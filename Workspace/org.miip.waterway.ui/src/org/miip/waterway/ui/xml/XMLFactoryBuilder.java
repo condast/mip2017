@@ -132,8 +132,8 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 		}
 
 		@Override
-		protected Object parseNode( Selection node, Attributes attributes) {
-			Object retval = null;
+		protected Composite parseNode( Selection node, Attributes attributes) {
+			Composite retval = null;
 			String style_str = getAttribute( attributes, AttributeNames.STYLE );
 			String name = getAttribute( attributes, AttributeNames.NAME );
 			String url = getAttribute( attributes, AttributeNames.URL );
@@ -141,8 +141,8 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 			String height_str = getAttribute( attributes, AttributeNames.HEIGHT );
 			int height = StringUtils.isEmpty( height_str )? 50: Integer.parseInt( height_str );
 
-			String width_str = getAttribute( attributes, AttributeNames.WIDTH );
-			int width = StringUtils.isEmpty( width_str )? 50: Integer.parseInt( width_str );
+			//String width_str = getAttribute( attributes, AttributeNames.WIDTH );
+			//int width = StringUtils.isEmpty( width_str )? 50: Integer.parseInt( width_str );
 
 			NavigationComposite navcomp = null;
 			Composite current = null;
@@ -211,6 +211,12 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 		protected void addValue(Enum<Selection> node, String value) {
 			// TODO Auto-generated method stub
 			
+		}
+
+		@Override
+		public Composite getUnit(String id) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 

@@ -29,4 +29,5 @@ Import-Package: org.condast.commons,
  org.eclipse.swt.widgets,
  org.openlayer.map.controller
 Export-Package: org.miip.waterway.ui,
+ org.miip.waterway.ui.lang,
  org.miip.waterway.ui.xml
