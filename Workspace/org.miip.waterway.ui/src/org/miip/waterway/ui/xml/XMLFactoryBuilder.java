@@ -8,6 +8,7 @@
 package org.miip.waterway.ui.xml;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.EnumSet;
 
@@ -60,13 +61,16 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 		ID,
 		NAME,
 		URL,
+		LINK,
+		SELECT,
 		STYLE,
 		SCOPE,
 		TYPE,
 		DATA,
 		DESCRIPTION,
 		HEIGHT,
-		WIDTH;
+		WIDTH,
+		SIZE;
 
 		@Override
 		public String toString() {
@@ -118,6 +122,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 		
 		private Composite composite;
 		private Composite parent;
+		private NavigationComposite navcomp;
 		
 		public XMLHandler( Composite parent ) {
 			super( EnumSet.allOf( XMLFactoryBuilder.Selection.class));
@@ -140,11 +145,12 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 			String data = getAttribute( attributes, AttributeNames.DATA );
 			String height_str = getAttribute( attributes, AttributeNames.HEIGHT );
 			int height = StringUtils.isEmpty( height_str )? 50: Integer.parseInt( height_str );
+			String size_str = getAttribute( attributes, AttributeNames.SIZE );
+			int size = StringUtils.isEmpty( size_str )? 50: Integer.parseInt( size_str );
 
 			//String width_str = getAttribute( attributes, AttributeNames.WIDTH );
 			//int width = StringUtils.isEmpty( width_str )? 50: Integer.parseInt( width_str );
 
-			NavigationComposite navcomp = null;
 			Composite current = null;
 			Composite widget = null;
 			switch( node ){
@@ -157,9 +163,13 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 				current = (Composite) super.getCurrentData();
 				int style = IStyle.SWT.convert( style_str );
 				boolean horizontal = SWT.HORIZONTAL == style;
-				widget = new NavigationComposite( current, style);
+				navcomp = new NavigationComposite( current, style);
+				widget = navcomp;
 				GridData gd_nav = new GridData(SWT.FILL, SWT.FILL, horizontal, !horizontal);
+				if( !StringUtils.isEmpty( size_str ))
+					gd_nav.widthHint = size;
 				widget.setLayoutData( gd_nav);
+				//navcomp.addSelectionListener(listener);
 				retval = widget;
 				break;
 			case IMAGE:
@@ -168,16 +178,23 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 				break;
 			case ITEM:
 				navcomp = (NavigationComposite) super.getCurrentData();
-				navcomp.addItem( name );
+				String select_str = getAttribute( attributes, AttributeNames.SELECT );
+				boolean select=  StringUtils.isEmpty( select_str )?false: Boolean.parseBoolean( select_str );
+				String link = getAttribute( attributes, AttributeNames.LINK );
+				navcomp.addItem( name, link, select );
 				break;
 			case BODY:
 				current = (Composite) super.getCurrentData();
 				widget = new Composite(current, IStyle.SWT.convert( style_str ));
-				widget.setLayout(new FillLayout(SWT.HORIZONTAL));
+				widget.setLayout(new FillLayout());
 				GridData gd_body = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 				gd_body.horizontalIndent = 0;
 				gd_body.verticalIndent = 0;
 				widget.setLayoutData( gd_body);
+				String sellink = navcomp.getSelectedLink();
+				if( !StringUtils.isEmpty( sellink )){
+					createComposite(sellink, widget, IStyle.SWT.convert( style_str ));
+				}
 				break;
 			case STATUS_BAR:
 				current = (Composite) super.getCurrentData();
@@ -219,5 +236,22 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	protected static Composite createComposite( String className, Composite parent, int style ){
+		if( StringUtils.isEmpty( className ))
+			return null;
+		Composite composite = null;
+		try{
+			Class<Composite> cls = (Class<Composite>) Class.forName( className );
+			Constructor<Composite> cons = cls.getConstructor( Composite.class, Integer.class);          
+			composite = cons.newInstance( parent, style );
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+		}
+		return composite;
+	}
+
 
 }

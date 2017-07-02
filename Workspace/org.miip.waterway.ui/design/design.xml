@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <design>
 	<frontend title="ACTIVE" id="org.miip.frontend" style="SWT.NONE">
-		<navigation style="SWT.VERTICAL">
+		<navigation style="SWT.VERTICAL" size="100">
 		  <image name="miip" url="/resources/miip.png"/>
 		  <menu>
-		    <item name="ENTRY"/>
+		    <item name="ENTRY" link="org.miip.waterway.ui.swt.MapComposite" select="true" style="SWT.BORDER"/>
 		    <item name="SEARCH"/>
 		    <item name="LOGIN"/>
 		    <item name="LOGOFF"/>

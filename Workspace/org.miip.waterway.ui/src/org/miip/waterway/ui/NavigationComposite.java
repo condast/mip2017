@@ -31,9 +31,11 @@ public class NavigationComposite extends Composite {
 	private Button imageButton;
 	private Text text;
 	private NavigationToolBar navigationBar;
+	private Map<String,String> links;
 	
 	public NavigationComposite(Composite parent, int style) {
 		super(parent, style);
+		links = new HashMap<String, String>();
 		this.createComposite(parent, style);
 	}
 	
@@ -65,12 +67,20 @@ public class NavigationComposite extends Composite {
         navigationBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
  	}
 	
-	public void addItem( String itemName ){
-		navigationBar.addToolItem(itemName);
+	public void addItem( String itemName, String link, boolean select ){
+		navigationBar.addItem( itemName );
+		links.put(itemName, link);
+		if( select )
+			navigationBar.setSelection( itemName );
 	}
 	
-	public ToolItem getItem( XMLFactoryBuilder.Selection selection ){
-		return navigationBar.getItem(selection );
+	public ToolItem getItem( String itemName ){
+		return navigationBar.getItem( itemName );
+	}
+
+	public String getSelectedLink(){
+		String selection = navigationBar.getSelection();
+		return links.get(selection);
 	}
 
 	public Image getImage(){
@@ -89,11 +99,11 @@ public class NavigationComposite extends Composite {
 		this.text.setText(text);
 	}
 	
-	public XMLFactoryBuilder.Selection getSelection(){
+	public String getSelection(){
 		return navigationBar.getSelection();
 	}
 	
-	public void setSelection( XMLFactoryBuilder.Selection selection ){
+	public void setSelection( String selection ){
 		navigationBar.setSelection( selection );
 	}
 	
@@ -112,7 +122,7 @@ public class NavigationComposite extends Composite {
 	private static class NavigationToolBar extends ToolBar{
 		private static final long serialVersionUID = 1L;
 
-		private XMLFactoryBuilder.Selection selection;
+		private String selection;
 		
 		private SelectionListener listener = new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
@@ -137,29 +147,29 @@ public class NavigationComposite extends Composite {
 							}
 							selected = item;
 							//selected.setImage( LabelProviderImages.getInstance().getImage( Images.CHECK ));
-							selection = ( XMLFactoryBuilder.Selection )item.getData();
+							selection = ( String )item.getData();
 							//prefs.putSettings( NavigationPreferences.Attributes.SELECTED_ITEM, selection.name() );
-							switch( selection ){
-							case REPORTS:
+							//switch( selection ){
+							//case REPORTS:
 								//Rectangle rec = item.getBounds();
 								//if( event.detail == SWT.ARROW ) {
 								//Point point = toDisplay( event.x, event.y );
 								//Point point = toDisplay(rec.x+rec.width,rec.y);
 								//dossier_menu.setLocation( point );					
 								//dossier_menu.setVisible( true );
-								break;
+								//break;
 								/*				   
 						case LOG_IN:
 							AuthenticationManager manager = AuthenticationManager.getInstance();
 							manager.login();
 							break;
 								 */	
-							case LOG_OFF:
-								manager.logout();
-								break;
-							default:
-								break;
-							}
+							//case LOG_OFF:
+							//	manager.logout();
+							//	break;
+							//default:
+							//	break;
+							//}
 							for( SelectionListener list: listeners )
 								list.widgetSelected( event );
 						}
@@ -172,14 +182,14 @@ public class NavigationComposite extends Composite {
 		};
 
 		private IAuthenticationManager manager;
-		private Map<XMLFactoryBuilder.Selection, ToolItem> toolItems;
+		private Map<String, ToolItem> toolItems;
 		private ToolItem selected;
 		
 		private Collection<SelectionListener> listeners;
 		
 		private NavigationToolBar( Composite parent, int style) {
 			super(parent, style);
-			this.toolItems = new HashMap<XMLFactoryBuilder.Selection, ToolItem>();
+			this.toolItems = new HashMap<String, ToolItem>();
 			this.listeners = new ArrayList<SelectionListener>();
 			try{
 				this.createComposite(parent, style);
@@ -201,22 +211,22 @@ public class NavigationComposite extends Composite {
 			this.pack();
 		}
 		
-		void addToolItem( String itemName ){
+		void addItem( String itemName ){
 			ToolItem  item = new ToolItem(this, SWT.RADIO );
 			item.setData(RWT.CUSTOM_VARIANT, RWT_NAVIGATION);
 			item.setText( itemName );
 			item.addSelectionListener( listener );
-			toolItems.put( selection, item );			
+			toolItems.put( itemName, item );			
 		}
 		
 		void setDefault( SelectionEvent event ){
-			setSelection( XMLFactoryBuilder.Selection.DEFAULT );
+			setSelection( XMLFactoryBuilder.Selection.DEFAULT.name() );
 			for( SelectionListener listener: listeners )
 				listener.widgetSelected( event );
 		}
 
-		ToolItem getItem( XMLFactoryBuilder.Selection selection ){
-			return toolItems.get(selection );
+		ToolItem getItem( String itemName ){
+			return toolItems.get( itemName );
 		}
 		
 		void setManager(IAuthenticationManager manager) {
@@ -231,11 +241,11 @@ public class NavigationComposite extends Composite {
 			this.listeners.remove( listener );
 		}
 		
-		XMLFactoryBuilder.Selection getSelection(){
+		String getSelection(){
 			return selection;
 		}
 
-		void setSelection( XMLFactoryBuilder.Selection selection ){
+		void setSelection( String selection ){
 			if( this.selected != null ){
 				this.selected.setImage(null);
 				this.selected.setSelection(false);
