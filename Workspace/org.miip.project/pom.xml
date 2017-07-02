@@ -21,7 +21,8 @@
         <rap-repo.url>http://download.eclipse.org/rt/rap/3.1/</rap-repo.url>
         <condast-commons>file:${generics}/org.condast.commons/Workspace/</condast-commons>
         <condast-js>file:${generics}/org.condast.js/Workspace/</condast-js>
-        <!-- <condast-repo.url>file:${generics}/alpha.root.cultuurinzicht.update</condast-repo.url>-->
+        <condast-symbiot>file:${generics}/org.condast.symbiotic/Workspace/</condast-symbiot>
+         <!-- <condast-repo.url>file:${generics}/alpha.root.cultuurinzicht.update</condast-repo.url>-->
         <condast-repo.url>file:P:/Windows/KenniscentrumRDM/Workspace/org.rdm.update</condast-repo.url>
     </properties>
 
@@ -51,6 +52,11 @@
             <url>${condast-js}/org.condast.js.update/target/site</url>
             <layout>p2</layout>
        </repository>
+       <repository>
+           <id>org-condast-symbiotic</id>
+           <url>${condast-symbiot}/org.condast.symbiotic.update/target/site</url>
+           <layout>p2</layout>
+      </repository>
     </repositories>
 
   <modules>
