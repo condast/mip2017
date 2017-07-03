@@ -4,7 +4,7 @@
 		<navigation style="SWT.VERTICAL" size="100">
 		  <image name="miip" url="/resources/miip.png"/>
 		  <menu>
-		    <item name="ENTRY" link="org.miip.waterway.ui.swt.MapComposite" select="true" style="SWT.BORDER"/>
+		    <item name="ENTRY" link="org.miip.waterway.ui.swt.MIIPComposite" select="true" style="SWT.BORDER"/>
 		    <item name="SEARCH"/>
 		    <item name="LOGIN"/>
 		    <item name="LOGOFF"/>
