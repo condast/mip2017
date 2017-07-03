@@ -1,8 +1,8 @@
 package org.miip.waterway.ui.swt;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.layout.GridLayout;
+
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.eclipse.swt.SWT;
@@ -21,6 +21,7 @@ public class MIIPComposite extends Composite {
 	private MIIPCanvas canvas;
 	private Text text_name;
 	private Text text_speed;
+	private Text text_bearing;
 	private Text text_lng;
 	private Text text_lat;
 	
@@ -29,17 +30,17 @@ public class MIIPComposite extends Composite {
 	private IEnvironmentListener listener = new IEnvironmentListener() {
 		
 		@Override
-		public void notifyEnvironmentChanged(EnvironmentEvent event) {
+		public void notifyEnvironmentChanged(final EnvironmentEvent event) {
 			getDisplay().asyncExec( new Runnable(){
 
 				@Override
 				public void run() {
+					setInput();
+					canvas.redraw();
 					switch( event.getType() ){
 					case INITIALSED:
-						initComposite();
 						break;
 					default:
-						initComposite();
 						break;
 					}
 				}
@@ -65,6 +66,7 @@ public class MIIPComposite extends Composite {
 		setLayout(new GridLayout(1, false));
 		canvas = new MIIPCanvas(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
+		
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new GridLayout(3, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -81,8 +83,11 @@ public class MIIPComposite extends Composite {
 		lblNewLabel_1.setText("Speed:");
 		
 		text_speed = new Text(composite, SWT.BORDER);
-		text_speed.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		
+		text_speed.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+		text_bearing = new Text(composite, SWT.BORDER);
+		text_bearing.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
 		Label lblPosition = new Label(composite, SWT.NONE);
 		lblPosition.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblPosition.setText("Position:");
@@ -105,7 +110,7 @@ public class MIIPComposite extends Composite {
 					environment.start();
 				else
 					environment.pause();
-				btnNewButton.setText( environment.isPaused()? "Stop": "Start");
+				btnNewButton.setText( !environment.isPaused()? "Stop": "Start");
 				super.widgetSelected(e);
 			}
 			
@@ -114,10 +119,11 @@ public class MIIPComposite extends Composite {
 		
 	}
 
-	protected void initComposite(){
+	protected void setInput(){
 		Ship ship = environment.getShip();
 		this.text_name.setText( ship.getId() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
+		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
 		this.text_lng.setText( String.valueOf( ship.getLnglat().getLongitude() ));
 		this.text_lat.setText( String.valueOf( ship.getLnglat().getLatitude() ));
 	}

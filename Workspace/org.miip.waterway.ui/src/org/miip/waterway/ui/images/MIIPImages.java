@@ -7,23 +7,45 @@
  *******************************************************************************/
 package org.miip.waterway.ui.images;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.condast.commons.strings.StringStyler;
 import org.condast.commons.ui.image.AbstractImages;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 public class MIIPImages extends AbstractImages{
 
 	public static final String BUNDLE_ID = "org.miip.waterway.ui";
+
+	public static final String S_ICON_PATH = "/resources/";
 	
-	private Map<String, String> imageMap;
+	public enum Images{
+		MIIP,
+		SHIP,
+		TREE;
+
+		@Override
+		public String toString() {
+			return StringStyler.prettyString( super.toString() );
+		}
 		
+		public static String getFileName( Images image ){
+			String str = null;
+			switch( image ){
+			case MIIP:
+				str = "miip.png";
+				break;
+			default:
+				str = image.name().toLowerCase() + "-32.png";
+				break;
+			}
+			return str;
+		}
+	}
+
 	private static MIIPImages images = new MIIPImages();
 	
 	private MIIPImages() {
-		super( "", BUNDLE_ID );
-		imageMap = new HashMap<String, String>();
+		super( S_ICON_PATH, BUNDLE_ID );
 	}
 
 	/**
@@ -36,12 +58,23 @@ public class MIIPImages extends AbstractImages{
 	
 	@Override
 	public void initialise(){
+		for( Images img: Images.values() )
+			setImage( Images.getFileName( img ));
 	}
 	
 	public void setImage( String name, String url ){
 		super.setImage(name);
-		this.imageMap.put(name, url );
 	}
+
+	/**
+	 * Get the image
+	 * @param desc
+	 * @return
+	 */
+	public static Image getImage( Images image ){
+		return getInstance().getImageFromName( image.toString());
+	}
+
 	/**
 	 * Get the image
 	 * @param desc
@@ -49,5 +82,9 @@ public class MIIPImages extends AbstractImages{
 	 */
 	public static Image getImage( String name ){
 		return getInstance().getImageFromName( name);
+	}
+	
+	public static Image getImageFromResource( Display display, Images image ){
+		return getImageFromResource(display, MIIPImages.class, S_ICON_PATH + Images.getFileName(image));
 	}
 }

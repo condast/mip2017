@@ -30,10 +30,11 @@ public class Ship extends AbstractModel<IModel.ModelTypes>{
 	}
 
 
-	public void sail( Date newTime ){
-		long interval = newTime.getTime() - currentTime.getTime();
-		long distance = ( long )( interval * ( speed/ TO_HOURS ));
+	public int sail( Date newTime ){
+		float interval = newTime.getTime() - currentTime.getTime();
+		float distance = interval * speed/ TO_HOURS;
 		LngLat position = Motion.extrapolate( super.getLnglat(), bearing, distance);
 		super.setLnglat(position);
+		return (int) distance;
 	}
 }
