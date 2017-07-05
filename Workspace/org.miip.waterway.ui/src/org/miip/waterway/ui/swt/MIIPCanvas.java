@@ -3,6 +3,9 @@ package org.miip.waterway.ui.swt;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.miip.waterway.internal.model.Location;
+import org.miip.waterway.internal.model.Ship;
+import org.miip.waterway.ui.eco.Bank;
 import org.miip.waterway.ui.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 
@@ -17,8 +20,6 @@ import org.eclipse.swt.graphics.Rectangle;
 public class MIIPCanvas extends Canvas {
 	private static final long serialVersionUID = 1L;
 
-	public static final int BANK_SIZE = 80;
-	
 	private PaintListener listener = new PaintListener(){
 		private static final long serialVersionUID = 1L;
 
@@ -28,6 +29,8 @@ public class MIIPCanvas extends Canvas {
 		}
 	};
 	
+    MIIPEnvironment environment = MIIPEnvironment.getInstance();
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -42,23 +45,32 @@ public class MIIPCanvas extends Canvas {
 	protected void drawField( GC gc ){
         Display display = super.getDisplay();
 		Rectangle clientArea = getClientArea();
-        gc.drawLine( 0, BANK_SIZE, clientArea.width, BANK_SIZE );
+        int bankSize = scaleYToDisplay( environment.getBankWidth());
+		gc.drawLine( 0, bankSize, clientArea.width, bankSize );
         
-        Rectangle rect = new Rectangle(0, 0, clientArea.width, BANK_SIZE);
+        Rectangle rect = new Rectangle(0, 0, clientArea.width, bankSize);
         gc.setBackground(display.getSystemColor(SWT.COLOR_DARK_GREEN));
         gc.fillRectangle( rect );
         
-        rect = new Rectangle(0, clientArea.height-BANK_SIZE, clientArea.width, clientArea.height );
+        rect = new Rectangle(0, clientArea.height-bankSize, clientArea.width, clientArea.height );
         gc.setBackground(display.getSystemColor(SWT.COLOR_DARK_GREEN ));
         gc.fillRectangle( rect );
-        gc.drawLine( 0, clientArea.height-BANK_SIZE, clientArea.width, clientArea.height-BANK_SIZE);
+        gc.drawLine( 0, clientArea.height-bankSize, clientArea.width, clientArea.height-bankSize);
 
         Point point = new Point( (int)( clientArea.width/2), (int)(clientArea.height/2));
         drawImage( gc, point, MIIPImages.Images.SHIP);
         
-        MIIPEnvironment environment = MIIPEnvironment.getInstance();
-        for( Point shore: environment.getShoreObjects())
-        	drawImage(gc, scaleToCanvas( shore ), MIIPImages.Images.TREE );
+        if(!environment.isInitialsed() )
+        	return;
+        
+         for( Bank bank: environment.getBanks()){
+        	for( Location tree: bank.getShoreObjects() )
+        		drawImage(gc, scaleToCanvas( tree ), MIIPImages.Images.TREE );
+         }
+         for( Ship ship: environment.getWaterway().getShips()){
+         		drawImage(gc, scaleToCanvas( environment.getLocation( ship )), MIIPImages.Images.SHIP );
+         }
+
         gc.dispose();
 	}
 
@@ -73,16 +85,24 @@ public class MIIPCanvas extends Canvas {
 		return img;
 	}
 	
-	protected Point scaleToCanvas( Point point ){
-        MIIPEnvironment environment = MIIPEnvironment.getInstance();
-		Rectangle clientArea = getClientArea();
-		float scalex = (float)clientArea.width/environment.getLength();
-		float scaley = (float)clientArea.height/environment.getWidth();
-		float x = point.x * scalex;
-		float y = point.y * scaley;
+	protected Point scaleToCanvas( Location location ){
+		int x = scaleXToDisplay((int) location.getX() );
+		int y = scaleYToDisplay((int)location.getY() );
 		return new Point((int) x, (int) y );
 	}
 	
+	protected int scaleYToDisplay( int length ){
+		Rectangle clientArea = getClientArea();
+		float scale = ((float)environment.getWidth() + 2*environment.getBankWidth() )/clientArea.height;
+		return (int)( length/scale );
+	}
+
+	protected int scaleXToDisplay( int length ){
+		Rectangle clientArea = getClientArea();
+		float scale = environment.getLength()/clientArea.width;
+		return (int)( length/scale );
+	}
+
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components

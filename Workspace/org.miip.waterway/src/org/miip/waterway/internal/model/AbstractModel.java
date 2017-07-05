@@ -1,15 +1,19 @@
 package org.miip.waterway.internal.model;
 
 import org.condast.commons.lnglat.LngLat;
-import org.condast.wph.core.definition.IModel;
+import org.miip.waterway.model.def.IModel;
 
-public abstract class AbstractModel<E extends Enum<E>> implements IModel<E>{
+public abstract class AbstractModel implements IModel{
 
 	private String id;
 	private LngLat lnglat;
-	private E type;
+	private ModelTypes type;
+
+	protected AbstractModel( ModelTypes type, LngLat lngLat ) {
+		this( type.toString(), type, lngLat );
+	}
 	
-	protected AbstractModel( String id, E type, LngLat lnglat ) {
+	protected AbstractModel( String id, ModelTypes type, LngLat lnglat ) {
 		this.id = id;
 		this.type = type;
 		this.lnglat = lnglat;
@@ -21,7 +25,7 @@ public abstract class AbstractModel<E extends Enum<E>> implements IModel<E>{
 	}
 
 	@Override
-	public E getType() {
+	public ModelTypes getType() {
 		return type;
 	}
 

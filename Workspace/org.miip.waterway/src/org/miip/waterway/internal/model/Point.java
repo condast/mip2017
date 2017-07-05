@@ -1,0 +1,54 @@
+package org.miip.waterway.internal.model;
+
+import org.condast.commons.lnglat.LngLat;
+import org.condast.commons.lnglat.LngLatUtils;
+
+/**
+ * With a point, one can choose to either keep the location fixed and change the
+ * lnglat coordinates, or to change the location. 
+ * @author Kees
+ *
+ */
+public class Point extends AbstractModel {
+
+	private Location location;
+	
+	public Point(LngLat lngLat, Location location) {
+		super( ModelTypes.COURSE, lngLat);
+		this.location = location;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	@Override
+	public void setLnglat(LngLat lnglat) {
+		super.setLnglat(lnglat);
+	}
+	
+	/**
+	 * Set new LngLat coordinates based on the new location
+	 * and keep the location in tact
+	 * @param newloc
+	 */
+	public static LngLat getLngLat( Point current, Location newloc ){
+		double displx = newloc.getX() - current.getLocation().getX();
+		double disply = newloc.getY() - current.getLocation().getY();
+		double distance = displx*displx + disply*disply;
+		
+		double rad = Math.asin(disply/Math.sqrt( distance));
+		return LngLatUtils.extrapolate( current.getLnglat(), rad, distance);
+	}
+	
+	/**
+	 * Set a new location, based on the lnglat coordinates
+	 * @param lnglat
+	 */
+	public static Location getLocation( Point current, LngLat lnglat ){
+		double newX = LngLatUtils.lngDistance(lnglat, current.getLnglat(), 0, 0);
+		double newY = LngLatUtils.latDistance(lnglat, current.getLnglat(), 0, 0);
+		Location location = new Location( current.getLocation().getX() + newX, current.getLocation().getY() + newY );
+		return location;
+	}
+}

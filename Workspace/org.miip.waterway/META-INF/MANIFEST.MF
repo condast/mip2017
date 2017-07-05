@@ -6,6 +6,6 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.condast.commons.lnglat,
- org.condast.commons.strings,
- org.condast.wph.core.definition
-Export-Package: org.miip.waterway.internal.model
+ org.condast.commons.strings
+Export-Package: org.miip.waterway.internal.model,
+ org.miip.waterway.model.def

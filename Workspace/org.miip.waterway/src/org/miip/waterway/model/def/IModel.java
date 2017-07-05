@@ -6,6 +6,10 @@ import org.condast.commons.strings.StringStyler;
 public interface IModel {
 
 	public enum ModelTypes{
+		POINT,
+		COURSE,
+		BANK,
+		WATERWAY,
 		SHIP;
 		
 		public String getImage(){
