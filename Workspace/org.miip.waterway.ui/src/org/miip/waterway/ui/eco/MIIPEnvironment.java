@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.condast.commons.lnglat.LngLat;
+import org.condast.commons.lnglat.LatLng;
 import org.condast.commons.lnglat.LngLatUtils;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.symbiotic.core.environment.Environment;
@@ -38,7 +38,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	private Lock lock;
 	private int timer;
 	
-	private LngLat position;//The left centre of the course
+	private LatLng position;//The left centre of the course
 	private Ship ship;
 	private Bank topBank;
 	private Bank bottomBank;
@@ -83,10 +83,10 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public int getWidth() {
 		return width;
 	}
+	
 	protected void setWidth(int width) {
 		this.width = width;
 	}
-	
 	
 	public int getTimer() {
 		return timer;
@@ -135,12 +135,12 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		//The left course associates a lnglat coordinate with a position on the course.
 		//In this case we use the left centre
 		float halfWidth = width/2;
-		this.position = new LngLat( LATITUDE, LONGITUDE );
+		this.position = new LatLng( LATITUDE, LONGITUDE );
 		
 		Rectangle rect = new Rectangle(0, 0, length, this.bankWidth );
 		topBank =  new Bank( Bank.Banks.UPPER, LngLatUtils.extrapolate( this.position, 0, halfWidth), rect );
 		
-		LngLat centre = LngLatUtils.extrapolate( this.position, Bearing.EAST.getDegrees(), length/2);
+		LatLng centre = LngLatUtils.extrapolate( this.position, Bearing.EAST.getDegrees(), length/2);
 		ship = new Ship( NAME, Calendar.getInstance().getTime(), 20, centre );
 		this.position = LngLatUtils.extrapolate( ship.getLnglat(), Bearing.EAST.getDegrees(), (int)( -length/2));
 		counter = 0;
@@ -152,35 +152,67 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this.initialsed = true;
 		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
 	}
+	
+	public Integer[] getXCoordinates(){
+		Collection<Integer> coords = new ArrayList<Integer>();
+		int ref = (int)this.position.getLongitude();
+		float interval = 0.001f;
+		float posx = ref;
+		LatLng end = LngLatUtils.extrapolate(this.position, Bearing.EAST.getDegrees(), length);
+		while( posx < end.getLongitude() ){
+			if( posx >= this.position.getLongitude()){
+				LatLng coord = new LatLng( this.position.getLatitude(), posx );
+				coords.add( (int) LngLatUtils.distance(this.position, coord) );
+			}
+			posx += interval;
+		}
+		return coords.toArray( new Integer[ coords.size()]);
+	}
+
+	public Integer[] getYCoordinates(){
+		Collection<Integer> coords = new ArrayList<Integer>();
+		int ref = (int)this.position.getLongitude();
+		float interval = 0.001f;
+		float posy = ref;
+		LatLng end = LngLatUtils.extrapolate(this.position, Bearing.NORTH.getDegrees(), width);
+		while( posy < end.getLatitude() ){
+			if( posy >= this.position.getLatitude()){
+				LatLng coord = new LatLng( posy, this.position.getLongitude() );
+				coords.add( (int) LngLatUtils.distance(this.position, coord) );
+			}
+			posy += interval;
+		}
+		return coords.toArray( new Integer[ coords.size()]);
+	}
 
 	@Override
 	public void onExecute() {
 		while( super.isRunning()){
-			if( !super.isPaused() ){
-				lock.lock();
-				try{
-					currentTime = Calendar.getInstance().getTime();
-					Location traverse = ship.plotNext(currentTime);
-					
-					LngLat course = LngLatUtils.extrapolateEast(this.position, traverse.getX() );
-					this.position = course;
-					
-					ship.sail( currentTime );	
-					waterway.update( course, currentTime, (float) traverse.getX());
-					counter = ( counter + 1)%10;
-					topBank.update( traverse.getY());
-					bottomBank.update( traverse.getY());
-					notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
-				}
-				finally{
-					lock.unlock();
-				}
-				try{
-					Thread.sleep(timer);
-				}
-				catch( InterruptedException ex ){
-					ex.printStackTrace();
-				}
+			if(super.isPaused() )
+				continue;
+			lock.lock();
+			try{
+				currentTime = Calendar.getInstance().getTime();
+				Location traverse = ship.plotNext(currentTime);
+
+				LatLng course = LngLatUtils.extrapolateEast(this.position, traverse.getX() );
+				this.position = course;
+
+				ship.sail( currentTime );	
+				waterway.update( course, currentTime, traverse.getX());
+				counter = ( counter + 1)%10;
+				topBank.update( traverse.getX());
+				bottomBank.update( traverse.getX());
+				notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
+			}
+			finally{
+				lock.unlock();
+			}
+			try{
+				Thread.sleep(timer);
+			}
+			catch( InterruptedException ex ){
+				ex.printStackTrace();
 			}
 		}
 	}

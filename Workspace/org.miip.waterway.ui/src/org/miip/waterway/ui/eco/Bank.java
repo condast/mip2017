@@ -3,7 +3,7 @@ package org.miip.waterway.ui.eco;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.condast.commons.lnglat.LngLat;
+import org.condast.commons.lnglat.LatLng;
 import org.condast.commons.lnglat.LngLatUtils;
 import org.condast.commons.strings.StringStyler;
 import org.eclipse.swt.graphics.Rectangle;
@@ -30,11 +30,11 @@ public class Bank extends AbstractModel{
 	
 	private Rectangle rectangle;
 
-	public Bank( Banks bank, LngLat lnglat, Rectangle rectangle) {
+	public Bank( Banks bank, LatLng lnglat, Rectangle rectangle) {
 		this( bank, lnglat, rectangle, DEFAULT_NR_OF_TREES );
 	}
 	
-	public Bank( Banks bank, LngLat lnglat, Rectangle rectangle, int nrOfShoreObjects) {
+	public Bank( Banks bank, LatLng lnglat, Rectangle rectangle, int nrOfShoreObjects) {
 		super( bank.toString(), IModel.ModelTypes.BANK, lnglat);
 		this.rectangle = rectangle;
 		this.nrOfShoreObjects = nrOfShoreObjects;

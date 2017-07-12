@@ -3,7 +3,7 @@ package org.miip.waterway.internal.model;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.condast.commons.lnglat.LngLat;
+import org.condast.commons.lnglat.LatLng;
 import org.condast.commons.lnglat.LngLatUtils;
 import org.miip.waterway.model.def.IModel;
 
@@ -32,15 +32,15 @@ public class Ship extends AbstractModel{
 	private float speed;//-20 - 60 km/hour
 	private Bearing bearing; //0-360
 
-	public Ship( String id, LngLat position, float speed, Bearing bearing) {
+	public Ship( String id, LatLng position, float speed, Bearing bearing) {
 		this( id, Calendar.getInstance().getTime(), speed, position, bearing );
 	}
 
-	public Ship( String id, Date currentTime, float speed, LngLat position) {
+	public Ship( String id, Date currentTime, float speed, LatLng position) {
 		this( id, currentTime, speed, position, Bearing.EAST );
 	}
 	
-	public Ship( String id, Date currentTime, float speed, LngLat position, Bearing bearing) {
+	public Ship( String id, Date currentTime, float speed, LatLng position, Bearing bearing) {
 		super( id, IModel.ModelTypes.SHIP, position );
 		this.currentTime = currentTime;
 		this.speed = speed;
@@ -69,10 +69,10 @@ public class Ship extends AbstractModel{
 		return new Location((float) x, (float)y );
 	}
 
-	public LngLat sail( Date newTime ){
+	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;
-		LngLat position = LngLatUtils.extrapolate( super.getLnglat(), bearing.getDegrees(), distance);
+		LatLng position = LngLatUtils.extrapolate( super.getLnglat(), bearing.getDegrees(), distance);
 		super.setLnglat(position);
 		this.currentTime = newTime;
 		return position;
@@ -84,8 +84,8 @@ public class Ship extends AbstractModel{
 	 * @param name
 	 * @return
 	 */
-	public static Ship createShip( LngLat lnglat, String name ){
-		double speed = 20;//10 + ( 60 * Math.random());
+	public static Ship createShip( LatLng lnglat, String name ){
+		double speed = 10 + ( 60 * Math.random());
 		Bearing bearing = ( Math.random() < 0.5f)? Bearing.EAST: Bearing.WEST;
 		return new Ship( name, lnglat, (float) speed, bearing);
 	}

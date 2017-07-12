@@ -20,6 +20,7 @@ import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.AbstractXmlHandler;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -174,7 +175,8 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 				break;
 			case IMAGE:
 				navcomp = (NavigationComposite) super.getCurrentData();
-				navcomp.setImage( MIIPImages.getInstance().getImageFromName(url));
+				Image image = MIIPImages.getImageFromResource( navcomp.getDisplay(), this.getClass(), url );
+				navcomp.setImage( image );
 				break;
 			case ITEM:
 				navcomp = (NavigationComposite) super.getCurrentData();

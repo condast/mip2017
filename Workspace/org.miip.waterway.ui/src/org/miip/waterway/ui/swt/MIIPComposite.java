@@ -55,6 +55,7 @@ public class MIIPComposite extends Composite {
 	private Button btnStartButton;
 	private Slider slider_speed;
 	private Spinner spinner_ships;
+	private Label lblActiveShips;
 	
 	/**
 	 * Create the composite.
@@ -104,15 +105,15 @@ public class MIIPComposite extends Composite {
 		});
 
 		lblSpeedLabel = new Label(group_control, SWT.BORDER);
-		lblSpeedLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection()));
+		lblSpeedLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+		lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection() ));
 
 		Label lblShipsLabel = new Label(group_control, SWT.NONE);
 		lblShipsLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		lblShipsLabel.setText("Amount:");
 
 		spinner_ships = new Spinner( group_control, SWT.BORDER );
-		spinner_ships.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 2, 1 ));
+		spinner_ships.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 		spinner_ships.setMaximum(10);
 		spinner_ships.setMaximum( 50 );
 		spinner_ships.addSelectionListener( new SelectionAdapter(){
@@ -124,7 +125,10 @@ public class MIIPComposite extends Composite {
 				super.widgetSelected(e);
 			}
 		});
-		
+
+		lblActiveShips = new Label(group_control, SWT.BORDER);
+		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
 		btnStartButton = new Button( group_control, SWT.NONE);
 		btnStartButton.setText("Start");
 		btnStartButton.addSelectionListener( new SelectionAdapter(){
@@ -182,6 +186,7 @@ public class MIIPComposite extends Composite {
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
 		this.text_lng.setText( String.valueOf( ship.getLnglat().getLongitude() ));
 		this.text_lat.setText( String.valueOf( ship.getLnglat().getLatitude() ));
+		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
 	}
 	
 	public void dispose(){

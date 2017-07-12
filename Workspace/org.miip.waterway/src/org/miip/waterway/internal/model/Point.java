@@ -1,6 +1,6 @@
 package org.miip.waterway.internal.model;
 
-import org.condast.commons.lnglat.LngLat;
+import org.condast.commons.lnglat.LatLng;
 import org.condast.commons.lnglat.LngLatUtils;
 
 /**
@@ -13,7 +13,7 @@ public class Point extends AbstractModel {
 
 	private Location location;
 	
-	public Point(LngLat lngLat, Location location) {
+	public Point(LatLng lngLat, Location location) {
 		super( ModelTypes.COURSE, lngLat);
 		this.location = location;
 	}
@@ -23,7 +23,7 @@ public class Point extends AbstractModel {
 	}
 
 	@Override
-	public void setLnglat(LngLat lnglat) {
+	public void setLnglat(LatLng lnglat) {
 		super.setLnglat(lnglat);
 	}
 	
@@ -32,7 +32,7 @@ public class Point extends AbstractModel {
 	 * and keep the location in tact
 	 * @param newloc
 	 */
-	public static LngLat getLngLat( Point current, Location newloc ){
+	public static LatLng getLngLat( Point current, Location newloc ){
 		double displx = newloc.getX() - current.getLocation().getX();
 		double disply = newloc.getY() - current.getLocation().getY();
 		double distance = displx*displx + disply*disply;
@@ -45,7 +45,7 @@ public class Point extends AbstractModel {
 	 * Set a new location, based on the lnglat coordinates
 	 * @param lnglat
 	 */
-	public static Location getLocation( Point current, LngLat lnglat ){
+	public static Location getLocation( Point current, LatLng lnglat ){
 		double newX = LngLatUtils.lngDistance(lnglat, current.getLnglat(), 0, 0);
 		double newY = LngLatUtils.latDistance(lnglat, current.getLnglat(), 0, 0);
 		Location location = new Location( current.getLocation().getX() + newX, current.getLocation().getY() + newY );

@@ -1,6 +1,6 @@
 package org.miip.waterway.model.def;
 
-import org.condast.commons.lnglat.LngLat;
+import org.condast.commons.lnglat.LatLng;
 import org.condast.commons.strings.StringStyler;
 
 public interface IModel {
@@ -42,7 +42,7 @@ public interface IModel {
 
 	String getId();
 
-	LngLat getLnglat();
+	LatLng getLnglat();
 
 	ModelTypes getType();
 }
