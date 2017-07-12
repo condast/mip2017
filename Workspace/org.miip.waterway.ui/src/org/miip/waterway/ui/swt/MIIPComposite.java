@@ -40,7 +40,7 @@ public class MIIPComposite extends Composite {
 				@Override
 				public void run() {
 					setInput();
-					canvas.redraw();
+					spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					canvas.redraw();
 					switch( event.getType() ){
 					case INITIALSED:
 						break;
@@ -115,12 +115,12 @@ public class MIIPComposite extends Composite {
 		spinner_ships.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 2, 1 ));
 		spinner_ships.setMaximum(10);
 		spinner_ships.setMaximum( 50 );
-		spinner_ships.setSelection(10);
 		spinner_ships.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				environment.getWaterway().setNrOfShips( spinner_ships.getSelection());
 				super.widgetSelected(e);
 			}
 		});

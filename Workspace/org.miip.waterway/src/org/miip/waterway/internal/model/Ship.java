@@ -64,8 +64,8 @@ public class Ship extends AbstractModel{
 		long interval = next.getTime() - this.currentTime.getTime();//msec
 		double distance = this.speed * interval / TO_HOURS;
 		double radian = Math.toRadians( this.bearing.getDegrees() );
-		double x = distance * Math.cos( radian );
-		double y = distance * Math.sin( radian );
+		double x = distance * Math.sin( radian );
+		double y = distance * Math.cos( radian );
 		return new Location((float) x, (float)y );
 	}
 
@@ -85,7 +85,7 @@ public class Ship extends AbstractModel{
 	 * @return
 	 */
 	public static Ship createShip( LngLat lnglat, String name ){
-		double speed = 10 + ( 60 * Math.random());
+		double speed = 20;//10 + ( 60 * Math.random());
 		Bearing bearing = ( Math.random() < 0.5f)? Bearing.EAST: Bearing.WEST;
 		return new Ship( name, lnglat, (float) speed, bearing);
 	}

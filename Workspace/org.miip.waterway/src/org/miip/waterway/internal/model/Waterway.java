@@ -12,7 +12,7 @@ import org.miip.waterway.model.def.IModel;
 
 public class Waterway extends AbstractModel{
 
-	private static final int DEFAULT_NR_OF_SHIPS = 5;
+	private static final int DEFAULT_NR_OF_SHIPS = 1;
 	
 	public enum Banks{
 		UPPER,
@@ -44,7 +44,7 @@ public class Waterway extends AbstractModel{
 	
 	protected void initialise(){
 		createShips( super.getLnglat(), this.nrOfShips );
-		createShips( LngLatUtils.extrapolateEast( super.getLnglat(), length ), this.nrOfShips );
+		//createShips( LngLatUtils.extrapolateEast( super.getLnglat(), length ), this.nrOfShips );
 	}
 
 	public int getNrOfShips() {
@@ -59,18 +59,18 @@ public class Waterway extends AbstractModel{
 		return ships.toArray( new Ship[ ships.size() ]);
 	}
 	
-	public void update( Date time, float distance ){
+	public void update( LngLat lngLat, Date time, float distance ){
+		super.setLnglat(lngLat);
 		for( Ship ship: getShips() ){
 			ship.sail( time );
 		}
-		super.setLnglat( LngLatUtils.extrapolateEast( super.getLnglat(), distance));
 		createShips( super.getLnglat(), this.nrOfShips );
-		createShips( LngLatUtils.extrapolateEast( super.getLnglat(), length ), this.nrOfShips );
+		//createShips( LngLatUtils.extrapolateEast( super.getLnglat(), length ), this.nrOfShips );
 	}
 
 	protected void createShips( LngLat place, int amount ){
 		for( int i=0; i< amount; i++){
-			double position = (Math.random() - 0.5f)*width;
+			double position = 1.8* ( Math.random() - 0.5f ) * width;
 			LngLat lnglat = LngLatUtils.extrapolateNorth( place, position );
 			Ship ship = Ship.createShip( lnglat, "newShip" );
 			ships.add( ship );

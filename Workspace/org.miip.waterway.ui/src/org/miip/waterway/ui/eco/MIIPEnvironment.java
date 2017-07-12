@@ -26,8 +26,8 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	private static final int DEFAULT_TIME_OUT =  1000;
 	
 	private static final String NAME = "HMS Rotterdam";
-	private static final float LONGITUDE = 51.936914f;
-	private static final float LATITUDE  = 4.055972f;
+	private static final float LONGITUDE = 4.00f;
+	private static final float LATITUDE  = 52.000f;
 	private static final int DEFAULT_LENGTH  = 2000; //2 km
 	private static final int DEFAULT_WIDTH  = 500; //500 m
 
@@ -135,7 +135,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		//The left course associates a lnglat coordinate with a position on the course.
 		//In this case we use the left centre
 		float halfWidth = width/2;
-		this.position = new LngLat( LONGITUDE, LATITUDE );
+		this.position = new LngLat( LATITUDE, LONGITUDE );
 		
 		Rectangle rect = new Rectangle(0, 0, length, this.bankWidth );
 		topBank =  new Bank( Bank.Banks.UPPER, LngLatUtils.extrapolate( this.position, 0, halfWidth), rect );
@@ -166,7 +166,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 					this.position = course;
 					
 					ship.sail( currentTime );	
-					waterway.update(currentTime, (float) traverse.getX());
+					waterway.update( course, currentTime, (float) traverse.getX());
 					counter = ( counter + 1)%10;
 					topBank.update( traverse.getY());
 					bottomBank.update( traverse.getY());

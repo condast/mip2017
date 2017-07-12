@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.internal.model.Location;
 import org.miip.waterway.internal.model.Ship;
+import org.miip.waterway.internal.model.Ship.Bearing;
 import org.miip.waterway.ui.eco.Bank;
 import org.miip.waterway.ui.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
@@ -68,7 +69,8 @@ public class MIIPCanvas extends Canvas {
         		drawImage(gc, scaleToCanvas( tree ), MIIPImages.Images.TREE );
          }
          for( Ship ship: environment.getWaterway().getShips()){
-         		drawImage(gc, scaleToCanvas( environment.getLocation( ship )), MIIPImages.Images.SHIP );
+        	 MIIPImages.Images img = Bearing.EAST.equals( ship.getBearing())? MIIPImages.Images.SHIP_GRN:MIIPImages.Images.SHIP_RED;	
+        	 drawImage(gc, scaleWaterwayToCanvas( environment.getLocation( ship )), img );
          }
 
         gc.dispose();
@@ -84,7 +86,14 @@ public class MIIPCanvas extends Canvas {
     	img.dispose();
 		return img;
 	}
-	
+
+	protected Point scaleWaterwayToCanvas( Location location ){
+		Rectangle clientArea = getClientArea();
+		float bankWidth = (float)clientArea.height * environment.getBankWidth()/environment.getWidth();
+		int x = scaleXToDisplay((int) location.getX() );
+		float y = bankWidth + scaleYToDisplay((int)location.getY() );
+		return new Point((int) x, (int) y );
+	}
 	protected Point scaleToCanvas( Location location ){
 		int x = scaleXToDisplay((int) location.getX() );
 		int y = scaleYToDisplay((int)location.getY() );

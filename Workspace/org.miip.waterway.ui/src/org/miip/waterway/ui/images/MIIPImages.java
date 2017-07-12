@@ -21,6 +21,10 @@ public class MIIPImages extends AbstractImages{
 	public enum Images{
 		MIIP,
 		SHIP,
+		SHIP_ORNG,
+		SHIP_RED,
+		SHIP_YLW,
+		SHIP_GRN,
 		TREE;
 
 		@Override
@@ -35,7 +39,9 @@ public class MIIPImages extends AbstractImages{
 				str = "miip.png";
 				break;
 			default:
-				str = image.name().toLowerCase() + "-32.png";
+				str = image.name().toLowerCase();
+				str = str.replace("_", "-");
+				str += "-32.png";
 				break;
 			}
 			return str;
