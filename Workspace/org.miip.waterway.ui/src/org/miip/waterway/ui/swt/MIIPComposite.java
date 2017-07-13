@@ -57,7 +57,7 @@ public class MIIPComposite extends Composite {
 	private Slider slider_speed;
 	private Spinner spinner_ships;
 	private Label lblActiveShips;
-	private Radar radar;
+	private HumanAssist radar;
 	
 	/**
 	 * Create the composite.
@@ -143,14 +143,15 @@ public class MIIPComposite extends Composite {
 					environment.start();
 				else
 					environment.pause();
-				btnStartButton.setText( !environment.isPaused()? "Stop": "Start");
+				Button btn = (Button) e.widget;
+				btn.setText( !environment.isPaused()? "Stop": "Start");
 				super.widgetSelected(e);
 			}
 			
 		});
 
 		btnClearButton = new Button( group_control, SWT.NONE);
-		btnClearButton.setText("Start");
+		btnClearButton.setText("Clear");
 		btnClearButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		btnClearButton.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
@@ -195,7 +196,7 @@ public class MIIPComposite extends Composite {
 		text_lat = new Text(group_ship, SWT.BORDER);
 		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));		
 		
-		radar = new Radar( composite, SWT.BORDER );
+		radar = new HumanAssist( composite, SWT.BORDER );
 		radar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));		
 	}
 

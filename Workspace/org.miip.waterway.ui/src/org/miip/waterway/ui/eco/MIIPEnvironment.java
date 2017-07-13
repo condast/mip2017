@@ -72,8 +72,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		return initialsed;
 	}
 	
-	public void clear(){
-		
+	public void clear(){	
 	}
 	
 	public int getLength() {
@@ -238,9 +237,8 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	 * @return
 	 */
 	public Location getLocation( IModel model ){
-		double x = LatLngUtils.lngDistance( this.position, model.getLnglat(), 0, 0);
-		double y = LatLngUtils.latDistance( this.position, model.getLnglat(), 0, 0);
-		return new Location( x, y );
-		
+		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLnglat(), 0, 0));
+		double y = Math.abs( LatLngUtils.latDistance( this.position, model.getLnglat(), 0, 0));
+		return new Location( x, y );	
 	}
 }
