@@ -3,7 +3,8 @@ package org.miip.waterway.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.condast.commons.lnglat.LatLng;
+import org.condast.commons.latlng.LatLng;
+import org.miip.waterway.model.Ship;
 
 /**
  * The pathway is the neighbourhood for a ship. A pathway is

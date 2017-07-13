@@ -1,4 +1,4 @@
-package org.miip.waterway.internal.model;
+package org.miip.waterway.model;
 
 public class Location {
 

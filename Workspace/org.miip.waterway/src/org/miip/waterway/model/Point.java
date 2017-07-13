@@ -1,7 +1,8 @@
-package org.miip.waterway.internal.model;
+package org.miip.waterway.model;
 
-import org.condast.commons.lnglat.LatLng;
-import org.condast.commons.lnglat.LngLatUtils;
+import org.condast.commons.latlng.LatLng;
+import org.condast.commons.latlng.LatLngUtils;
+import org.miip.waterway.internal.model.AbstractModel;
 
 /**
  * With a point, one can choose to either keep the location fixed and change the
@@ -38,7 +39,7 @@ public class Point extends AbstractModel {
 		double distance = displx*displx + disply*disply;
 		
 		double rad = Math.asin(disply/Math.sqrt( distance));
-		return LngLatUtils.extrapolate( current.getLnglat(), rad, distance);
+		return LatLngUtils.extrapolate( current.getLnglat(), rad, distance);
 	}
 	
 	/**
@@ -46,8 +47,8 @@ public class Point extends AbstractModel {
 	 * @param lnglat
 	 */
 	public static Location getLocation( Point current, LatLng lnglat ){
-		double newX = LngLatUtils.lngDistance(lnglat, current.getLnglat(), 0, 0);
-		double newY = LngLatUtils.latDistance(lnglat, current.getLnglat(), 0, 0);
+		double newX = LatLngUtils.lngDistance(lnglat, current.getLnglat(), 0, 0);
+		double newY = LatLngUtils.latDistance(lnglat, current.getLnglat(), 0, 0);
 		Location location = new Location( current.getLocation().getX() + newX, current.getLocation().getY() + newY );
 		return location;
 	}

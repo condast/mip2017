@@ -3,12 +3,12 @@ package org.miip.waterway.ui.eco;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.condast.commons.lnglat.LatLng;
-import org.condast.commons.lnglat.LngLatUtils;
+import org.condast.commons.latlng.LatLng;
+import org.condast.commons.latlng.LatLngUtils;
 import org.condast.commons.strings.StringStyler;
 import org.eclipse.swt.graphics.Rectangle;
 import org.miip.waterway.internal.model.AbstractModel;
-import org.miip.waterway.internal.model.Location;
+import org.miip.waterway.model.Location;
 import org.miip.waterway.model.def.IModel;
 
 public class Bank extends AbstractModel{
@@ -68,6 +68,6 @@ public class Bank extends AbstractModel{
 			}
 			shore.add( new Location( x, y ));
 		}
-		super.setLnglat( LngLatUtils.extrapolateEast( super.getLnglat(), distance));	
+		super.setLnglat( LatLngUtils.extrapolateEast( super.getLnglat(), distance));	
 	}
 }

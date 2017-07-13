@@ -1,10 +1,11 @@
-package org.miip.waterway.internal.model;
+package org.miip.waterway.model;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import org.condast.commons.lnglat.LatLng;
-import org.condast.commons.lnglat.LngLatUtils;
+import org.condast.commons.latlng.LatLng;
+import org.condast.commons.latlng.LatLngUtils;
+import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.def.IModel;
 
 public class Ship extends AbstractModel{
@@ -22,7 +23,7 @@ public class Ship extends AbstractModel{
 			this.degrees = degress;
 		}
 
-		public int getDegrees() {
+		public int getAngle() {
 			return degrees;
 		}
 	}
@@ -63,7 +64,7 @@ public class Ship extends AbstractModel{
 	public Location plotNext( Date next ){
 		long interval = next.getTime() - this.currentTime.getTime();//msec
 		double distance = this.speed * interval / TO_HOURS;
-		double radian = Math.toRadians( this.bearing.getDegrees() );
+		double radian = Math.toRadians( this.bearing.getAngle() );
 		double x = distance * Math.sin( radian );
 		double y = distance * Math.cos( radian );
 		return new Location((float) x, (float)y );
@@ -72,7 +73,7 @@ public class Ship extends AbstractModel{
 	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;
-		LatLng position = LngLatUtils.extrapolate( super.getLnglat(), bearing.getDegrees(), distance);
+		LatLng position = LatLngUtils.extrapolate( super.getLnglat(), bearing.getAngle(), distance);
 		super.setLnglat(position);
 		this.currentTime = newTime;
 		return position;

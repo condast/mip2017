@@ -7,19 +7,19 @@ import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.condast.commons.lnglat.LatLng;
-import org.condast.commons.lnglat.LngLatUtils;
+import org.condast.commons.latlng.LatLng;
+import org.condast.commons.latlng.LatLngUtils;
 import org.condast.commons.thread.AbstractExecuteThread;
-import org.condast.symbiotic.core.environment.Environment;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.condast.symbiotic.core.environment.IEnvironmentListener.EventTypes;
 import org.eclipse.swt.graphics.Rectangle;
-import org.miip.waterway.internal.model.Location;
-import org.miip.waterway.internal.model.Ship;
-import org.miip.waterway.internal.model.Ship.Bearing;
-import org.miip.waterway.internal.model.Waterway;
+import org.miip.waterway.model.Location;
+import org.miip.waterway.model.Ship;
+import org.miip.waterway.model.Waterway;
+import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.def.IModel;
+import org.miip.waterway.sa.SituationalAwareness;
 
 public class MIIPEnvironment extends AbstractExecuteThread {
 
@@ -34,7 +34,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public static final int BANK_WIDTH = 60;	
 
 	private Date currentTime;
-	private Environment environment;
 	private Lock lock;
 	private int timer;
 	
@@ -43,6 +42,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	private Bank topBank;
 	private Bank bottomBank;
 	private Waterway waterway;
+	private SituationalAwareness sa;
 	
 	private Collection<IEnvironmentListener> listeners;
 	private int counter;
@@ -57,7 +57,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this( DEFAULT_LENGTH, DEFAULT_WIDTH, BANK_WIDTH );
 	}
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
-		this.environment = new Environment();
 		this.length = length;
 		this.width = width;
 		this.bankWidth = bankWidth;
@@ -72,6 +71,11 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public boolean isInitialsed() {
 		return initialsed;
 	}
+	
+	public void clear(){
+		
+	}
+	
 	public int getLength() {
 		return length;
 	}
@@ -91,15 +95,19 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public int getTimer() {
 		return timer;
 	}
+	
 	public void setTimer(int timer) {
 		this.timer = timer;
 	}
+	
 	public int getBankWidth() {
 		return bankWidth;
 	}
+	
 	public void setBankWidth(int bankWidth) {
 		this.bankWidth = bankWidth;
 	}
+	
 	public Ship getShip() {
 		return ship;
 	}
@@ -113,6 +121,10 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	
 	public Waterway getWaterway() {
 		return waterway;
+	}
+	
+	public SituationalAwareness getSituationalAwareness() {
+		return sa;
 	}
 	
 	public void addListener( IEnvironmentListener listener ){
@@ -138,15 +150,17 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this.position = new LatLng( LATITUDE, LONGITUDE );
 		
 		Rectangle rect = new Rectangle(0, 0, length, this.bankWidth );
-		topBank =  new Bank( Bank.Banks.UPPER, LngLatUtils.extrapolate( this.position, 0, halfWidth), rect );
+		topBank = new Bank( Bank.Banks.UPPER, LatLngUtils.extrapolate( this.position, 0, halfWidth), rect );
 		
-		LatLng centre = LngLatUtils.extrapolate( this.position, Bearing.EAST.getDegrees(), length/2);
+		LatLng centre = LatLngUtils.extrapolate( this.position, Bearing.EAST.getAngle(), length/2);
 		ship = new Ship( NAME, Calendar.getInstance().getTime(), 20, centre );
-		this.position = LngLatUtils.extrapolate( ship.getLnglat(), Bearing.EAST.getDegrees(), (int)( -length/2));
+		this.position = LatLngUtils.extrapolate( ship.getLnglat(), Bearing.EAST.getAngle(), (int)( -length/2));
+		
+		sa = new SituationalAwareness(ship);
+		
 		counter = 0;
-
 		rect = new Rectangle(0, this.bankWidth + width, length, this.bankWidth );//also account for the upper bank
-		bottomBank =  new Bank( Bank.Banks.LOWER,LngLatUtils.extrapolate(this.position, 0, halfWidth), rect );
+		bottomBank =  new Bank( Bank.Banks.LOWER,LatLngUtils.extrapolate(this.position, 0, halfWidth), rect );
 		
 		this.waterway = new Waterway(this.position, length, width);
 		this.initialsed = true;
@@ -158,11 +172,11 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		int ref = (int)this.position.getLongitude();
 		float interval = 0.001f;
 		float posx = ref;
-		LatLng end = LngLatUtils.extrapolate(this.position, Bearing.EAST.getDegrees(), length);
+		LatLng end = LatLngUtils.extrapolate(this.position, Bearing.EAST.getAngle(), length);
 		while( posx < end.getLongitude() ){
 			if( posx >= this.position.getLongitude()){
 				LatLng coord = new LatLng( this.position.getLatitude(), posx );
-				coords.add( (int) LngLatUtils.distance(this.position, coord) );
+				coords.add( (int) LatLngUtils.distance(this.position, coord) );
 			}
 			posx += interval;
 		}
@@ -174,11 +188,11 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		int ref = (int)this.position.getLongitude();
 		float interval = 0.001f;
 		float posy = ref;
-		LatLng end = LngLatUtils.extrapolate(this.position, Bearing.NORTH.getDegrees(), width);
+		LatLng end = LatLngUtils.extrapolate(this.position, Bearing.NORTH.getAngle(), width);
 		while( posy < end.getLatitude() ){
 			if( posy >= this.position.getLatitude()){
 				LatLng coord = new LatLng( posy, this.position.getLongitude() );
-				coords.add( (int) LngLatUtils.distance(this.position, coord) );
+				coords.add( (int) LatLngUtils.distance(this.position, coord) );
 			}
 			posy += interval;
 		}
@@ -195,10 +209,11 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 				currentTime = Calendar.getInstance().getTime();
 				Location traverse = ship.plotNext(currentTime);
 
-				LatLng course = LngLatUtils.extrapolateEast(this.position, traverse.getX() );
+				LatLng course = LatLngUtils.extrapolateEast(this.position, traverse.getX() );
 				this.position = course;
 
 				ship.sail( currentTime );	
+				sa.update(waterway);
 				waterway.update( course, currentTime, traverse.getX());
 				counter = ( counter + 1)%10;
 				topBank.update( traverse.getX());
@@ -223,8 +238,8 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	 * @return
 	 */
 	public Location getLocation( IModel model ){
-		double x = LngLatUtils.lngDistance( this.position, model.getLnglat(), 0, 0);
-		double y = LngLatUtils.latDistance( this.position, model.getLnglat(), 0, 0);
+		double x = LatLngUtils.lngDistance( this.position, model.getLnglat(), 0, 0);
+		double y = LatLngUtils.latDistance( this.position, model.getLnglat(), 0, 0);
 		return new Location( x, y );
 		
 	}

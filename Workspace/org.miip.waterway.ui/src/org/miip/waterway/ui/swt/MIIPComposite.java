@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
-import org.miip.waterway.internal.model.Ship;
+import org.miip.waterway.model.Ship;
 import org.miip.waterway.ui.eco.MIIPEnvironment;
 import org.eclipse.swt.widgets.Button;
 
@@ -53,9 +53,11 @@ public class MIIPComposite extends Composite {
 		}
 	};
 	private Button btnStartButton;
+	private Button btnClearButton;
 	private Slider slider_speed;
 	private Spinner spinner_ships;
 	private Label lblActiveShips;
+	private Radar radar;
 	
 	/**
 	 * Create the composite.
@@ -131,6 +133,7 @@ public class MIIPComposite extends Composite {
 
 		btnStartButton = new Button( group_control, SWT.NONE);
 		btnStartButton.setText("Start");
+		btnStartButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		btnStartButton.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
@@ -141,6 +144,20 @@ public class MIIPComposite extends Composite {
 				else
 					environment.pause();
 				btnStartButton.setText( !environment.isPaused()? "Stop": "Start");
+				super.widgetSelected(e);
+			}
+			
+		});
+
+		btnClearButton = new Button( group_control, SWT.NONE);
+		btnClearButton.setText("Start");
+		btnClearButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		btnClearButton.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				environment.pause();
 				super.widgetSelected(e);
 			}
 			
@@ -177,6 +194,9 @@ public class MIIPComposite extends Composite {
 		
 		text_lat = new Text(group_ship, SWT.BORDER);
 		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));		
+		
+		radar = new Radar( composite, SWT.BORDER );
+		radar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));		
 	}
 
 	protected void setInput(){
@@ -187,6 +207,7 @@ public class MIIPComposite extends Composite {
 		this.text_lng.setText( String.valueOf( ship.getLnglat().getLongitude() ));
 		this.text_lat.setText( String.valueOf( ship.getLnglat().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
+		this.radar.setInput( environment.getSituationalAwareness());
 	}
 	
 	public void dispose(){
