@@ -52,6 +52,10 @@ public class Waterway extends AbstractModel{
 		return length;
 	}
 
+	public int getWidth() {
+		return width;
+	}
+
 	public int getNrOfShips() {
 		return nrOfShips;
 	}

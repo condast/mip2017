@@ -155,7 +155,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		ship = new Ship( NAME, Calendar.getInstance().getTime(), 20, centre );
 		this.position = LatLngUtils.extrapolate( ship.getLnglat(), Bearing.EAST.getAngle(), (int)( -length/2));
 		
-		sa = new SituationalAwareness(ship);
+		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
 		
 		counter = 0;
 		rect = new Rectangle(0, this.bankWidth + width, length, this.bankWidth );//also account for the upper bank

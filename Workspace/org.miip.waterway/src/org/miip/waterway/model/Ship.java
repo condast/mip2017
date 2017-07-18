@@ -9,6 +9,9 @@ import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.def.IModel;
 
 public class Ship extends AbstractModel{
+	
+	private static final int DEFAULT_LENGTH = 20;//m
+	
 	private static final int TO_HOURS = 60*60;
 	
 	public enum Bearing{
@@ -30,24 +33,38 @@ public class Ship extends AbstractModel{
 	
 	private Date currentTime;
 	
+	private int length;
 	private float speed;//-20 - 60 km/hour
 	private Bearing bearing; //0-360
+	
+	private double rotation;
+	private double rot; //Rate of turn (degress/minute
 
 	public Ship( String id, LatLng position, float speed, Bearing bearing) {
-		this( id, Calendar.getInstance().getTime(), speed, position, bearing );
+		this( id, Calendar.getInstance().getTime(), speed, DEFAULT_LENGTH, position, bearing );
 	}
 
 	public Ship( String id, Date currentTime, float speed, LatLng position) {
-		this( id, currentTime, speed, position, Bearing.EAST );
+		this( id, currentTime, speed, DEFAULT_LENGTH, position, Bearing.EAST );
 	}
 	
-	public Ship( String id, Date currentTime, float speed, LatLng position, Bearing bearing) {
+	public Ship( String id, Date currentTime, float speed, int length, LatLng position, Bearing bearing) {
 		super( id, IModel.ModelTypes.SHIP, position );
 		this.currentTime = currentTime;
 		this.speed = speed;
 		this.bearing = bearing;
+		this.length = length;
+		this.rotation = (( double )this.length + 5 * Math.random()) * this.speed; 
+		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
 	}
 	
+	public double getTurn( long timemsec ){
+		return timemsec * this.rot * 60000;
+	}
+	
+	public double getMinTurnDistance(){
+		return this.rotation * Math.tan( Math.toRadians(1));//the distance of a one degree turn
+	}
 	public float getSpeed() {
 		return speed;
 	}

@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Ship.Bearing;
-import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.eco.Bank;
 import org.miip.waterway.ui.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
@@ -19,7 +18,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class MIIPCanvas extends Canvas implements IRadarUI{
+public class MIIPCanvas extends Canvas{
 	private static final long serialVersionUID = 1L;
 
 	private PaintListener listener = new PaintListener(){
@@ -100,7 +99,7 @@ public class MIIPCanvas extends Canvas implements IRadarUI{
 	protected Image drawImage( GC gc, Point point, MIIPImages.Images image ){
 		Image img = MIIPImages.getImageFromResource( getDisplay(), image );
 		Rectangle bounds = img.getBounds();
-		Point centre = new Point((int)(bounds.width/2), (int)( bounds.height/2));
+		Point centre = new Point(( int )( bounds.width/2), (int)( bounds.height/2 ));
 		int posx = (point.x-centre.x)<0? 0: point.x-centre.x;
 		int posy = (point.y-centre.y)<0? 0: point.y-centre.y;
 		gc.drawImage( img, posx, posy);
@@ -144,11 +143,4 @@ public class MIIPCanvas extends Canvas implements IRadarUI{
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-
-	@Override
-	public void setInput(SituationalAwareness sa) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
