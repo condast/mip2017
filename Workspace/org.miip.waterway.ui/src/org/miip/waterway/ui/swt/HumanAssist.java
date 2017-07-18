@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.sa.SituationalAwareness;
 
-public class HumanAssist extends Canvas {
+public class HumanAssist extends Canvas implements IRadarUI {
 	private static final long serialVersionUID = 1L;
 
 	private PaintListener listener = new PaintListener(){
@@ -75,9 +75,12 @@ public class HumanAssist extends Canvas {
 		gc.fillOval((int)(centrex-clip/2), (int)(centrey-clip/2), (int)(clip), (int)clip);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.ui.swt.IRadarUI#setInput(org.miip.waterway.sa.SituationalAwareness)
+	 */
+	@Override
 	public void setInput( SituationalAwareness sa ){
 		this.sa = sa;
 		this.redraw();
 	}
-
 }

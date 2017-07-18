@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Ship.Bearing;
+import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.eco.Bank;
 import org.miip.waterway.ui.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
@@ -18,7 +19,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class MIIPCanvas extends Canvas {
+public class MIIPCanvas extends Canvas implements IRadarUI{
 	private static final long serialVersionUID = 1L;
 
 	private PaintListener listener = new PaintListener(){
@@ -43,6 +44,11 @@ public class MIIPCanvas extends Canvas {
 		super.addPaintListener(listener);
 	}
 
+	@Override
+	public Composite getParent(){
+		return super.getParent();
+	}
+	
 	protected void drawField( GC gc ){
 		Display display = super.getDisplay();
 		Rectangle clientArea = getClientArea();
@@ -137,6 +143,12 @@ public class MIIPCanvas extends Canvas {
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
+	}
+
+	@Override
+	public void setInput(SituationalAwareness sa) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.miip.waterway.ui.swt;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
 
@@ -12,11 +13,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.ui.eco.MIIPEnvironment;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 
 public class MIIPComposite extends Composite {
 	private static final long serialVersionUID = 1L;
@@ -57,7 +60,9 @@ public class MIIPComposite extends Composite {
 	private Slider slider_speed;
 	private Spinner spinner_ships;
 	private Label lblActiveShips;
-	private HumanAssist radar;
+	
+	private IRadarUI radar;
+	private Combo combo_radar;
 	
 	/**
 	 * Create the composite.
@@ -107,7 +112,7 @@ public class MIIPComposite extends Composite {
 		});
 
 		lblSpeedLabel = new Label(group_control, SWT.BORDER);
-		lblSpeedLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+		lblSpeedLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection() ));
 
 		Label lblShipsLabel = new Label(group_control, SWT.NONE);
@@ -150,6 +155,7 @@ public class MIIPComposite extends Composite {
 			
 		});
 
+		new Label( group_control, SWT.NONE );
 		btnClearButton = new Button( group_control, SWT.NONE);
 		btnClearButton.setText("Clear");
 		btnClearButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
@@ -160,8 +166,7 @@ public class MIIPComposite extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				environment.pause();
 				super.widgetSelected(e);
-			}
-			
+			}			
 		});
 
 		Group group_ship = new Group( composite, SWT.NONE );
@@ -196,8 +201,47 @@ public class MIIPComposite extends Composite {
 		text_lat = new Text(group_ship, SWT.BORDER);
 		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));		
 		
-		radar = new HumanAssist( composite, SWT.BORDER );
-		radar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));		
+		Composite comp_radar_ctrl = new Composite(composite, SWT.NONE); 
+		comp_radar_ctrl.setLayout(new GridLayout(1, false));
+		comp_radar_ctrl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Composite comp_radar = new Composite(comp_radar_ctrl, SWT.NONE); 
+		comp_radar.setLayout(new FillLayout());
+		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		radar = new HumanAssist( comp_radar, SWT.BORDER );
+		
+		combo_radar = new Combo( comp_radar_ctrl, SWT.BORDER );
+		combo_radar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));		
+		combo_radar.setItems(IRadarUI.RadarSelect.getItems());
+		combo_radar.select(IRadarUI.RadarSelect.WARP.ordinal());
+		combo_radar.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				final Composite parent = radar.getParent();
+				for( Control child: parent.getChildren() )
+					child.dispose();
+				getDisplay().asyncExec( new Runnable(){
+
+					@Override
+					public void run() {
+						switch( combo_radar.getSelectionIndex()){
+						case 0:
+							radar = new MIIPCanvas(parent, SWT.BORDER);
+							break;
+						default:
+							radar = new HumanAssist( parent, SWT.BORDER );	
+							break;
+						}
+					}
+					
+				});
+				super.widgetSelected(e);
+			}
+
+		});
+		
 	}
 
 	protected void setInput(){
