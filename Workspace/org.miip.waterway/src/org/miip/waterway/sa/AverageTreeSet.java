@@ -10,7 +10,7 @@ import java.util.Set;
 public class AverageTreeSet<T extends Object> implements Set<T>{
 
 	private LinkedList<Node> nodes;
-	private Node root, store;
+	private Node root, current;
 	private Comparator<T> comparator;
 	
 	public AverageTreeSet() {
@@ -24,13 +24,24 @@ public class AverageTreeSet<T extends Object> implements Set<T>{
 	
 	public boolean add( T item ){
 		Node node = new Node( item );
-		if( store != null ){
-			root = new Node( this.store, node );
-			this.nodes.push( root );
-			this.store = null;
+		this.nodes.push( node );
+		if( root == null ){
+			root = node;
+			return true;
+		}
+		if( current != null ){
+			updateTree(current, node);
 		}else
-			this.store = node;	
+			this.current = node;	
 		return true;
+	}
+	
+	protected void updateTree( Node last, Node newValue ){
+		Node parent = new Node( last.getValue(), newValue.getValue() );
+		if( !last.isRoot())
+			updateTree( last.getParent(), parent );
+		else
+			root = parent;
 	}
 	
 	/**
@@ -165,6 +176,7 @@ public class AverageTreeSet<T extends Object> implements Set<T>{
 	
 	private class Node{
 		private Collection<Node> children;
+		private Node parent;
 		private T value;
 
 		public Node( T value ){
@@ -172,9 +184,22 @@ public class AverageTreeSet<T extends Object> implements Set<T>{
 			this.value = value;
 		}
 
-		public Node( Node first, Node second) {
-			children.add(first);
-			children.add( second );
+		public Node( Node parent, T value ){
+			this( value );
+			this.parent = parent;
+		}
+				
+		public Node( T first, T second) {
+			children.add(new Node( this, first));
+			children.add( new Node( this, second ));
+		}
+		
+		private boolean isRoot(){
+			return parent == null;
+		}
+		
+		private Node getParent(){
+			return parent;
 		}
 		
 		public T getValue() {
