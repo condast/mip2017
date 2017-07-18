@@ -1,9 +1,7 @@
 package org.miip.waterway.sa;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -24,8 +22,7 @@ public class SituationalAwareness {
 	private Lock lock;
 	private int range;
 	private int steps;
-	private AngleData data;
-	private Stack<Double> stack;
+	private Set<Double> data;
 
 	public SituationalAwareness( Ship ship ) {
 		this( ship, MAX_DEGREES);
@@ -36,7 +33,7 @@ public class SituationalAwareness {
 		this.steps = steps;
 		lock = new ReentrantLock();
 		radar = new TreeMap<Integer, Double>();
-		stack = new Stack<>();
+		data = new AverageTreeSet<Double>();
 	}
 	
 	public int getSteps() {
@@ -60,6 +57,7 @@ public class SituationalAwareness {
 				double bank =  getBankDistance(waterway, i); 
 				double shipdist = vectors.containsKey(i)? vectors.get(i):(double)Integer.MAX_VALUE;
 				Double distance = ( shipdist < bank)? shipdist: bank;
+				data.add( distance);
 				radar.put( i, distance );
 			}
 		}
@@ -70,6 +68,10 @@ public class SituationalAwareness {
 		}
 	}
 
+	public int getPassage( int granularity ){
+		return 0;
+	}
+	
 	/**
 	 * Get the radians for the given step size
 	 * @param step
@@ -107,57 +109,5 @@ public class SituationalAwareness {
 			vectors.put( vector.getKey(), vector.getValue());
 		}
 		return vectors;
-	}
-
-	private void updateData( int steps, double distance ){
-		stack.push(distance);
-		if( stack.size() < 2 )
-			return;
-		AngleData adata = new AngleData(stack.pop(), stack.pop());
-		if( data == null ){
-			data = adata;
-			return;
-		}
-		boolean start = steps%2==0;
-		if( start == true)
-			return;
-		return;
-	}
-	
-	private class AngleData{
-		private AngleData[] children;
-		private int depth;
-		private double average;
-
-		public AngleData( double distance1, double distance2 ){
-			children = new AngleData[2];
-			this.average = ( distance1 + distance2)/2;
-		}
-
-		public AngleData( AngleData first, AngleData second) {
-			this( first.getAverage(), second.getAverage());
-			children[0] = first;
-			first.descend();
-			children[1] = second;
-			second.descend();
-			this.depth = 0;
-		}
-		
-		public double getAverage() {
-			return average;
-		}
-
-		public int getDepth() {
-			return depth;
-		}
-
-		private void descend(){
-			this.depth++;
-		}
-		
-		
-		
-		
-		
 	}
 }
