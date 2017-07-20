@@ -11,7 +11,8 @@ public interface IRadarUI {
 
 	public enum RadarSelect{
 		WARP,
-		HUMAN_ASSIST;
+		HUMAN_ASSIST,
+		AVERAGE;
 
 		@Override
 		public String toString() {
@@ -24,6 +25,10 @@ public interface IRadarUI {
 				items[i] = values()[i].toString();
 			}
 			return items;
+		}
+		
+		public static RadarSelect getRadar( int index ){
+			return RadarSelect.values()[index];
 		}
 	}
 	

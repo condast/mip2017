@@ -48,6 +48,10 @@ public class Waterway extends AbstractModel{
 		createShips( LatLngUtils.extrapolateEast( super.getLnglat(), length-350 ), this.nrOfShips );
 	}
 
+	public void clear(){
+		this.ships.clear();
+	}
+	
 	public int getLength() {
 		return length;
 	}

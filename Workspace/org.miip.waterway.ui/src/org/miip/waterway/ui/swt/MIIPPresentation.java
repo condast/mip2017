@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class MIIPCanvas extends Canvas{
+public class MIIPPresentation extends Canvas{
 	private static final long serialVersionUID = 1L;
 
 	private PaintListener listener = new PaintListener(){
@@ -37,7 +37,7 @@ public class MIIPCanvas extends Canvas{
 	 * @param parent
 	 * @param style
 	 */
-	public MIIPCanvas(Composite parent, Integer style) {
+	public MIIPPresentation(Composite parent, Integer style) {
 		super(parent, style);
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener(listener);

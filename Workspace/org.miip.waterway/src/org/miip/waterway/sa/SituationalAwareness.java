@@ -1,11 +1,16 @@
 package org.miip.waterway.sa;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.condast.commons.graph.binary.IBinaryTreeSet;
+import org.condast.commons.graph.binary.IOperator;
+import org.condast.commons.graph.binary.AbstractOperator;
+import org.condast.commons.graph.binary.SequentialBinaryTreeSet;
 import org.condast.commons.latlng.LatLng;
 import org.condast.commons.latlng.LatLngUtils;
 import org.miip.waterway.model.Ship;
@@ -22,7 +27,7 @@ public class SituationalAwareness {
 	private Lock lock;
 	private int range;
 	private int steps;
-	private Set<Double> data;
+	private IBinaryTreeSet<Double> data;
 
 	public SituationalAwareness( Ship ship ) {
 		this( ship, MAX_DEGREES);
@@ -33,7 +38,23 @@ public class SituationalAwareness {
 		this.steps = steps;
 		lock = new ReentrantLock();
 		radar = new TreeMap<Integer, Double>();
-		data = new AverageTreeSet<Double>();
+		IOperator<Double, Double> average = new AbstractOperator<Double, Double>(){
+
+			@Override
+			public Double calculate(Collection<Double> input) {
+				Double sum = 0d;
+				Iterator<Double> iterator = input.iterator();
+				while( iterator.hasNext() ){
+					Double value = iterator.next();
+					if( value == null )
+						value = 0d;
+					sum+=value;
+				}
+				return (sum/input.size());
+			}
+			
+		};
+		data = new SequentialBinaryTreeSet<Double>( average);
 	}
 	
 	public int getSteps() {
@@ -53,6 +74,7 @@ public class SituationalAwareness {
 		Map<Integer, Double> vectors = getVectors( waterway );
 		lock.lock();
 		try{
+			data.clear();
 			for( int i=0; i< steps; i++ ){
 				double bank =  getBankDistance(waterway, i); 
 				double shipdist = vectors.containsKey(i)? vectors.get(i):(double)Integer.MAX_VALUE;
@@ -68,8 +90,8 @@ public class SituationalAwareness {
 		}
 	}
 
-	public int getPassage( int granularity ){
-		return 0;
+	public IBinaryTreeSet<Double> getTreeSet(){
+		return data;
 	}
 	
 	/**

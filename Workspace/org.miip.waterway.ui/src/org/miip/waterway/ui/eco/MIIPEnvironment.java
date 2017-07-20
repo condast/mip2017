@@ -72,7 +72,8 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		return initialsed;
 	}
 	
-	public void clear(){	
+	public void clear(){
+		waterway.clear();
 	}
 	
 	public int getLength() {

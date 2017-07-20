@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Combo;
 public class MIIPComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	private MIIPCanvas canvas;
+	private MIIPPresentation canvas;
 	private Text text_name;
 	private Text text_speed;
 	private Text text_bearing;
@@ -80,7 +80,7 @@ public class MIIPComposite extends Composite {
 	
 	protected void createComposite( Composite parent, int style ){
 		setLayout(new GridLayout(1, false));
-		canvas = new MIIPCanvas(this, SWT.BORDER );
+		canvas = new MIIPPresentation(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 		
 		Composite composite = new Composite(this, SWT.NONE);
@@ -167,7 +167,7 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				environment.pause();
+				environment.clear();
 				super.widgetSelected(e);
 			}			
 		});
@@ -225,14 +225,20 @@ public class MIIPComposite extends Composite {
 
 					@Override
 					public void run() {
-						switch( combo_radar.getSelectionIndex()){
-						case 0:
+						switch( IRadarUI.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
+						case WARP:
 							radar = new Radar(parent, SWT.BORDER);
+							break;
+						case AVERAGE:
+							AveragingRadar avr = new AveragingRadar(parent, SWT.BORDER);
+							avr.setExpand( 1);
+							radar = avr;
 							break;
 						default:
 							radar = new HumanAssist( parent, SWT.BORDER );	
 							break;
 						}
+						radar.setInput(environment.getSituationalAwareness());
 						radar.refresh();
 						parent.layout();
 
