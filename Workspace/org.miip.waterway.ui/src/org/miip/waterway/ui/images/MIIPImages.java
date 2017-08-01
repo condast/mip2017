@@ -32,7 +32,7 @@ public class MIIPImages extends AbstractImages{
 			return StringStyler.prettyString( super.toString() );
 		}
 		
-		public static String getFileName( Images image ){
+		public static String getResource( Images image ){
 			String str = null;
 			switch( image ){
 			case MIIP:
@@ -65,7 +65,7 @@ public class MIIPImages extends AbstractImages{
 	@Override
 	public void initialise(){
 		for( Images img: Images.values() )
-			setImage( Images.getFileName( img ));
+			setImage( Images.getResource( img ));
 	}
 	
 	public void setImage( String name, String url ){
@@ -78,7 +78,7 @@ public class MIIPImages extends AbstractImages{
 	 * @return
 	 */
 	public static Image getImage( Images image ){
-		return getInstance().getImageFromName( image.toString());
+		return getInstance().getImageFromName( Images.getResource(image));
 	}
 
 	/**
@@ -91,6 +91,6 @@ public class MIIPImages extends AbstractImages{
 	}
 	
 	public static Image getImageFromResource( Display display, Images image ){
-		return getImageFromResource(display, MIIPImages.class, S_ICON_PATH + Images.getFileName(image));
+		return getImageFromResource(display, MIIPImages.class, S_ICON_PATH + Images.getResource(image));
 	}
 }
