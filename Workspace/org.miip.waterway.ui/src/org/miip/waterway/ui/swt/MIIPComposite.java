@@ -38,6 +38,8 @@ public class MIIPComposite extends Composite {
 		
 		@Override
 		public void notifyEnvironmentChanged(final EnvironmentEvent event) {
+			if( getDisplay().isDisposed() )
+				return;
 			getDisplay().asyncExec( new Runnable(){
 
 				@Override

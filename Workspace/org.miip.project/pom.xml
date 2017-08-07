@@ -22,8 +22,8 @@
         <condast-commons>file:${generics}/org.condast.commons/Workspace/</condast-commons>
         <condast-js>file:${generics}/org.condast.js/Workspace/</condast-js>
         <condast-symbiot>file:${generics}/org.condast.symbiotic/Workspace/</condast-symbiot>
-        <condast-repo.url>file:${generics}/Root/WorkSpace/alpha.root.cultuurinzicht.update</condast-repo.url>
-        <!-- <condast-repo.url>file:P:/Windows/KenniscentrumRDM/Workspace/org.rdm.update</condast-repo.url> -->
+        <!-- <condast-repo.url>file:${generics}/Root/WorkSpace/alpha.root.cultuurinzicht.update</condast-repo.url>-->
+        <condast-repo.url>file:P:/Windows/KenniscentrumRDM/Workspace/org.rdm.update</condast-repo.url>
     </properties>
 
     <repositories>

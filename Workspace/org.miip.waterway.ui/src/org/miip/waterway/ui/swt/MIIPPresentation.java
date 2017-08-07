@@ -97,13 +97,19 @@ public class MIIPPresentation extends Canvas{
 	}
 
 	protected Image drawImage( GC gc, Point point, MIIPImages.Images image ){
-		Image img = MIIPImages.getImageFromResource( getDisplay(), image );
-		Rectangle bounds = img.getBounds();
-		Point centre = new Point(( int )( bounds.width/2), (int)( bounds.height/2 ));
-		int posx = (point.x-centre.x)<0? 0: point.x-centre.x;
-		int posy = (point.y-centre.y)<0? 0: point.y-centre.y;
-		gc.drawImage( img, posx, posy);
-		img.dispose();
+		Image img = null;
+		try{
+			img = MIIPImages.getImageFromResource( getDisplay(), image );
+			Rectangle bounds = img.getBounds();
+			Point centre = new Point(( int )( bounds.width/2), (int)( bounds.height/2 ));
+			int posx = (point.x-centre.x)<0? 0: point.x-centre.x;
+			int posy = (point.y-centre.y)<0? 0: point.y-centre.y;
+			gc.drawImage( img, posx, posy);
+			img.dispose();
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+		}
 		return img;
 	}
 

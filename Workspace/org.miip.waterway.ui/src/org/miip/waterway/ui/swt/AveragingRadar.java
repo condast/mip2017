@@ -2,7 +2,7 @@ package org.miip.waterway.ui.swt;
 
 import java.util.List;
 
-import org.condast.commons.graph.binary.IBinaryTreeSet;
+import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 
