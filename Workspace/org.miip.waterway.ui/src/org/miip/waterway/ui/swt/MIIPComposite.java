@@ -4,7 +4,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
-
+import org.condast.commons.ui.session.ISessionListener;
+import org.condast.commons.ui.session.SessionEvent;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.eclipse.swt.SWT;
@@ -18,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.ui.eco.MIIPEnvironment;
+import org.miip.waterway.ui.utils.UIPushSession;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 
@@ -51,7 +53,6 @@ public class MIIPComposite extends Composite {
 						break;
 					}
 				}
-				
 			});
 		}
 	};
@@ -66,6 +67,21 @@ public class MIIPComposite extends Composite {
 	private Slider slider_sense;
 	private Slider slider_range;
 	
+	private UIPushSession session = UIPushSession.getInstance();
+	private ISessionListener<Object> slistener = new ISessionListener<Object>(){
+
+		@Override
+		public void notifySessionChanged(SessionEvent<Object> event) {
+			getDisplay().asyncExec( new Runnable(){
+
+				@Override
+				public void run() {
+					layout();
+				}
+			});	
+		}	
+	};
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -76,6 +92,9 @@ public class MIIPComposite extends Composite {
 		this.environment = MIIPEnvironment.getInstance();
 		this.environment.addListener(listener);
 		this.createComposite(parent, style);
+		
+		this.session.getSession().addSessionListener(slistener);
+		this.session.getSession().start();
 	}
 	
 	protected void createComposite( Composite parent, int style ){
@@ -150,9 +169,17 @@ public class MIIPComposite extends Composite {
 					environment.start();
 				else
 					environment.pause();
-				btnClearButton.setEnabled( !environment.isRunning() || environment.isPaused());
+				btnClearButton.setEnabled( false );//!environment.isRunning() || environment.isPaused());
 				Button btn = (Button) e.widget;
 				btn.setText( !environment.isPaused()? "Stop": "Start");
+				getDisplay().asyncExec( new Runnable(){
+
+					@Override
+					public void run() {
+						layout();
+					}
+					
+				});
 				super.widgetSelected(e);
 			}
 			
@@ -304,6 +331,9 @@ public class MIIPComposite extends Composite {
 	public void dispose(){
 		this.environment.removeListener(listener);
 		this.environment.stop();
+		this.session.getSession().stop();
+		this.session.getSession().removeSessionListener(slistener);
+		this.session.getSession().dispose();
 		super.dispose();
 	}
 	
@@ -311,5 +341,4 @@ public class MIIPComposite extends Composite {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-
 }

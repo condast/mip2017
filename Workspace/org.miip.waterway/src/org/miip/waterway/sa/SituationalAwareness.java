@@ -7,10 +7,10 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.condast.commons.graph.binary.IBinaryTreeSet;
-import org.condast.commons.graph.binary.IOperator;
-import org.condast.commons.graph.binary.AbstractOperator;
-import org.condast.commons.graph.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.binary.IBinaryTreeSet;
+import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.operations.AbstractOperator;
+import org.condast.commons.data.operations.IOperator;
 import org.condast.commons.latlng.LatLng;
 import org.condast.commons.latlng.LatLngUtils;
 import org.miip.waterway.model.Ship;

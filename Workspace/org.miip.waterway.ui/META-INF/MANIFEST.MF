@@ -6,13 +6,14 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.condast.commons.authentication.core,
- org.condast.commons.graph.binary,
+ org.condast.commons.data.binary,
  org.condast.commons.i18n,
  org.condast.commons.latlng,
  org.condast.commons.strings,
  org.condast.commons.swt,
  org.condast.commons.thread,
  org.condast.commons.ui.image,
+ org.condast.commons.ui.session,
  org.condast.commons.ui.widgets,
  org.condast.commons.ui.wizard,
  org.condast.commons.xml,
