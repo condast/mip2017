@@ -20,7 +20,6 @@ import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.def.IModel;
 import org.miip.waterway.sa.SituationalAwareness;
-import org.miip.waterway.ui.utils.UIPushSession;
 
 public class MIIPEnvironment extends AbstractExecuteThread {
 
@@ -51,7 +50,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	private int width; //The width of the course
 	private int bankWidth;
 	private boolean initialsed;
-	private UIPushSession session = UIPushSession.getInstance();
 	
 	private static MIIPEnvironment miipenvironment = new MIIPEnvironment();
 	
@@ -221,7 +219,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 				topBank.update( traverse.getX());
 				bottomBank.update( traverse.getX());
 				notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
-				session.getSession().addData(new Object());
 			}
 			finally{
 				lock.unlock();
