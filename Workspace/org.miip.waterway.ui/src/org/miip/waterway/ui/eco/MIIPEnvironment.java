@@ -201,9 +201,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 
 	@Override
 	public synchronized void onExecute() {
-		while( super.isRunning()){
-			if(super.isPaused() )
-				continue;
 			lock.lock();
 			try{
 				currentTime = Calendar.getInstance().getTime();
@@ -229,7 +226,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 			catch( InterruptedException ex ){
 				ex.printStackTrace();
 			}
-		}
 	}
 	
 	/**
