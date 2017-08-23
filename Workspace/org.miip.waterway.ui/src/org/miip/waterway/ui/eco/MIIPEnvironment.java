@@ -141,7 +141,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	}
 
 	@Override
-	public void onInitialise() {
+	public boolean onInitialise() {
 		currentTime = Calendar.getInstance().getTime();
 		
 		//The left course associates a lnglat coordinate with a position on the course.
@@ -165,6 +165,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this.waterway = new Waterway(this.position, length, width);
 		this.initialsed = true;
 		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
+		return true;
 	}
 	
 	public Integer[] getXCoordinates(){
