@@ -193,10 +193,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 				gd_body.horizontalIndent = 0;
 				gd_body.verticalIndent = 0;
 				widget.setLayoutData( gd_body);
-				String sellink = navcomp.getSelectedLink();
-				if( !StringUtils.isEmpty( sellink )){
-					createComposite(sellink, widget, IStyle.SWT.convert( style_str ));
-				}
 				break;
 			case STATUS_BAR:
 				current = (Composite) super.getCurrentData();

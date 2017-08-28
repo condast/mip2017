@@ -202,31 +202,26 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 
 	@Override
 	public synchronized void onExecute() {
-			lock.lock();
-			try{
-				currentTime = Calendar.getInstance().getTime();
-				Location traverse = ship.plotNext(currentTime);
+		lock.lock();
+		try{
+			currentTime = Calendar.getInstance().getTime();
+			Location traverse = ship.plotNext(currentTime);
 
-				LatLng course = LatLngUtils.extrapolateEast(this.position, traverse.getX() );
-				this.position = course;
+			LatLng course = LatLngUtils.extrapolateEast(this.position, traverse.getX() );
+			this.position = course;
 
-				ship.sail( currentTime );	
-				sa.update(waterway);
-				waterway.update( course, currentTime, traverse.getX());
-				counter = ( counter + 1)%10;
-				topBank.update( traverse.getX());
-				bottomBank.update( traverse.getX());
-				notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
-			}
-			finally{
-				lock.unlock();
-			}
-			try{
-				Thread.sleep(timer);
-			}
-			catch( InterruptedException ex ){
-				ex.printStackTrace();
-			}
+			ship.sail( currentTime );	
+			sa.update(waterway);
+			waterway.update( course, currentTime, traverse.getX());
+			counter = ( counter + 1)%10;
+			topBank.update( traverse.getX());
+			bottomBank.update( traverse.getX());
+			notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
+		}
+		finally{
+			lock.unlock();
+		}
+		sleep( timer );
 	}
 	
 	/**
