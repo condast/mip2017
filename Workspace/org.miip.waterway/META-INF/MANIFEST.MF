@@ -9,8 +9,11 @@ Import-Package: org.condast.commons,
  org.condast.commons.data.binary,
  org.condast.commons.data.operations,
  org.condast.commons.latlng,
- org.condast.commons.strings
+ org.condast.commons.strings,
+ org.condast.commons.thread,
+ org.condast.symbiotic.core.environment
 Export-Package: org.miip.waterway.internal.model,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
+ org.miip.waterway.model.eco,
  org.miip.waterway.sa

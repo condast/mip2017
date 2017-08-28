@@ -1,4 +1,4 @@
-package org.miip.waterway.ui.eco;
+package org.miip.waterway.model.eco;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,9 +13,8 @@ import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.condast.symbiotic.core.environment.IEnvironmentListener.EventTypes;
-import org.eclipse.swt.graphics.Rectangle;
+import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Location;
-import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.def.IModel;
@@ -38,7 +37,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	private int timer;
 	
 	private LatLng position;//The left centre of the course
-	private Ship ship;
+	private CentreShip ship;
 	private Bank topBank;
 	private Bank bottomBank;
 	private Waterway waterway;
@@ -108,7 +107,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this.bankWidth = bankWidth;
 	}
 	
-	public Ship getShip() {
+	public CentreShip getShip() {
 		return ship;
 	}
 	
@@ -153,7 +152,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		topBank = new Bank( Bank.Banks.UPPER, LatLngUtils.extrapolate( this.position, 0, halfWidth), rect );
 		
 		LatLng centre = LatLngUtils.extrapolate( this.position, Bearing.EAST.getAngle(), length/2);
-		ship = new Ship( NAME, Calendar.getInstance().getTime(), 20, centre );
+		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, centre );
 		this.position = LatLngUtils.extrapolate( ship.getLnglat(), Bearing.EAST.getAngle(), (int)( -length/2));
 		
 		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);

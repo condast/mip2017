@@ -5,9 +5,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
+
+import java.util.EnumSet;
+
+import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.ISessionListener;
 import org.condast.commons.ui.session.RefreshSession;
 import org.condast.commons.ui.session.SessionEvent;
+import org.condast.commons.ui.widgets.AbstractButtonBar;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.eclipse.rap.rwt.RWT;
@@ -22,7 +27,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.Ship;
-import org.miip.waterway.ui.eco.MIIPEnvironment;
+import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.eclipse.swt.widgets.Button;
@@ -70,8 +75,8 @@ public class MIIPComposite extends Composite {
 			});
 		}
 	};
-	private Button btnStartButton;
-	private Button btnClearButton;
+	private PlayerComposite<MIIPEnvironment> playerbar;
+	
 	private Slider slider_speed;
 	private Spinner spinner_ships;
 	private Label lblActiveShips;
@@ -107,28 +112,28 @@ public class MIIPComposite extends Composite {
 
 	protected void createComposite( Composite parent, int style ){
 		setLayout(new GridLayout(2, false));
+
+		createImageBar(this, style);
 		canvas = new MIIPPresentation(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
-		createImageBar(this, style);
 		
 		Composite composite = new Composite(this, SWT.NONE);
-		composite.setLayout(new GridLayout(3, false));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		composite.setLayout(new GridLayout(4, false));
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,2,1));
 
 		Group group_control = new Group( composite, SWT.NONE );
 		group_control.setText("Control");
 		GridData gd_control = new GridData( SWT.FILL, SWT.FILL, false, true);
-		gd_control.widthHint = 300;
 		group_control.setLayout(new GridLayout(3, false));
 		group_control.setLayoutData( gd_control );
 
 		Label lblSpeedTextLabel = new Label(group_control, SWT.NONE);
-		lblSpeedTextLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblSpeedTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		lblSpeedTextLabel.setText("Speed:");
 
 		slider_speed = new Slider( group_control, SWT.BORDER );
 		GridData gd_slider = new GridData( SWT.FILL, SWT.FILL, false, false );
-		gd_slider.widthHint = 80;
+		//gd_slider.widthHint = 80;
 		slider_speed.setLayoutData( gd_slider);
 		slider_speed.setMinimum(1);
 		slider_speed.setMaximum(1000);
@@ -170,47 +175,9 @@ public class MIIPComposite extends Composite {
 		lblActiveShips = new Label(group_control, SWT.BORDER);
 		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		new Label( group_control, SWT.NONE );
-
-		btnStartButton = new Button( group_control, SWT.NONE);
-		btnStartButton.setText("Start");
-		btnStartButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		btnStartButton.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if( !environment.isRunning() )
-					environment.start();
-				else
-					environment.pause();
-				btnClearButton.setEnabled( false );//!environment.isRunning() || environment.isPaused());
-				Button btn = (Button) e.widget;
-				btn.setText( !environment.isPaused()? "Stop": "Start");
-				getDisplay().asyncExec( new Runnable(){
-
-					@Override
-					public void run() {
-						layout();
-					}		
-				});
-				super.widgetSelected(e);
-			}		
-		});
-
-		btnClearButton = new Button( group_control, SWT.NONE);
-		btnClearButton.setText("Clear");
-		btnClearButton.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false ));
-		btnClearButton.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				environment.clear();
-				super.widgetSelected(e);
-			}			
-		});
-
+		playerbar = new PlayerComposite<MIIPEnvironment>( group_control, SWT.BORDER );
+		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
+		
 		Group group_ship = new Group( composite, SWT.NONE );
 		GridData gd_ship= new GridData( SWT.FILL, SWT.FILL, true, true );
 		gd_ship.widthHint = 120;
@@ -327,9 +294,9 @@ public class MIIPComposite extends Composite {
 			}
 		});
 		
-		Composite comp_radar = new Composite(this, SWT.NONE); 
+		Composite comp_radar = new Composite( composite, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
-		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		radar = new Radar( comp_radar, SWT.BORDER );		
 	}
 
@@ -370,7 +337,7 @@ public class MIIPComposite extends Composite {
 				});
 			}
 		});
-		GridData nmtData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData nmtData = new GridData(SWT.FILL, SWT.TOP, true, true);
 		nmtButton.setLayoutData(nmtData);
 	}
 
@@ -399,4 +366,80 @@ public class MIIPComposite extends Composite {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
+	
+	private class PlayerComposite<I extends Object> extends AbstractButtonBar<PlayerImages.Images, I> {
+		private static final long serialVersionUID = 1L;
+
+		public PlayerComposite(Composite parent, int style) {
+			super(parent, style);
+		}
+
+		@Override
+		protected EnumSet<PlayerImages.Images> setupButtonBar() {
+			return EnumSet.of(PlayerImages.Images.START, 
+					PlayerImages.Images.STOP, 
+					PlayerImages.Images.NEXT,
+					PlayerImages.Images.RESET);
+		}
+
+		@Override
+		protected Control createButton(PlayerImages.Images type) {
+			Button button = new Button( this, SWT.FLAT );
+			switch( type ){
+			case STOP:
+				button.setEnabled(( environment != null ) && environment.isRunning());
+				break;
+			default:
+				break;
+			}
+			button.setData(type);
+			button.addSelectionListener( new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					Button button = (Button) e.getSource();
+					PlayerImages.Images image = (PlayerImages.Images) button.getData();
+					switch( image ){
+					case START:
+						environment.start();
+						//setModels( environment.getModels());
+						//setInput(ce.getBehaviour());
+						getButton( PlayerImages.Images.STOP).setEnabled(true);
+						button.setEnabled(false);
+						Button clear = (Button) getButton( PlayerImages.Images.RESET);
+						clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
+						//Button btn = (Button) e.widget;
+						//btn.setText( !environment.isPaused()? "Stop": "Start");
+						getDisplay().asyncExec( new Runnable(){
+
+							@Override
+							public void run() {
+								layout();
+							}		
+						});
+						break;
+					case STOP:
+						environment.stop();
+						getButton( PlayerImages.Images.START).setEnabled(true);
+						button.setEnabled(false);
+						clear = (Button) getButton( PlayerImages.Images.RESET);
+						clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
+						break;
+					case NEXT:
+						environment.step();
+						break;
+					case RESET:
+						environment.clear();
+					default:
+						break;
+					}
+					
+				}		
+			});
+			button.setImage( PlayerImages.getInstance().getImage(type));
+			return button;
+		}
+	}
+
 }

@@ -3,12 +3,14 @@ package org.miip.waterway.ui.swt;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Ship.Bearing;
-import org.miip.waterway.ui.eco.Bank;
-import org.miip.waterway.ui.eco.MIIPEnvironment;
+import org.miip.waterway.model.eco.Bank;
+import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
+import org.condast.commons.latlng.Vector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -48,6 +50,18 @@ public class MIIPPresentation extends Canvas{
 		return super.getParent();
 	}
 	
+	protected Point drawOffset( CentreShip ship, Point centre ){
+		if( ship == null )
+			return centre;
+		Vector<Integer> vector = ship.getOffset();
+		if( vector == null )
+			return centre;
+		double angle = Math.sin( Math.toRadians( vector.getKey()));
+		int xoffset = (int)((float)20 * vector.getValue() *  angle );
+		int yoffset = (int)((float)20 * vector.getValue() *  Math.cos( Math.toRadians( vector.getKey())));
+		return new Point( centre.x + xoffset, centre.y + yoffset );
+	}
+	
 	protected void drawField( GC gc ){
 		Display display = super.getDisplay();
 		Rectangle clientArea = getClientArea();
@@ -64,7 +78,8 @@ public class MIIPPresentation extends Canvas{
 		gc.drawLine( 0, clientArea.height-bankSize, clientArea.width, clientArea.height-bankSize);
 
 		Point point = new Point( (int)( clientArea.width/2), (int)(clientArea.height/2));
-		drawImage( gc, point, MIIPImages.Images.SHIP);
+		CentreShip cship = this.environment.getShip();
+		drawImage( gc, drawOffset( cship, point ), MIIPImages.Images.SHIP);
 
 		if(!environment.isInitialsed() )
 			return;

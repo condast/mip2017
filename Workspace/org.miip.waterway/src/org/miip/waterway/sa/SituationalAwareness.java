@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
@@ -28,6 +29,8 @@ public class SituationalAwareness {
 	private int range;
 	private int steps;
 	private IBinaryTreeSet<Double> data;
+	
+	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
 	public SituationalAwareness( Ship ship ) {
 		this( ship, MAX_DEGREES);
@@ -79,8 +82,12 @@ public class SituationalAwareness {
 				double bank =  getBankDistance(waterway, i); 
 				double shipdist = vectors.containsKey(i)? vectors.get(i):(double)Integer.MAX_VALUE;
 				Double distance = ( shipdist < bank)? shipdist: bank;
-				data.add( distance);
-				radar.put( i, distance );
+				if( distance < this.range ){
+					if( shipdist < bank )
+						logger.info( "Position: " + (int)(( float)i * 360/steps) + ", distance " + distance );
+					data.add( distance);
+					radar.put( i, distance );
+				}
 			}
 		}
 		catch( Exception ex ){

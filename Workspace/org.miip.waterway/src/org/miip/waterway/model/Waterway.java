@@ -45,7 +45,7 @@ public class Waterway extends AbstractModel{
 	
 	protected void initialise(){
 		createShips( super.getLnglat(), this.nrOfShips );
-		createShips( LatLngUtils.extrapolateEast( super.getLnglat(), length-350 ), this.nrOfShips );
+		//createShips( LatLngUtils.extrapolateEast( super.getLnglat(), length-350 ), this.nrOfShips );
 	}
 
 	public void clear(){
@@ -81,7 +81,7 @@ public class Waterway extends AbstractModel{
 				ships.remove( ship );
 		}
 		createShips( super.getLnglat(), this.nrOfShips );
-		createShips( LatLngUtils.extrapolateEast( super.getLnglat(), length ), this.nrOfShips );
+		//createShips( LatLngUtils.extrapolateEast( super.getLnglat(), length ), this.nrOfShips );
 	}
 
 	protected void createShips( LatLng place, int amount ){

@@ -1,4 +1,4 @@
-package org.miip.waterway.ui.representation;
+package org.miip.waterway.model.representation;
 
 import java.util.ArrayList;
 import java.util.Collection;

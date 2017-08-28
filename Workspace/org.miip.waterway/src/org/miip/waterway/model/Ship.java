@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.condast.commons.latlng.LatLng;
 import org.condast.commons.latlng.LatLngUtils;
+import org.condast.commons.latlng.Vector;
 import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.def.IModel;
 
@@ -95,6 +96,7 @@ public class Ship extends AbstractModel{
 		this.currentTime = newTime;
 		return position;
 	}
+	
 	
 	/**
 	 * Create a new ship with random values
