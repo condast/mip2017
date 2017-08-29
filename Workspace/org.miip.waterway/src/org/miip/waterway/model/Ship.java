@@ -5,7 +5,6 @@ import java.util.Date;
 
 import org.condast.commons.latlng.LatLng;
 import org.condast.commons.latlng.LatLngUtils;
-import org.condast.commons.latlng.Vector;
 import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.def.IModel;
 
@@ -40,6 +39,8 @@ public class Ship extends AbstractModel{
 	
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
+
+	//private Logger logger = Logger.getLogger( this.getClass().getName() );
 
 	public Ship( String id, LatLng position, float speed, Bearing bearing) {
 		this( id, Calendar.getInstance().getTime(), speed, DEFAULT_LENGTH, position, bearing );
@@ -91,7 +92,8 @@ public class Ship extends AbstractModel{
 	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;
-		LatLng position = LatLngUtils.extrapolate( super.getLnglat(), bearing.getAngle(), distance);
+		LatLng position = LatLngUtils.extrapolate( super.getLatLbg(), bearing.getAngle(), distance);
+		//logger.info( "New Position for spped:" + getSpeed() + "\n\t" + super.getLnglat() + ", to\n\t" + position );
 		super.setLnglat(position);
 		this.currentTime = newTime;
 		return position;

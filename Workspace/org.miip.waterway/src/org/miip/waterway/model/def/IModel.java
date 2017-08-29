@@ -42,7 +42,7 @@ public interface IModel {
 
 	String getId();
 
-	LatLng getLnglat();
+	LatLng getLatLbg();
 
 	ModelTypes getType();
 }

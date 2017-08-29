@@ -346,8 +346,8 @@ public class MIIPComposite extends Composite {
 		this.text_name.setText( ship.getId() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
-		this.text_lng.setText( String.valueOf( ship.getLnglat().getLongitude() ));
-		this.text_lat.setText( String.valueOf( ship.getLnglat().getLatitude() ));
+		this.text_lng.setText( String.valueOf( ship.getLatLbg().getLongitude() ));
+		this.text_lat.setText( String.valueOf( ship.getLatLbg().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
 		this.radar.setSensitivity(this.slider_sense.getSelection());
 		this.radar.setInput( environment.getSituationalAwareness() );

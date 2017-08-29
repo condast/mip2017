@@ -6,7 +6,7 @@ import org.miip.waterway.model.def.IModel;
 public abstract class AbstractModel implements IModel{
 
 	private String id;
-	private LatLng lnglat;
+	private LatLng latlng;
 	private ModelTypes type;
 
 	protected AbstractModel( ModelTypes type, LatLng lngLat ) {
@@ -16,7 +16,7 @@ public abstract class AbstractModel implements IModel{
 	protected AbstractModel( String id, ModelTypes type, LatLng lnglat ) {
 		this.id = id;
 		this.type = type;
-		this.lnglat = lnglat;
+		this.latlng = lnglat;
 	}
 
 	@Override
@@ -30,11 +30,11 @@ public abstract class AbstractModel implements IModel{
 	}
 
 	@Override
-	public LatLng getLnglat() {
-		return lnglat;
+	public LatLng getLatLbg() {
+		return latlng;
 	}
 
 	protected void setLnglat(LatLng lnglat) {
-		this.lnglat = lnglat;
+		this.latlng = lnglat;
 	}
 }

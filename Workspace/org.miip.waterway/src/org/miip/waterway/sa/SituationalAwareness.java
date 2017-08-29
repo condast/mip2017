@@ -131,11 +131,21 @@ public class SituationalAwareness {
 	}
 	
 	public Map<Integer, Double> getVectors( Waterway waterway ){
-		LatLng latlng = ship.getLnglat();
+		LatLng latlng = ship.getLatLbg();
 		Map<Integer, Double> vectors = new TreeMap<Integer, Double>();
 		for( Ship other: waterway.getShips() ){
-			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLnglat(), this.steps );
+			double hordistance = LatLngUtils.lngDistance(latlng, other.getLatLbg(), 0, 0 );
+			if( Math.abs( hordistance) > 2*this.range )
+				continue;
+			double distance = LatLngUtils.distance(latlng, other.getLatLbg() );
+			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLatLbg(), this.steps );
+			logger.info( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLatLbg() );
+			//logger.info( "Diff " + (latlng.getLongitude() - other.getLnglat().getLongitude() ));
+			logger.info( "Diff " + distance + "[" + vector.getKey() + ", "+ vector.getValue() + "]");
 			vectors.put( vector.getKey(), vector.getValue());
+			//if( vector.getValue() < 100 )
+				//logger.info("Vector found for" + ship.getLnglat() + " and\n\t " + 
+			//other.getLnglat() );
 		}
 		return vectors;
 	}

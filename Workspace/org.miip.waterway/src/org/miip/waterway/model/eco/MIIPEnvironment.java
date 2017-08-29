@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import org.condast.commons.latlng.LatLng;
 import org.condast.commons.latlng.LatLngUtils;
@@ -49,6 +50,8 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	private int width; //The width of the course
 	private int bankWidth;
 	private boolean initialsed;
+	
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	private static MIIPEnvironment miipenvironment = new MIIPEnvironment();
 	
@@ -153,7 +156,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		
 		LatLng centre = LatLngUtils.extrapolate( this.position, Bearing.EAST.getAngle(), length/2);
 		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, centre );
-		this.position = LatLngUtils.extrapolate( ship.getLnglat(), Bearing.EAST.getAngle(), (int)( -length/2));
 		
 		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
 		
@@ -203,6 +205,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public synchronized void onExecute() {
 		lock.lock();
 		try{
+			logger.info("\n\nEXECUTE:");
 			currentTime = Calendar.getInstance().getTime();
 			Location traverse = ship.plotNext(currentTime);
 
@@ -210,11 +213,16 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 			this.position = course;
 
 			ship.sail( currentTime );	
-			sa.update(waterway);
+			//logger.info( "New Position " + this.position + ",\n\t\t   " + ship.getLnglat() );
+			//logger.info( "Diff " + (this.position.getLongitude() - ship.getLnglat().getLongitude() ));
+			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
 			waterway.update( course, currentTime, traverse.getX());
+
+			sa.update(waterway);//after updating waterway
 			counter = ( counter + 1)%10;
 			topBank.update( traverse.getX());
 			bottomBank.update( traverse.getX());
+			
 			notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
 		}
 		finally{
@@ -229,8 +237,8 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	 * @return
 	 */
 	public Location getLocation( IModel model ){
-		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLnglat(), 0, 0));
-		double y = Math.abs( LatLngUtils.latDistance( this.position, model.getLnglat(), 0, 0));
+		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLatLbg(), 0, 0));
+		double y = Math.abs( LatLngUtils.latDistance( this.position, model.getLatLbg(), 0, 0));
 		return new Location( x, y );	
 	}
 }

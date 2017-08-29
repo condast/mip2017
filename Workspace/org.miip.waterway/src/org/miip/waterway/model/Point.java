@@ -39,7 +39,7 @@ public class Point extends AbstractModel {
 		double distance = displx*displx + disply*disply;
 		
 		double rad = Math.asin(disply/Math.sqrt( distance));
-		return LatLngUtils.extrapolate( current.getLnglat(), rad, distance);
+		return LatLngUtils.extrapolate( current.getLatLbg(), rad, distance);
 	}
 	
 	/**
@@ -47,8 +47,8 @@ public class Point extends AbstractModel {
 	 * @param lnglat
 	 */
 	public static Location getLocation( Point current, LatLng lnglat ){
-		double newX = LatLngUtils.lngDistance(lnglat, current.getLnglat(), 0, 0);
-		double newY = LatLngUtils.latDistance(lnglat, current.getLnglat(), 0, 0);
+		double newX = LatLngUtils.lngDistance(lnglat, current.getLatLbg(), 0, 0);
+		double newY = LatLngUtils.latDistance(lnglat, current.getLatLbg(), 0, 0);
 		Location location = new Location( current.getLocation().getX() + newX, current.getLocation().getY() + newY );
 		return location;
 	}
