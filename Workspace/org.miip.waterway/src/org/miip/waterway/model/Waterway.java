@@ -89,7 +89,8 @@ public class Waterway extends AbstractModel{
 			double position = 1.8* ( Math.random() - 0.5f ) * width;
 			LatLng lnglat = LatLngUtils.extrapolateNorth( place, position );
 			Ship ship = Ship.createShip( lnglat, "newShip" );
-			ships.add( ship );
+			//if( ships.isEmpty())
+				ships.add( ship );
 		}
 	}
 }
