@@ -1,42 +1,60 @@
 package org.miip.waterway.ui.swt;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import org.condast.commons.data.binary.IBinaryTreeSet;
+import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.operations.AbstractOperator;
+import org.condast.commons.data.operations.IOperator;
+import org.condast.commons.latlng.Vector;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 
 public class AveragingRadar extends AbstractRadar{
 	private static final long serialVersionUID = 1L;
 
-	private int depth;
-	
-	private int expand;
-	
+	private IBinaryTreeSet<Vector<Integer>> data;
+
+	IOperator<Vector<Integer>, Vector<Integer>> average = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
+
+		@Override
+		public Vector<Integer> calculate(Collection<Vector<Integer>> parents) {
+			Double avgdist = 0d;
+			Iterator<Vector<Integer>> iterator = parents.iterator();
+			int degree = 0;
+			while( iterator.hasNext() ){
+				Vector<Integer> value = iterator.next();
+				degree += value.getKey();
+				avgdist+=value.getValue();
+			}
+			degree = (int)((float)degree/parents.size());
+			return new Vector<Integer>( degree, new Double((double)avgdist/parents.size()));
+		}
+		
+	};
+
+	private Logger logger = Logger.getLogger( this.getClass().getName() );
+
 	public AveragingRadar(Composite parent, int style) {
 		super(parent, style);
-		this.expand = 1;
 	}
 	
-	public int getExpand() {
-		return expand;
-	}
-
-	public void setExpand(int expand) {
-		this.expand = expand;
-	}
-
 	@Override
-	protected void drawField(GC gc) {
-		IBinaryTreeSet<Double> tree = getSituationalAwareness().getTreeSet();
-		for( int i=0; i<tree.getDepth(); i++ ){
-			depth = i;
-			List<Double> values = tree.getValues(i);
-			for( int j=0; j<values.size(); j++ ){
-				double value = (values.get(j) == null)?0: values.get(j); 
-				drawDegree(gc, j, value );
-			}
+	protected void onDrawStart(GC gc) {
+		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
+		Map<Integer, Double> radar = super.getSituationalAwareness().getRadar();
+		Iterator<Map.Entry<Integer, Double>> iterator = radar.entrySet().iterator();
+		while( iterator.hasNext() ){
+			Map.Entry<Integer, Double> entry = iterator.next();
+			data.add( new Vector<Integer>( entry.getKey(), entry.getValue()));
 		}
+		super.onDrawStart(gc);
 	}
 
 	/**
@@ -47,39 +65,31 @@ public class AveragingRadar extends AbstractRadar{
 	 * @param angle
 	 * @param adist
 	 */
-	protected void drawDegree( GC gc, int degrees, double adist ){
-		double length = depth*expand;
-		double centrex = getCentre().x - length/2;
-		double centrey = getCentre().y - length/2;
+	protected void drawDegree( GC gc, int angle, double adist ){
 		
-		double phi = (depth < 2)? 2 * Math.PI: Math.toRadians( 360/depth);
-		double angle = degrees * phi;
-		gc.setForeground( getColour( adist ));
-		int[] poly = new int[6];
-		poly[0] = (int)centrex;
-		poly[1] = (int)centrey;
-		poly[2] = getX(degrees, angle);
-		poly[3] = getY( degrees, angle );
-		poly[4] = getX( degrees, angle + phi);
-		poly[5] =  getY( degrees, angle + phi);
-		gc.drawPolyline(poly);
-	}
-	
-	protected int getX( int degrees, double angle ){
-		double length = depth*expand;
-		double centrex = getCentre().x - length/2;
-		double step = (depth == 0 )? degrees: (double)degrees/depth;
-		int xsign = (( step > 0.25) && ( step < 0.75 ))?-1: 1;
-		int xpos = (int)( centrex + xsign*( length * Math.sin( angle * degrees )));
-		return xpos;
-	}
+		List<Vector<Integer>> results = this.data.getValues(0);
+		Vector<Integer> vect = null;
+		for( Vector<Integer> vector: results ){
+			if( vector.getKey() != angle )
+				continue;
+			vect = vector;
+			break;
+		}
+		if( vect == null )
+			return;
 
-	protected int getY( int degrees, double angle ){
-		double length = depth*expand;
-		double centrey = getCentre().y - length/2;
-		double step = (depth == 0 )? degrees:(double)degrees/depth;
-		int ysign = (( step > 0) && ( step < 0.5 ))?-1: 1;
-		return (int)( centrey + ysign*( length * Math.cos( angle )));
+		double centrex = super.getCentre().x;
+		double centrey = super.getCentre().y;
+		double length = (centrex < centrey )? centrex: centrey;
+		length = length * ( vect.getValue() / super.getRange());
+		
+		double xpos1 = centrex + length * Math.sin( toRadians( angle ));
+		double ypos1 = centrey + length * Math.cos( toRadians( angle ));
+		double xpos2 = centrex + length * Math.sin( toRadians( angle+1 ));
+		double ypos2 = centrey + length * Math.cos( toRadians( angle+1 ));
+		Color background = gc.getBackground();
+		gc.setBackground( getColour( vect.getValue() ));
+		gc.fillPolygon(new int[]{(int) centrex, (int)centrey, (int)xpos1, (int)ypos1, (int)xpos2, (int)ypos2});
+		gc.setBackground(background);
 	}
-
 }

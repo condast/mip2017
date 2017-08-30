@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.servlet;version="3.0.0",
  org.condast.commons.authentication.core,
  org.condast.commons.data.binary,
+ org.condast.commons.data.operations,
  org.condast.commons.i18n,
  org.condast.commons.latlng,
  org.condast.commons.strings,

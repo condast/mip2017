@@ -199,10 +199,21 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 	@Override
 	public void setInput( SituationalAwareness sa ){
 		this.sa = sa;
-		this.redraw();
+		refresh();
 	}
 	
 	public void refresh(){
-		this.redraw();
+		if( Display.getCurrent().isDisposed() )
+			return;
+		Display.getCurrent().asyncExec( new Runnable(){
+
+			@Override
+			public void run() {
+				if( isDisposed())
+					return;
+				redraw();
+			}
+			
+		});
 	}
 }

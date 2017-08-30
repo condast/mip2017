@@ -28,6 +28,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.eco.MIIPEnvironment;
+import org.miip.waterway.sa.IShipMovedListener;
+import org.miip.waterway.sa.ShipEvent;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.eclipse.swt.widgets.Button;
@@ -41,11 +43,12 @@ public class MIIPComposite extends Composite {
 
 	private MIIPPresentation canvas;
 	private Text text_name;
+	private Label lblSpeedLabel;
 	private Text text_speed;
 	private Text text_bearing;
 	private Text text_lng;
 	private Text text_lat;
-	private Label lblSpeedLabel;
+	private Label lblHits;
 
 	private Button miipButton;
 	private Button nmtButton;
@@ -88,6 +91,8 @@ public class MIIPComposite extends Composite {
 	private Slider slider_range;
 	private Label lbl_range;
 	
+	private int hits;
+	
 	private RefreshSession<MIIPEnvironment> session;
 	private ISessionListener<MIIPEnvironment> slistener = new ISessionListener<MIIPEnvironment>(){
 
@@ -95,6 +100,22 @@ public class MIIPComposite extends Composite {
 		public void notifySessionChanged(SessionEvent<MIIPEnvironment> event) {
 			layout();
 		}	
+	};
+	
+	private IShipMovedListener shlistener = new IShipMovedListener() {
+		
+		@Override
+		public void notifyShipmoved(ShipEvent event) {
+			getDisplay().asyncExec( new Runnable(){
+
+				@Override
+				public void run() {
+					hits++;
+					lblHits.setText( String.valueOf(hits));
+				}
+				
+			});
+		}
 	};
 	
 	/**
@@ -214,6 +235,12 @@ public class MIIPComposite extends Composite {
 		text_lat = new Text(group_ship, SWT.BORDER);
 		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
 		
+		Label lbl_hitText = new Label( group_ship, SWT.NONE );
+		lbl_hitText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false ));
+		lbl_hitText.setText("Hits: ");
+		lblHits = new Label( group_ship, SWT.BORDER );
+		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
+		
 		Group grp_radar = new Group(composite, SWT.NONE); 
 		grp_radar.setText("Radar");
 		grp_radar.setLayout(new GridLayout(2, false));
@@ -244,7 +271,7 @@ public class MIIPComposite extends Composite {
 							break;
 						case AVERAGE:
 							AveragingRadar avr = new AveragingRadar(parent, SWT.BORDER);
-							avr.setExpand( 1);
+							//avr.setExpand( 1);
 							radar = avr;
 							break;
 						default:
@@ -359,10 +386,12 @@ public class MIIPComposite extends Composite {
 		this.radar.setSensitivity(this.slider_sense.getSelection());
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
+		this.lblHits.setText(String.valueOf(hits));
 		this.radar.setInput( environment.getSituationalAwareness() );
 	}
 	
 	public void dispose(){
+		this.environment.getSituationalAwareness().removelistener(shlistener);
 		this.environment.removeListener(listener);
 		this.environment.stop();
 		this.session.stop();
@@ -412,6 +441,7 @@ public class MIIPComposite extends Composite {
 					switch( image ){
 					case START:
 						environment.start();
+						environment.getSituationalAwareness().addlistener(shlistener);
 						//setModels( environment.getModels());
 						//setInput(ce.getBehaviour());
 						getButton( PlayerImages.Images.STOP).setEnabled(true);
@@ -430,6 +460,7 @@ public class MIIPComposite extends Composite {
 						break;
 					case STOP:
 						environment.stop();
+						environment.removeListener(listener);
 						getButton( PlayerImages.Images.START).setEnabled(true);
 						button.setEnabled(false);
 						clear = (Button) getButton( PlayerImages.Images.RESET);
@@ -439,6 +470,7 @@ public class MIIPComposite extends Composite {
 						environment.step();
 						break;
 					case RESET:
+						hits = 0;
 						environment.clear();
 					default:
 						break;

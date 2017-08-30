@@ -103,7 +103,7 @@ public class Waterway extends AbstractModel{
 			LatLng lnglat = LatLngUtils.extrapolateNorth( place, position );
 			Ship ship = Ship.createShip( lnglat, "newShip" );
 			logger.info("Adding ship: " + ship.getLatLbg() + " bearing " + ship.getBearing());
-			logger.info("Distance to centre: " + LatLngUtils.distance(centre, ship.getLatLbg()));
+			logger.fine( "Distance to centre: " + LatLngUtils.distance(centre, ship.getLatLbg()));
 			ships.add( ship );
 		}
 	}

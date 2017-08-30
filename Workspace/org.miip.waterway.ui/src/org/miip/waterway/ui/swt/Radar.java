@@ -12,6 +12,7 @@ public class Radar extends AbstractRadar{
 		super(parent, style);
 	}
 	
+	@Override
 	protected void drawDegree( GC gc, int angle, double distance ){
 		if( distance > super.getRange() )
 			return;

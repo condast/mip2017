@@ -240,7 +240,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public Location getLocation( IModel model ){
 		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLatLbg(), 0, 0));
 		double y = 1.8* Math.abs( LatLngUtils.latDistance( this.position, model.getLatLbg(), 0, 0));
-		logger.info("Creating location for " + model.getLatLbg() + " =  [" + x + ",  " + y  );
+		logger.fine("Creating location for " + model.getLatLbg() + " =  [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}
 }

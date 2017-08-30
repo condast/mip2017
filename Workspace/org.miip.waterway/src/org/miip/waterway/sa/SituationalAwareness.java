@@ -1,17 +1,13 @@
 package org.miip.waterway.sa;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import org.condast.commons.data.binary.IBinaryTreeSet;
-import org.condast.commons.data.binary.SequentialBinaryTreeSet;
-import org.condast.commons.data.operations.AbstractOperator;
-import org.condast.commons.data.operations.IOperator;
 import org.condast.commons.latlng.LatLng;
 import org.condast.commons.latlng.LatLngUtils;
 import org.miip.waterway.model.Ship;
@@ -28,9 +24,10 @@ public class SituationalAwareness {
 	private Lock lock;
 	private int range;
 	private int steps;
-	private IBinaryTreeSet<Double> data;
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
+	
+	private Collection<IShipMovedListener> listeners;
 
 	public SituationalAwareness( Ship ship ) {
 		this( ship, MAX_DEGREES);
@@ -40,30 +37,27 @@ public class SituationalAwareness {
 		this.ship = ship;
 		this.steps = steps;
 		lock = new ReentrantLock();
+		this.listeners = new ArrayList<IShipMovedListener>();
 		radar = new TreeMap<Integer, Double>();
-		IOperator<Double, Double> average = new AbstractOperator<Double, Double>(){
-
-			@Override
-			public Double calculate(Collection<Double> input) {
-				Double sum = 0d;
-				Iterator<Double> iterator = input.iterator();
-				while( iterator.hasNext() ){
-					Double value = iterator.next();
-					if( value == null )
-						value = 0d;
-					sum+=value;
-				}
-				return (sum/input.size());
-			}
-			
-		};
-		data = new SequentialBinaryTreeSet<Double>( average);
 	}
 	
 	public int getSteps() {
 		return steps;
 	}
+	
+	public void addlistener( IShipMovedListener listener ){
+		this.listeners.add( listener);
+	}
 
+	public void removelistener( IShipMovedListener listener ){
+		this.listeners.remove(listener);
+	}
+
+	protected void notifylistners( ShipEvent event ){
+		for( IShipMovedListener listener: listeners )
+			listener.notifyShipmoved(event);	
+	}
+	
 	public Ship.Bearing getBearing(){
 		return ship.getBearing();
 	}
@@ -77,16 +71,17 @@ public class SituationalAwareness {
 		Map<Integer, Double> vectors = getVectors( waterway );
 		lock.lock();
 		try{
-			data.clear();
 			radar.clear();
 			for( int i=0; i< steps; i++ ){
 				double bank =  getBankDistance(waterway, i); 
 				double shipdist = vectors.containsKey(i)? vectors.get(i):(double)Integer.MAX_VALUE;
 				Double distance = ( shipdist < bank)? shipdist: bank;
 				if( distance < this.range ){
-					data.add( distance);
 					radar.put( i, distance );
 				}
+				logger.fine( "distance: "  + distance );
+				if( distance < 25 )
+					notifylistners( new ShipEvent( ship, true ));
 			}
 		}
 		catch( Exception ex ){
@@ -96,10 +91,6 @@ public class SituationalAwareness {
 		}
 	}
 
-	public IBinaryTreeSet<Double> getTreeSet(){
-		return data;
-	}
-	
 	/**
 	 * Get the radians for the given step size
 	 * @param step
@@ -136,9 +127,9 @@ public class SituationalAwareness {
 			double hordistance = LatLngUtils.lngDistance(latlng, other.getLatLbg(), 0, 0 );
 			if( Math.abs( hordistance) > 2*this.range )
 				continue;
-			double distance = LatLngUtils.distance(latlng, other.getLatLbg() );
+			//double distance = LatLngUtils.distance(latlng, other.getLatLbg() );
 			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLatLbg(), this.steps );
-			//logger.info( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLatLbg() );
+			logger.fine( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLatLbg() );
 			//logger.info( "Diff " + (latlng.getLongitude() - other.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + distance + "[" + vector.getKey() + ", "+ vector.getValue() + "]");
 			vectors.put( vector.getKey(), vector.getValue());
