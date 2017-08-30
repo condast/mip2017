@@ -21,6 +21,9 @@ public class MIIPImages extends AbstractImages{
 	public enum Images{
 		MIIP,
 		NMT,
+		CONDAST,
+		KC_DHS,
+		RDM_COE,
 		SHIP,
 		SHIP_ORNG,
 		SHIP_RED,
@@ -41,6 +44,15 @@ public class MIIPImages extends AbstractImages{
 				break;
 			case NMT:
 				str = "nmt.jpg";
+				break;
+			case CONDAST:
+				str = "condast.png";
+				break;
+			case KC_DHS:
+				str = "kc-dhs.png";
+				break;
+			case RDM_COE:
+				str = "rdm-coe.jpg";
 				break;
 			default:
 				str = image.name().toLowerCase();

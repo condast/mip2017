@@ -18,6 +18,8 @@ import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Label;
@@ -26,6 +28,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
+import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.IShipMovedListener;
@@ -40,6 +43,9 @@ public class MIIPComposite extends Composite {
 
 	public static final String S_MIIP_URL = "http://www.maritiemland.nl/news/startbijeenkomst-maritieme-innovatie-impuls-projecten-2017/";
 	public static final String S_NMT_URL = "http://www.maritiemland.nl/innovatie/projecten/maritieme-innovatie-impuls-projecten/";
+	public static final String S_KC_DHS_URL = "https://www.hogeschoolrotterdam.nl/onderzoek/kenniscentra/duurzame-havenstad/over-het-kenniscentrum/";
+	public static final String S_RDM_COE_URL = "http://www.rdmcoe.nl//";
+	public static final String S_CONDAST_URL = "http://www.condast.com/";
 
 	private MIIPPresentation canvas;
 	private Text text_name;
@@ -49,9 +55,6 @@ public class MIIPComposite extends Composite {
 	private Text text_lng;
 	private Text text_lat;
 	private Label lblHits;
-
-	private Button miipButton;
-	private Button nmtButton;
 
 	private MIIPEnvironment environment; 
 	
@@ -83,6 +86,7 @@ public class MIIPComposite extends Composite {
 	private Slider slider_speed;
 	private Spinner spinner_ships;
 	private Label lblActiveShips;
+	private Button btn_manual;
 	
 	private IRadarUI radar;
 	private Combo combo_radar;
@@ -195,9 +199,24 @@ public class MIIPComposite extends Composite {
 			}
 		});
 
+		
 		lblActiveShips = new Label(group_control, SWT.BORDER);
 		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
+		btn_manual = new Button( group_control, SWT.CHECK );
+		btn_manual.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		btn_manual.setText("Manual");
+		btn_manual.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Button check = (Button) e.widget;
+				if( check.getSelection() )
+					canvas.setFocus();
+				super.widgetSelected(e);
+			}
+		});
 		playerbar = new PlayerComposite<MIIPEnvironment>( group_control, SWT.BORDER );
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 		
@@ -331,7 +350,39 @@ public class MIIPComposite extends Composite {
 		Composite comp_radar = new Composite( composite, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new Radar( comp_radar, SWT.BORDER );		
+		radar = new Radar( comp_radar, SWT.BORDER );	
+		canvas.addKeyListener(new KeyAdapter(){
+			private static final long serialVersionUID = 1L;
+
+				public void keyPressed(KeyEvent e)
+				{
+					if( !btn_manual.getSelection())
+						return;
+					CentreShip ship = environment.getShip();
+					int bearing = ( ship.getOffset() == null )?90: ship.getOffset().getKey();
+					int distance = 0;
+					switch( e.keyCode ){
+					case SWT.ARROW_UP:
+						bearing = bearing + 3;
+						break;
+					case SWT.ARROW_DOWN:
+						bearing = bearing - 3 ;
+						break;
+					case SWT.ARROW_LEFT:
+						distance = -2;
+						break;
+					case SWT.ARROW_RIGHT:
+						distance = +2;;
+						break;
+					default: 
+						break;
+					}
+					int newDistance = ( ship.getOffset() == null )? distance: (int) (ship.getOffset().getValue() + distance);
+					if( newDistance > 6 )
+						newDistance = 6;
+					ship.setOffset(bearing, newDistance);						
+				}
+		});
 	}
 
 	private void createImageBar(Composite parent, int style) {
@@ -339,24 +390,17 @@ public class MIIPComposite extends Composite {
 		comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false ));
 		comp.setLayout( new GridLayout( 1, false));
 
-		miipButton = new Button(comp, SWT.FLAT);
-		miipButton.setImage( MIIPImages.getImage(Images.MIIP));
-		miipButton.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				UrlLauncher launcher = RWT.getClient().getService( UrlLauncher.class );
-				launcher.openURL( S_NMT_URL );
-				super.widgetSelected(e);
-			}
-		});
-		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		miipButton.setLayoutData(layoutData);	
-
-		nmtButton = new Button(comp, SWT.FLAT);
-		nmtButton.setImage( MIIPImages.getImage(Images.NMT));
-		nmtButton.addSelectionListener( new SelectionAdapter(){
+		createImageButton( comp, Images.MIIP, S_MIIP_URL );
+		createImageButton( comp, Images.NMT, S_NMT_URL );
+		createImageButton( comp, Images.RDM_COE, S_RDM_COE_URL );
+		createImageButton( comp, Images.KC_DHS, S_KC_DHS_URL );
+		createImageButton( comp, Images.CONDAST, S_CONDAST_URL );
+	}
+	
+	private Button createImageButton( Composite parent, Images image, final String url ){
+		Button button = new Button(parent, SWT.FLAT);
+		button.setImage( MIIPImages.getImage( image ));
+		button.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -366,13 +410,14 @@ public class MIIPComposite extends Composite {
 					@Override
 					public void run() {
 						UrlLauncher launcher = RWT.getClient().getService( UrlLauncher.class );
-						launcher.openURL( S_NMT_URL );
+						launcher.openURL( url );
 					}					
 				});
 			}
 		});
 		GridData nmtData = new GridData(SWT.FILL, SWT.TOP, true, true);
-		nmtButton.setLayoutData(nmtData);
+		button.setLayoutData(nmtData);
+		return button;
 	}
 
 	protected void setInput(){
@@ -391,9 +436,11 @@ public class MIIPComposite extends Composite {
 	}
 	
 	public void dispose(){
-		this.environment.getSituationalAwareness().removelistener(shlistener);
-		this.environment.removeListener(listener);
-		this.environment.stop();
+		if( this.environment != null ){
+			this.environment.getSituationalAwareness().removelistener(shlistener);
+			this.environment.removeListener(listener);
+			this.environment.stop();
+		}
 		this.session.stop();
 		this.session.removeSessionListener(slistener);
 		this.session.dispose();

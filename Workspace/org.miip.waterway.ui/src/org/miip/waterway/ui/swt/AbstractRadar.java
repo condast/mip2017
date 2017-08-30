@@ -157,7 +157,7 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 	}
 
 	protected void onDrawStart( GC gc ){
-		logger.info( "Radar settings: rage = " + this.range + ", sensitivity = " + this.sensitivity );
+		logger.fine( "Radar settings: rage = " + this.range + ", sensitivity = " + this.sensitivity );
 	}
 	
 	protected void onDrawEnd( GC gc ){/* NOTHING */ }
@@ -167,7 +167,7 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 			return;
 		this.onDrawStart(gc);
 		TreeMap<Integer, Double> drawMap = new TreeMap<Integer, Double>( sa.getRadar());
-		logger.info( "Radar values found: " + drawMap.size() );
+		logger.fine( "Radar values found: " + drawMap.size() );
 		Iterator<Map.Entry<Integer, Double>> iterator = drawMap.descendingMap().entrySet().iterator();
 		while( iterator.hasNext() ){
 			Map.Entry<Integer, Double> entry = iterator.next();

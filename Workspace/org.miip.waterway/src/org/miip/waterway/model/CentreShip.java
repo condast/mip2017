@@ -25,13 +25,23 @@ public class CentreShip extends Ship {
 	public Vector<Integer> getOffset() {
 		return offset;
 	}
+	
+	public void setOffset( int angle, int distance ){
+		offset = new Vector<Integer>( angle, distance );		
+	}
 
 	@Override
 	public LatLng sail(Date newTime) {
-		Bearing bearing = super.getBearing();
-		int angle = bearing.getAngle() + (int)(1 + 10 * Math.random());
-		int distance = ( int )( 5 * Math.random() );
-		offset = new Vector<Integer>( angle, distance );
+		//Bearing bearing = super.getBearing();
+		/*
+		if( offset != null ){
+			int angle_diff = bearing.getAngle() - offset.getKey();
+			int angle = ( angle_diff < 0 )? offset.getKey()+1: ( angle_diff > 0 )? offset.getKey()-1: bearing.getAngle(); 
+
+			int distance = (int)(( offset.getValue() > 0 )? offset.getValue() - 1: ( offset.getValue() < 0 )? offset.getValue() + 1:0 );
+			offset = new Vector<Integer>( angle, distance );
+		}
+		*/
 		return super.sail(newTime);
 	}	
 }

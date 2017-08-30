@@ -205,7 +205,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public synchronized void onExecute() {
 		lock.lock();
 		try{
-			logger.info("\n\nEXECUTE:");
+			logger.fine("\n\nEXECUTE:");
 			currentTime = Calendar.getInstance().getTime();
 			Location traverse = ship.plotNext(currentTime);
 
