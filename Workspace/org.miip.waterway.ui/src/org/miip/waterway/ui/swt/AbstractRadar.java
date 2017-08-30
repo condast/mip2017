@@ -3,11 +3,13 @@ package org.miip.waterway.ui.swt;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -18,7 +20,72 @@ import org.miip.waterway.sa.SituationalAwareness;
 
 public abstract class AbstractRadar extends Canvas implements IRadarUI{
 	private static final long serialVersionUID = 1L;
+	
+	public enum RadarColours{
+		NONE( SWT.COLOR_TRANSPARENT),
+		TRANSPARANT( SWT.COLOR_TRANSPARENT),
+		GREEN( SWT.COLOR_GREEN ),
+		YELLOW( SWT.COLOR_YELLOW ),
+		ORANGE( SWT.COLOR_RED | SWT.COLOR_YELLOW ),
+		RED( SWT.COLOR_RED );
+		
+		private int index;
+		
+		
+		private RadarColours( int index ){
+			this.index = index;
+		}
+		
+		public int getIndex(){
+			return this.index;
+		}
+		
+		public static RadarColours getColour( int index ){
+			RadarColours colour;
+			switch( index ){
+			case SWT.COLOR_GREEN:
+				colour = RadarColours.GREEN;
+				break;
+			case SWT.COLOR_RED:
+				colour = RadarColours.RED;
+				break;
+			case SWT.COLOR_YELLOW:
+				colour = RadarColours.YELLOW;
+				break;
+			default:
+				colour = RadarColours.TRANSPARANT;
+				break;
+			}
+			if( RadarColours.ORANGE.getIndex() == index )
+				colour = RadarColours.ORANGE;
+			return colour;
+		}
+		
+		public static Color getColour( Device device, RadarColours rc ){
+			Color colour = null;
+			switch( rc ){
+			case ORANGE:
+				colour = new Color (device, 225, 113, 0);
+			default:
+				colour = device.getSystemColor( rc.getIndex());
+				break;
+			}
+			return colour;
+		}
 
+		public static Color getColour( Device device, int index ){
+			RadarColours colour = RadarColours.values()[ index+1 ];
+			return getColour( device, colour);
+		}
+
+		public static Color getLinearColour( Device device, int distance, int range, int sensitivity ){
+			boolean far = ( distance > ( range - sensitivity ));
+			int red = far? 50: (int)( 255 * ( 1 - distance/range ));
+			int green = far? 255: (int)( 255 * distance/range );
+			int blue = 50;
+			return new Color( device, red, green, blue );
+		}
+	}
 	
 	private PaintListener listener = new PaintListener(){
 		private static final long serialVersionUID = 1L;
@@ -32,8 +99,10 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 	private SituationalAwareness sa;
 	
 	private int range;
-	private float sensitivity;
-	
+	private int sensitivity; //part of the range
+
+	private Logger logger = Logger.getLogger( this.getClass().getName() );
+
 	protected AbstractRadar(Composite parent, int style) {
 		super(parent, style);
 		this.sensitivity = DEFAULT_SENSITIVITY;
@@ -47,13 +116,13 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 	}
 
 	@Override
-	public float getSensitivity() {
+	public int getSensitivity() {
 		return sensitivity;
 	}
 
 	@Override
 	public void setSensitivity( int sensitivity) {
-		this.sensitivity = (float)sensitivity/1000;
+		this.sensitivity = sensitivity;
 	}
 
 	@Override
@@ -87,7 +156,10 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 		return 2*Math.PI*part;
 	}
 
-	protected void onDrawStart( GC gc ){/* NOTHING */ }
+	protected void onDrawStart( GC gc ){
+		logger.info( "Radar settings: rage = " + this.range + ", sensitivity = " + this.sensitivity );
+	}
+	
 	protected void onDrawEnd( GC gc ){/* NOTHING */ }
 
 	protected void drawField( GC gc ){
@@ -95,6 +167,7 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 			return;
 		this.onDrawStart(gc);
 		TreeMap<Integer, Double> drawMap = new TreeMap<Integer, Double>( sa.getRadar());
+		logger.info( "Radar values found: " + drawMap.size() );
 		Iterator<Map.Entry<Integer, Double>> iterator = drawMap.descendingMap().entrySet().iterator();
 		while( iterator.hasNext() ){
 			Map.Entry<Integer, Double> entry = iterator.next();
@@ -109,12 +182,16 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 		if( sa == null)
 			return getDisplay().getSystemColor( colour );
 		
-		if( distance > this.sensitivity * this.range )
-			return getDisplay().getSystemColor( SWT.COLOR_GREEN );
-		double relax = ( Math.abs( distance)> sa.getRange() )? 1: Math.abs( distance/sa.getRange() );
-		int red = (int)( 255 * (1-relax*relax ));
-		int green = (int)( 255 * relax*relax );
-		return new Color (getDisplay(), red, green, 0);
+		if( distance <= this.sensitivity )
+			return getDisplay().getSystemColor( SWT.COLOR_RED );
+		if( distance > this.range )
+			return getDisplay().getSystemColor( SWT.COLOR_TRANSPARENT );
+		//int index = (int)(( this.range - this.sensitivity )/distance );
+		return RadarColours.getLinearColour(getDisplay(), (int) distance, this.range, (int) this.sensitivity );
+		//double relax = ( Math.abs( distance)> sa.getRange() )? 1: Math.abs( distance/sa.getRange() );
+		//int red = (int)( 255 * (1-relax*relax ));
+		//int green = (int)( 255 * relax*relax );
+		//return new Color (getDisplay(), red, green, 0);
 	}
 	
 	protected abstract void drawDegree( GC gc, int angle, double distance );

@@ -163,7 +163,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		rect = new Rectangle(0, this.bankWidth + width, length, this.bankWidth );//also account for the upper bank
 		bottomBank =  new Bank( Bank.Banks.LOWER,LatLngUtils.extrapolate(this.position, 0, halfWidth), rect );
 		
-		this.waterway = new Waterway(this.position, length, width);
+		this.waterway = new Waterway(this.position, length, width, 100);
 		this.initialsed = true;
 		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
 		return true;
@@ -233,12 +233,14 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	
 	/**
 	 * Get the location with respect to the reference
+	 * TODO NOTE: for some reason we need to add a correction of 1.8 in the latitude
 	 * @param model
 	 * @return
 	 */
 	public Location getLocation( IModel model ){
 		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLatLbg(), 0, 0));
-		double y = Math.abs( LatLngUtils.latDistance( this.position, model.getLatLbg(), 0, 0));
+		double y = 1.8* Math.abs( LatLngUtils.latDistance( this.position, model.getLatLbg(), 0, 0));
+		logger.info("Creating location for " + model.getLatLbg() + " =  [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}
 }

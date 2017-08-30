@@ -84,7 +84,9 @@ public class MIIPComposite extends Composite {
 	private IRadarUI radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
+	private Label lbl_sense;
 	private Slider slider_range;
+	private Label lbl_range;
 	
 	private RefreshSession<MIIPEnvironment> session;
 	private ISessionListener<MIIPEnvironment> slistener = new ISessionListener<MIIPEnvironment>(){
@@ -214,11 +216,11 @@ public class MIIPComposite extends Composite {
 		
 		Group grp_radar = new Group(composite, SWT.NONE); 
 		grp_radar.setText("Radar");
-		grp_radar.setLayout(new GridLayout(1, false));
+		grp_radar.setLayout(new GridLayout(2, false));
 		grp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		int radar_width = 80;
-		GridData gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
+		GridData gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false, 2, 1);
 		gd_radar.widthHint = radar_width;
 		combo_radar = new Combo( grp_radar, SWT.BORDER );
 		combo_radar.setLayoutData( gd_radar);		
@@ -260,7 +262,6 @@ public class MIIPComposite extends Composite {
 		
 		slider_sense = new Slider( grp_radar, SWT.BORDER );
 		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
-		gd_radar.widthHint = radar_width;
 		slider_sense.setLayoutData( gd_radar);
 		slider_sense.setMinimum(1);
 		slider_sense.setMaximum(900);
@@ -272,13 +273,16 @@ public class MIIPComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				radar.setSensitivity( slider_sense.getSelection());
+				lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
 				super.widgetSelected(e);
 			}
 		});
 
+		lbl_sense = new Label( grp_radar, SWT.BORDER );
+		lbl_sense.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
+		
 		slider_range = new Slider( grp_radar, SWT.BORDER );
 		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
-		gd_radar.widthHint = radar_width;
 		slider_range.setLayoutData( gd_radar);
 		slider_range.setMinimum(1);
 		slider_range.setMaximum(3000);
@@ -290,9 +294,12 @@ public class MIIPComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				radar.setRange( slider_range.getSelection());
+				lbl_range.setText( String.valueOf( slider_range.getSelection()));
 				super.widgetSelected(e);
 			}
 		});
+		lbl_range = new Label( grp_radar, SWT.BORDER );
+		lbl_range.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 		
 		Composite comp_radar = new Composite( composite, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
@@ -350,6 +357,8 @@ public class MIIPComposite extends Composite {
 		this.text_lat.setText( String.valueOf( ship.getLatLbg().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
 		this.radar.setSensitivity(this.slider_sense.getSelection());
+		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
+		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
 		this.radar.setInput( environment.getSituationalAwareness() );
 	}
 	

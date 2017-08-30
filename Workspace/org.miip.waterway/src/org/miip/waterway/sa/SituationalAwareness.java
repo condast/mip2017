@@ -78,13 +78,12 @@ public class SituationalAwareness {
 		lock.lock();
 		try{
 			data.clear();
+			radar.clear();
 			for( int i=0; i< steps; i++ ){
 				double bank =  getBankDistance(waterway, i); 
 				double shipdist = vectors.containsKey(i)? vectors.get(i):(double)Integer.MAX_VALUE;
 				Double distance = ( shipdist < bank)? shipdist: bank;
 				if( distance < this.range ){
-					if( shipdist < bank )
-						logger.info( "Position: " + (int)(( float)i * 360/steps) + ", distance " + distance );
 					data.add( distance);
 					radar.put( i, distance );
 				}
@@ -139,9 +138,9 @@ public class SituationalAwareness {
 				continue;
 			double distance = LatLngUtils.distance(latlng, other.getLatLbg() );
 			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLatLbg(), this.steps );
-			logger.info( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLatLbg() );
+			//logger.info( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLatLbg() );
 			//logger.info( "Diff " + (latlng.getLongitude() - other.getLnglat().getLongitude() ));
-			logger.info( "Diff " + distance + "[" + vector.getKey() + ", "+ vector.getValue() + "]");
+			//logger.info( "Diff " + distance + "[" + vector.getKey() + ", "+ vector.getValue() + "]");
 			vectors.put( vector.getKey(), vector.getValue());
 			//if( vector.getValue() < 100 )
 				//logger.info("Vector found for" + ship.getLnglat() + " and\n\t " + 

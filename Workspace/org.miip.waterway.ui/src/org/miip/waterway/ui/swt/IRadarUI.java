@@ -44,7 +44,7 @@ public interface IRadarUI {
 	 * Get the sensitivity of the radar
 	 * @return
 	 */
-	public float getSensitivity();
+	public int getSensitivity();
 
 	/**
 	 * Set the sensitivity of the radar

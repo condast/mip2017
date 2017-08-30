@@ -81,7 +81,7 @@ public class Waterway extends AbstractModel{
 	
 	public void update( LatLng position, Date time, double distance ){
 		super.setLnglat(position);
-		logger.info( "Update Position " + position );
+		logger.fine( "Update Position " + position );
 		for( Ship ship: getShips() ){
 			LatLng ll = ship.sail( time );
 			double dist = LatLngUtils.distance(super.getLatLbg(), ll); 
@@ -92,7 +92,7 @@ public class Waterway extends AbstractModel{
 			//logger.info( "Diff " + LatLngUtils.distance(position, ship.getLnglat() ));
 		}
 		createShips( super.getLatLbg(), this.nrOfShips );
-		//createShips( LatLngUtils.extrapolateEast( super.getLnglat(), length ), this.nrOfShips );
+		createShips( LatLngUtils.extrapolateEast( super.getLatLbg(), length ), this.nrOfShips );
 	}
 
 	protected void createShips( LatLng place, int amount ){
