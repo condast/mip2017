@@ -50,6 +50,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	private int width; //The width of the course
 	private int bankWidth;
 	private boolean initialsed;
+	private boolean manual;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -63,6 +64,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this.width = width;
 		this.bankWidth = bankWidth;
 		this.timer = DEFAULT_TIME_OUT;
+		this.manual = false;
 		lock = new ReentrantLock();
 		this.listeners = new ArrayList<IEnvironmentListener>();
 	}
@@ -74,8 +76,12 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		return initialsed;
 	}
 	
+	public void setManual(boolean manual) {
+		this.manual = manual;
+	}
 	public void clear(){
 		waterway.clear();
+		this.manual = false;
 	}
 	
 	public int getLength() {
@@ -158,7 +164,8 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, centre );
 		
 		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
-		
+		if( !this.manual )
+			sa.controlShip();
 		counter = 0;
 		rect = new Rectangle(0, this.bankWidth + width, length, this.bankWidth );//also account for the upper bank
 		bottomBank =  new Bank( Bank.Banks.LOWER,LatLngUtils.extrapolate(this.position, 0, halfWidth), rect );
@@ -238,9 +245,9 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	 * @return
 	 */
 	public Location getLocation( IModel model ){
-		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLatLbg(), 0, 0));
-		double y = 1.8* Math.abs( LatLngUtils.latDistance( this.position, model.getLatLbg(), 0, 0));
-		logger.fine("Creating location for " + model.getLatLbg() + " =  [" + x + ",  " + y  );
+		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLatLng(), 0, 0));
+		double y = 1.8* Math.abs( LatLngUtils.latDistance( this.position, model.getLatLng(), 0, 0));
+		logger.fine("Creating location for " + model.getLatLng() + " =  [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}
 }

@@ -212,6 +212,7 @@ public class MIIPComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Button check = (Button) e.widget;
+				environment.setManual( check.getSelection());
 				if( check.getSelection() )
 					canvas.setFocus();
 				super.widgetSelected(e);
@@ -359,28 +360,24 @@ public class MIIPComposite extends Composite {
 					if( !btn_manual.getSelection())
 						return;
 					CentreShip ship = environment.getShip();
-					int bearing = ( ship.getOffset() == null )?90: ship.getOffset().getKey();
-					int distance = 0;
+					CentreShip.Controls control = null; 
 					switch( e.keyCode ){
 					case SWT.ARROW_UP:
-						bearing = bearing + 3;
+						control = CentreShip.Controls.UP;
 						break;
 					case SWT.ARROW_DOWN:
-						bearing = bearing - 3 ;
+						control = CentreShip.Controls.DOWN;
 						break;
 					case SWT.ARROW_LEFT:
-						distance = -2;
+						control = CentreShip.Controls.LEFT;
 						break;
 					case SWT.ARROW_RIGHT:
-						distance = +2;;
+						control = CentreShip.Controls.RIGHT;
 						break;
 					default: 
 						break;
 					}
-					int newDistance = ( ship.getOffset() == null )? distance: (int) (ship.getOffset().getValue() + distance);
-					if( newDistance > 6 )
-						newDistance = 6;
-					ship.setOffset(bearing, newDistance);						
+					ship.setControl(control);						
 				}
 		});
 	}
@@ -425,8 +422,8 @@ public class MIIPComposite extends Composite {
 		this.text_name.setText( ship.getId() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
-		this.text_lng.setText( String.valueOf( ship.getLatLbg().getLongitude() ));
-		this.text_lat.setText( String.valueOf( ship.getLatLbg().getLatitude() ));
+		this.text_lng.setText( String.valueOf( ship.getLatLng().getLongitude() ));
+		this.text_lat.setText( String.valueOf( ship.getLatLng().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
 		this.radar.setSensitivity(this.slider_sense.getSelection());
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));

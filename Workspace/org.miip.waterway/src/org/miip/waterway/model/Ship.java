@@ -92,7 +92,7 @@ public class Ship extends AbstractModel{
 	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;
-		LatLng position = LatLngUtils.extrapolate( super.getLatLbg(), bearing.getAngle(), distance);
+		LatLng position = LatLngUtils.extrapolate( super.getLatLng(), bearing.getAngle(), distance);
 		//logger.info( "New Position for spped:" + getSpeed() + "\n\t" + super.getLnglat() + ", to\n\t" + position );
 		super.setLnglat(position);
 		this.currentTime = newTime;

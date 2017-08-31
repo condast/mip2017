@@ -14,6 +14,7 @@
     <properties>
         <tycho.version>0.26.0</tycho.version>
         <generics>P:/GitHub</generics>
+        <virgo-root>file:${generics}/Root/Workspace/Virgo</virgo-root>
         <project-root>P:/GitHub/org.miip</project-root>
         <workspace-root>P:/Windows/Condast/Workspace/org.miip</workspace-root>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
@@ -22,8 +23,7 @@
         <condast-commons>file:${generics}/org.condast.commons/Workspace/</condast-commons>
         <condast-js>file:${generics}/org.condast.js/Workspace/</condast-js>
         <condast-symbiot>file:${generics}/org.condast.symbiotic/Workspace/</condast-symbiot>
-        <condast-repo.url>file:${generics}/Root/WorkSpace/alpha.root.cultuurinzicht.update</condast-repo.url>
-        <!-- <condast-repo.url>file:P:/Windows/KenniscentrumRDM/Workspace/org.rdm.update</condast-repo.url>-->
+        <condast-repo.url>${virgo-root}/alpha.condast.root.update/</condast-repo.url>
     </properties>
 
     <repositories>

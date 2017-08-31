@@ -30,7 +30,7 @@ public abstract class AbstractModel implements IModel{
 	}
 
 	@Override
-	public LatLng getLatLbg() {
+	public LatLng getLatLng() {
 		return latlng;
 	}
 

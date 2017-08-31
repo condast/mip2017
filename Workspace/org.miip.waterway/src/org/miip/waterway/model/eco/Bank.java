@@ -68,6 +68,6 @@ public class Bank extends AbstractModel{
 			}
 			shore.add( new Location( x, y ));
 		}
-		super.setLnglat( LatLngUtils.extrapolateEast( super.getLatLbg(), distance));	
+		super.setLnglat( LatLngUtils.extrapolateEast( super.getLatLng(), distance));	
 	}
 }

@@ -50,9 +50,9 @@ public class Waterway extends AbstractModel{
 	}
 	
 	protected void initialise(){
-		centre = LatLngUtils.extrapolate( super.getLatLbg(), Bearing.EAST.getAngle(), length/2);
-		createShips( super.getLatLbg(), this.nrOfShips );
-		//createShips( LatLngUtils.extrapolateEast( super.getLnglat(), length-350 ), this.nrOfShips );
+		centre = LatLngUtils.extrapolate( super.getLatLng(), Bearing.EAST.getAngle(), length/2);
+		createShips( super.getLatLng(), (int)(this.nrOfShips/2) );
+		createShips( LatLngUtils.extrapolateEast( super.getLatLng(), length-350 ), (int)( this.nrOfShips/2) );
 	}
 
 	public void clear(){
@@ -84,7 +84,7 @@ public class Waterway extends AbstractModel{
 		logger.fine( "Update Position " + position );
 		for( Ship ship: getShips() ){
 			LatLng ll = ship.sail( time );
-			double dist = LatLngUtils.distance(super.getLatLbg(), ll); 
+			double dist = LatLngUtils.distance(super.getLatLng(), ll); 
 			if(( dist > -MARGIN_X ) || ( dist < -( this.length + MARGIN_X )))
 				ships.remove( ship );
 			//logger.info( "New Position for spped:" + ship.getSpeed() + ",\n\t" + ship.getLnglat() );
@@ -92,7 +92,7 @@ public class Waterway extends AbstractModel{
 			//logger.info( "Diff " + LatLngUtils.distance(position, ship.getLnglat() ));
 		}
 		//createShips( super.getLatLbg(), (int)(this.nrOfShips/2) );
-		LatLng east = LatLngUtils.extrapolateEast( super.getLatLbg(), length );
+		LatLng east = LatLngUtils.extrapolateEast( super.getLatLng(), length );
 		createShips( east, (int)(this.nrOfShips/2) );
 	}
 
@@ -103,8 +103,8 @@ public class Waterway extends AbstractModel{
 			double position = ( Math.random() - 0.5f ) * width;
 			LatLng lnglat = LatLngUtils.extrapolateNorth( place, position );
 			Ship ship = Ship.createShip( lnglat, "newShip" );
-			logger.info("Adding ship: " + ship.getLatLbg() + " bearing " + ship.getBearing());
-			logger.fine( "Distance to centre: " + LatLngUtils.distance(centre, ship.getLatLbg()));
+			logger.fine("Adding ship: " + ship.getLatLng() + " bearing " + ship.getBearing());
+			logger.fine( "Distance to centre: " + LatLngUtils.distance(centre, ship.getLatLng()));
 			ships.add( ship );
 		}
 	}

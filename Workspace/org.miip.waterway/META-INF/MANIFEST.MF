@@ -5,14 +5,12 @@ Bundle-SymbolicName: org.miip.waterway
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.condast.commons,
- org.condast.commons.data.binary,
+Import-Package: org.condast.commons.data.binary,
  org.condast.commons.data.operations,
  org.condast.commons.latlng,
  org.condast.commons.strings,
  org.condast.commons.thread,
- org.condast.symbiotic.core.environment,
- org.condast.wph.core.def
+ org.condast.symbiotic.core.environment
 Export-Package: org.miip.waterway.internal.model,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
