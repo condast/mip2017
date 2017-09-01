@@ -56,9 +56,9 @@ public class MIIPPresentation extends Canvas{
 		Vector<Integer> vector = ship.getOffset();
 		if( vector == null )
 			return centre;
-		double angle = Math.sin( Math.toRadians( vector.getKey()));
-		int xoffset = (int)((float)20 * vector.getValue() *  angle );
-		int yoffset = (int)((float)20 * vector.getValue() *  Math.cos( Math.toRadians( vector.getKey())));
+		//double angle = Math.sin( Math.toRadians( vector.getKey()));
+		int xoffset = (int) vector.getValue().doubleValue();//(int)((float)20 * vector.getValue() *  angle );
+		int yoffset = vector.getKey();//(int)((float)20 * vector.getValue() *  Math.cos( Math.toRadians( vector.getKey())));
 		return new Point( centre.x + xoffset, centre.y + yoffset );
 	}
 	

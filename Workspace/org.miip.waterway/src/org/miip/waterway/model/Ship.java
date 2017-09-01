@@ -35,7 +35,7 @@ public class Ship extends AbstractModel{
 	
 	private int length;
 	private float speed;//-20 - 60 km/hour
-	private Bearing bearing; //0-360
+	private int bearing; //0-360
 	
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
@@ -54,7 +54,7 @@ public class Ship extends AbstractModel{
 		super( id, IModel.ModelTypes.SHIP, position );
 		this.currentTime = currentTime;
 		this.speed = speed;
-		this.bearing = bearing;
+		this.bearing = bearing.getAngle();
 		this.length = length;
 		this.rotation = (( double )this.length + 5 * Math.random()) * this.speed; 
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
@@ -71,8 +71,12 @@ public class Ship extends AbstractModel{
 		return speed;
 	}
 
-	public Bearing getBearing() {
+	public int getBearing() {
 		return bearing;
+	}
+
+	protected void setBearing( int angle ){
+		this.bearing = angle;
 	}
 
 	/**
@@ -83,7 +87,7 @@ public class Ship extends AbstractModel{
 	public Location plotNext( Date next ){
 		long interval = next.getTime() - this.currentTime.getTime();//msec
 		double distance = this.speed * interval / TO_HOURS;
-		double radian = Math.toRadians( this.bearing.getAngle() );
+		double radian = Math.toRadians( this.bearing );
 		double x = distance * Math.sin( radian );
 		double y = distance * Math.cos( radian );
 		return new Location((float) x, (float)y );
@@ -92,7 +96,7 @@ public class Ship extends AbstractModel{
 	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;
-		LatLng position = LatLngUtils.extrapolate( super.getLatLng(), bearing.getAngle(), distance);
+		LatLng position = LatLngUtils.extrapolate( super.getLatLng(), bearing, distance);
 		//logger.info( "New Position for spped:" + getSpeed() + "\n\t" + super.getLnglat() + ", to\n\t" + position );
 		super.setLnglat(position);
 		this.currentTime = newTime;

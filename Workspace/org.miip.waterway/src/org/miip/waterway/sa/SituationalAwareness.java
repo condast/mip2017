@@ -83,10 +83,6 @@ public class SituationalAwareness {
 			listener.notifyShipmoved(event);	
 	}
 	
-	public Ship.Bearing getBearing(){
-		return ship.getBearing();
-	}
-	
 	public int getRange() {
 		return range;
 	}
@@ -116,7 +112,7 @@ public class SituationalAwareness {
 		}
 	}
 
-	public void controlShip(){
+	public void controlShip( float min_distance, boolean max ){
 		Iterator<Map.Entry<Integer, Double>> iterator = this.radar.entrySet().iterator();
 		SequentialBinaryTreeSet<Vector<Integer>> data = new SequentialBinaryTreeSet<Vector<Integer>>( operator );
 		while( iterator.hasNext() ){
@@ -133,17 +129,20 @@ public class SituationalAwareness {
 			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
 		}
 		int angle = vectors.get(0).getKey();
+		double distance = vectors.get(0).getValue();
+		if(max && distance > min_distance )
+			return;
 		CentreShip.Controls control = null;
-		if(( angle < 64) || ( angle > 448 ))
-			control = Controls.DOWN;
-		else if( angle < 192)
-			control = Controls.LEFT;
-		else if( angle < 320)
+		if(( angle < 325) || ( angle > 448 ))
 			control = Controls.UP;
-		else if( angle < 448)
+		else if( angle < 192)
 			control = Controls.RIGHT;
+		else if( angle < 320)
+			control = Controls.DOWN;
+		else if( angle < 448)
+			control = Controls.LEFT;
 		ship.setControl(control);
-		logger.info("Angle: " + angle + "Distance " + vectors.get(0).getValue() + " Control: " + control.name() );
+		logger.info("Angle: " + angle + ", Distance " + distance + " Control: " + control.name() );
 	}
 	
 	/**

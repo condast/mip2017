@@ -164,8 +164,6 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, centre );
 		
 		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
-		if( !this.manual )
-			sa.controlShip();
 		counter = 0;
 		rect = new Rectangle(0, this.bankWidth + width, length, this.bankWidth );//also account for the upper bank
 		bottomBank =  new Bank( Bank.Banks.LOWER,LatLngUtils.extrapolate(this.position, 0, halfWidth), rect );
@@ -226,6 +224,9 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 			waterway.update( course, currentTime, traverse.getX());
 
 			sa.update(waterway);//after updating waterway
+			float min_distance = manual?this.getLength(): 50;
+			sa.controlShip( min_distance, this.manual );
+			
 			counter = ( counter + 1)%10;
 			topBank.update( traverse.getX());
 			bottomBank.update( traverse.getX());
@@ -247,7 +248,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	public Location getLocation( IModel model ){
 		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLatLng(), 0, 0));
 		double y = 1.8* Math.abs( LatLngUtils.latDistance( this.position, model.getLatLng(), 0, 0));
-		logger.fine("Creating location for " + model.getLatLng() + " =  [" + x + ",  " + y  );
+		logger.fine("Creating location for " + model.getLatLng() + " = \n\t [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}
 }

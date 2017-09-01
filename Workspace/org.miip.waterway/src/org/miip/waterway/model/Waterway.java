@@ -91,7 +91,7 @@ public class Waterway extends AbstractModel{
 			//logger.info( "Diff " + (position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(position, ship.getLnglat() ));
 		}
-		//createShips( super.getLatLbg(), (int)(this.nrOfShips/2) );
+		createShips( super.getLatLng(), (int)(this.nrOfShips/2) );
 		LatLng east = LatLngUtils.extrapolateEast( super.getLatLng(), length );
 		createShips( east, (int)(this.nrOfShips/2) );
 	}
