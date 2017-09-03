@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MIIP 2017 Designer Bundle
+Bundle-SymbolicName: org.miip.waterway.designer
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.miip.waterway.designer.Activator
+Bundle-Vendor: Condast
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: org.condast.commons.thread,
+ org.miip.waterway.model.def,
+ org.miip.waterway.model.eco,
+ org.osgi.framework;version="1.3.0",
+ org.osgi.service.component.annotations;version="1.2.0"
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/org.miip.waterway.designer.services.DesignFactory.xml

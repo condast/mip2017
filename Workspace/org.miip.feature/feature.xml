@@ -17,12 +17,20 @@
    </license>
 
    <requires>
-      <import plugin="org.eclipse.rap.rwt"/>
       <import plugin="org.condast.commons"/>
+      <import plugin="org.eclipse.rap.rwt"/>
       <import plugin="org.condast.commons.authentication"/>
       <import plugin="org.condast.commons.ui"/>
-      <import plugin="org.eclipse.rap.jface"/>
       <import plugin="org.openlayer.map"/>
+      <import plugin="org.eclipse.osgi.services"/>
+      <import plugin="org.condast.commons.data"/>
+      <import plugin="javax.servlet"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="com.google.gson"/>
+      <import plugin="javax.ws.rs-api"/>
+      <import plugin="org.glassfish.jersey.core.jersey-common"/>
+      <import plugin="org.glassfish.jersey.core.jersey-server"/>
+      <import plugin="org.glassfish.jersey.containers.jersey-container-servlet-core"/>
    </requires>
 
    <plugin
@@ -41,6 +49,27 @@
 
    <plugin
          id="org.miip.waterway.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.miip.waterway.designer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.condast.symbiotic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.miip.waterway.rest"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -47,22 +47,10 @@ public interface IRadarUI {
 	public int getSensitivity();
 
 	/**
-	 * Set the sensitivity of the radar
-	 * @return
-	 */
-	public void setSensitivity(int sensitivity);
-
-	/**
 	 * get the range of the radar
 	 * @return
 	 */
 	public int getRange();
-
-	/**
-	 * Set the rangeo f the radar
-	 * @param range
-	 */
-	public void setRange(int range);
 	
 	/**
 	 * redraw the canvas

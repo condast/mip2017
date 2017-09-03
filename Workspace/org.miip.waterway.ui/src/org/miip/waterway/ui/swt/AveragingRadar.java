@@ -4,14 +4,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.operations.AbstractOperator;
 import org.condast.commons.data.operations.IOperator;
 import org.condast.commons.latlng.Vector;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +37,6 @@ public class AveragingRadar extends AbstractRadar{
 		
 	};
 
-	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
 	public AveragingRadar(Composite parent, int style) {
 		super(parent, style);

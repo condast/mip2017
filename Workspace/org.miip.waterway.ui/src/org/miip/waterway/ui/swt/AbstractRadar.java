@@ -31,7 +31,6 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 		
 		private int index;
 		
-		
 		private RadarColours( int index ){
 			this.index = index;
 		}
@@ -120,8 +119,7 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 		return sensitivity;
 	}
 
-	@Override
-	public void setSensitivity( int sensitivity) {
+	protected void setSensitivity( int sensitivity) {
 		this.sensitivity = sensitivity;
 	}
 
@@ -130,8 +128,7 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 		return range;
 	}
 
-	@Override
-	public void setRange(int range) {
+	protected void setRange(int range) {
 		this.range = range;
 	}
 
@@ -199,6 +196,8 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 	@Override
 	public void setInput( SituationalAwareness sa ){
 		this.sa = sa;
+		this.setRange( sa.getRange());
+		this.setSensitivity( sa.getSensitivity());
 		refresh();
 	}
 	

@@ -33,6 +33,7 @@ import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.IShipMovedListener;
 import org.miip.waterway.sa.ShipEvent;
+import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.eclipse.swt.widgets.Button;
@@ -68,7 +69,7 @@ public class MIIPComposite extends Composite {
 
 				@Override
 				public void run() {
-					setInput();
+					updateView();
 					spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					canvas.redraw();
 					switch( event.getType() ){
 					case INITIALSED:
@@ -129,8 +130,6 @@ public class MIIPComposite extends Composite {
 	 */
 	public MIIPComposite(Composite parent, Integer style) {
 		super(parent, style);
-		this.environment = MIIPEnvironment.getInstance();
-		this.environment.addListener(listener);
 		this.createComposite(parent, style);
 		this.session = new RefreshSession<MIIPEnvironment>();
 		this.session.addSessionListener(slistener);
@@ -164,7 +163,6 @@ public class MIIPComposite extends Composite {
 		slider_speed.setLayoutData( gd_slider);
 		slider_speed.setMinimum(1);
 		slider_speed.setMaximum(1000);
-		slider_speed.setSelection( environment.getTimer());
 		slider_speed.setIncrement(10);
 		slider_speed.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
@@ -319,7 +317,8 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				radar.setSensitivity( slider_sense.getSelection());
+				SituationalAwareness sa = environment.getSituationalAwareness();
+				sa.setSensitivity( slider_sense.getSelection());
 				lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
 				super.widgetSelected(e);
 			}
@@ -340,7 +339,8 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				radar.setRange( slider_range.getSelection());
+				SituationalAwareness sa = environment.getSituationalAwareness();
+				sa.setRange( slider_range.getSelection());
 				lbl_range.setText( String.valueOf( slider_range.getSelection()));
 				super.widgetSelected(e);
 			}
@@ -417,19 +417,32 @@ public class MIIPComposite extends Composite {
 		return button;
 	}
 
-	protected void setInput(){
+	public void setInput( MIIPEnvironment environment ){
+		this.environment = environment;
+		this.environment.addListener(listener);
+		this.canvas.setInput(environment);
+	}
+	
+	protected void updateView(){
 		Ship ship = environment.getShip();
+		slider_speed.setSelection( environment.getTimer());
 		this.text_name.setText( ship.getId() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
 		this.text_lng.setText( String.valueOf( ship.getLatLng().getLongitude() ));
 		this.text_lat.setText( String.valueOf( ship.getLatLng().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
-		this.radar.setSensitivity(this.slider_sense.getSelection());
+		
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
 		this.lblHits.setText(String.valueOf(hits));
-		this.radar.setInput( environment.getSituationalAwareness() );
+
+		SituationalAwareness sa = this.environment.getSituationalAwareness();
+		this.slider_sense.setSelection( sa.getSensitivity() );
+		this.slider_range.setMaximum( environment.getLength()/2 );
+		this.slider_range.setSelection( sa.getRange() );
+		this.radar.setInput( sa );
+
 	}
 	
 	public void dispose(){

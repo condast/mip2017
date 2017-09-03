@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.miip.rwt.service.Dispatcher;
 import org.miip.waterway.ui.FrontEndComposite;
 
 public class BasicEntryPoint extends AbstractEntryPoint {
@@ -13,7 +14,8 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	@Override
     protected void createContents(Composite parent) {
         parent.setLayout(new GridLayout(1, false));
-        Composite frontend = new FrontEndComposite( parent, SWT.NONE );
+        FrontEndComposite frontend = new FrontEndComposite( parent, SWT.NONE );
         frontend.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
+        Dispatcher.getInstance().startApplication(frontend);
     }
 }

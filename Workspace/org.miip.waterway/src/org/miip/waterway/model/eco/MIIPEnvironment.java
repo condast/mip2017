@@ -18,10 +18,11 @@ import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.Ship.Bearing;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.def.IModel;
 import org.miip.waterway.sa.SituationalAwareness;
 
-public class MIIPEnvironment extends AbstractExecuteThread {
+public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
 
 	private static final int DEFAULT_TIME_OUT =  1000;
 	
@@ -54,9 +55,7 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
-	private static MIIPEnvironment miipenvironment = new MIIPEnvironment();
-	
-	private MIIPEnvironment() {
+	public MIIPEnvironment() {
 		this( DEFAULT_LENGTH, DEFAULT_WIDTH, BANK_WIDTH );
 	}
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
@@ -68,17 +67,22 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		lock = new ReentrantLock();
 		this.listeners = new ArrayList<IEnvironmentListener>();
 	}
-	public static MIIPEnvironment getInstance(){
-		return miipenvironment;
-	}
 	
 	public boolean isInitialsed() {
 		return initialsed;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#setManual(boolean)
+	 */
+	@Override
 	public void setManual(boolean manual) {
 		this.manual = manual;
 	}
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#clear()
+	 */
+	@Override
 	public void clear(){
 		waterway.clear();
 		this.manual = false;
@@ -100,10 +104,18 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this.width = width;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getTimer()
+	 */
+	@Override
 	public int getTimer() {
 		return timer;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#setTimer(int)
+	 */
+	@Override
 	public void setTimer(int timer) {
 		this.timer = timer;
 	}
@@ -116,6 +128,10 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		this.bankWidth = bankWidth;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getShip()
+	 */
+	@Override
 	public CentreShip getShip() {
 		return ship;
 	}
@@ -127,18 +143,34 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		return bank;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getWaterway()
+	 */
+	@Override
 	public Waterway getWaterway() {
 		return waterway;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getSituationalAwareness()
+	 */
+	@Override
 	public SituationalAwareness getSituationalAwareness() {
 		return sa;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#addListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
+	 */
+	@Override
 	public void addListener( IEnvironmentListener listener ){
 		this.listeners.add( listener );
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#removeListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
+	 */
+	@Override
 	public void removeListener( IEnvironmentListener listener ){
 		this.listeners.remove( listener );
 	}
@@ -162,13 +194,16 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		
 		LatLng centre = LatLngUtils.extrapolate( this.position, Bearing.EAST.getAngle(), length/2);
 		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, centre );
-		
+
+		this.waterway = new Waterway(this.position, length, width, 100);
+
 		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
+		sa.setRange(length/2);
+		
 		counter = 0;
 		rect = new Rectangle(0, this.bankWidth + width, length, this.bankWidth );//also account for the upper bank
 		bottomBank =  new Bank( Bank.Banks.LOWER,LatLngUtils.extrapolate(this.position, 0, halfWidth), rect );
 		
-		this.waterway = new Waterway(this.position, length, width, 100);
 		this.initialsed = true;
 		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
 		return true;
@@ -206,6 +241,9 @@ public class MIIPEnvironment extends AbstractExecuteThread {
 		return coords.toArray( new Integer[ coords.size()]);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#onExecute()
+	 */
 	@Override
 	public synchronized void onExecute() {
 		lock.lock();

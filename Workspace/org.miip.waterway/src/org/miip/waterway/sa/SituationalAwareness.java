@@ -32,8 +32,10 @@ public class SituationalAwareness {
 	private Map<Integer, Double> radar;
 	private Lock lock;
 	private int range;
-	private int steps;
+	private int sensitivity;
 	
+	private int steps;
+		
 	private AbstractOperator<Vector<Integer>, Vector<Integer>> operator = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
 
 		@Override
@@ -47,7 +49,6 @@ public class SituationalAwareness {
 			}
 			return new Vector<Integer>( (int) (angle/input.size()), distance);
 		}
-		
 	};
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
@@ -65,7 +66,23 @@ public class SituationalAwareness {
 		this.listeners = new ArrayList<IShipMovedListener>();
 		radar = new TreeMap<Integer, Double>();
 	}
-	
+
+	public int getRange() {
+		return range;
+	}
+
+	public void setRange(int range) {
+		this.range = range;
+	}
+
+	public int getSensitivity() {
+		return sensitivity;
+	}
+
+	public void setSensitivity(int sensitivity) {
+		this.sensitivity = sensitivity;
+	}
+
 	public int getSteps() {
 		return steps;
 	}
@@ -83,12 +100,7 @@ public class SituationalAwareness {
 			listener.notifyShipmoved(event);	
 	}
 	
-	public int getRange() {
-		return range;
-	}
-
 	public void update( Waterway waterway ){
-		this.range = waterway.getLength()/2;
 		Map<Integer, Double> vectors = getVectors( waterway );
 		lock.lock();
 		try{
@@ -111,8 +123,13 @@ public class SituationalAwareness {
 			lock.unlock();
 		}
 	}
-
-	public void controlShip( float min_distance, boolean max ){
+	
+	/**
+	 * Create a binary view of the situational awareness. This view creates
+	 * subsequent averages of the radar images 
+	 * @return
+	 */
+	public SequentialBinaryTreeSet<Vector<Integer>> getBinaryView(){
 		Iterator<Map.Entry<Integer, Double>> iterator = this.radar.entrySet().iterator();
 		SequentialBinaryTreeSet<Vector<Integer>> data = new SequentialBinaryTreeSet<Vector<Integer>>( operator );
 		while( iterator.hasNext() ){
@@ -122,10 +139,22 @@ public class SituationalAwareness {
 		}
 		List<Vector<Integer>> vectors = data.getValues(5);
 		if( vectors.isEmpty() )
+			return null;
+		Collections.sort( vectors, new VectorComparator());
+		for( Vector<Integer> entry: vectors ){
+			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
+		}
+		return data;
+	}
+
+
+	public void controlShip( float min_distance, boolean max ){
+		SequentialBinaryTreeSet<Vector<Integer>> data = this.getBinaryView();
+		List<Vector<Integer>> vectors = data.getValues(5);
+		if( vectors.isEmpty() )
 			return;
 		Collections.sort( vectors, new VectorComparator());
 		for( Vector<Integer> entry: vectors ){
-			data.add(entry);
 			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
 		}
 		int angle = vectors.get(0).getKey();

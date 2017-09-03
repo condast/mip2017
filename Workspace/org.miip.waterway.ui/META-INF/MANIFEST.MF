@@ -40,4 +40,5 @@ Import-Package: javax.servlet;version="3.0.0",
  org.openlayer.map.controller
 Export-Package: org.miip.waterway.ui,
  org.miip.waterway.ui.lang,
+ org.miip.waterway.ui.swt,
  org.miip.waterway.ui.xml

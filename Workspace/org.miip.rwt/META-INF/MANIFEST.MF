@@ -5,13 +5,17 @@ Bundle-SymbolicName: org.miip.rwt
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Service-Component: OSGI-INF/contribution.xml
+Service-Component: OSGI-INF/contribution.xml,
+ OSGI-INF/org.miip.rwt.service.EnvironmentService.xml
 Import-Package: org.condast.commons.xml,
  org.eclipse.rap.rwt.application;version="3.1.0",
  org.eclipse.rap.rwt.client;version="3.1.0",
  org.eclipse.swt,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
+ org.miip.waterway.model.def,
  org.miip.waterway.ui,
- org.miip.waterway.ui.xml
+ org.miip.waterway.ui.swt,
+ org.miip.waterway.ui.xml,
+ org.osgi.service.component.annotations;version="1.2.0"
 Bundle-ActivationPolicy: lazy

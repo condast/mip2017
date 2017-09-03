@@ -32,7 +32,7 @@ public class MIIPPresentation extends Canvas{
 		}
 	};
 
-	MIIPEnvironment environment = MIIPEnvironment.getInstance();
+	MIIPEnvironment environment;
 
 	/**
 	 * Create the composite.
@@ -50,6 +50,9 @@ public class MIIPPresentation extends Canvas{
 		return super.getParent();
 	}
 	
+	public void setInput( MIIPEnvironment environment){
+		this.environment = environment;
+	}
 	protected Point drawOffset( CentreShip ship, Point centre ){
 		if( ship == null )
 			return centre;
@@ -63,6 +66,8 @@ public class MIIPPresentation extends Canvas{
 	}
 	
 	protected void drawField( GC gc ){
+		if( environment == null )
+			return;
 		Display display = super.getDisplay();
 		Rectangle clientArea = getClientArea();
 		int bankSize = scaleYToDisplay( environment.getBankWidth());

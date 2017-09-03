@@ -6,7 +6,10 @@
 		        http://www.eclipse.org/virgo/schema/plan
 		        http://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd">
 
-     <artifact type="bundle" name="org.miip.rwt" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.condast.symbiotic" version="[1.0.0, 2.0.0)"/>
      <artifact type="bundle" name="org.miip.waterway" version="[1.0.0, 2.0.0)"/>
      <artifact type="bundle" name="org.miip.waterway.ui" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.waterway.designer" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.waterway.rest" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.rwt" version="[1.0.0, 2.0.0)"/>
 </plan>
