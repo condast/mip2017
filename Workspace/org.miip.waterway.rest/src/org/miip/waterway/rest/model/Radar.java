@@ -1,6 +1,7 @@
 package org.miip.waterway.rest.model;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +20,10 @@ public class Radar{
 	private SituationalAwareness sa;
 	private List<Vector<Integer>> vectors;
 	
-	private Map<Integer,Integer[]> colours;
+	private Collection<RadarData> colours;
 	
 	public Radar() {
-		colours = new HashMap<Integer,Integer[]>();
+		colours = new ArrayList<RadarData>();
 	}
 
 	protected void drawField(){
@@ -40,10 +41,10 @@ public class Radar{
 	protected void drawDegree( int angle, double distance ){
 		if(( Utils.assertNull( vectors )) || ( distance > sa.getRange() )) 
 			return;
-		colours.put(angle, getIntColour( getColour( angle )));
+		colours.add( new RadarData( angle, getColour( angle )));
 	}
 	
-	public Map<Integer, Integer[]> getColours() {
+	public Collection<RadarData> getColours() {
 		return colours;
 	}
 
@@ -53,17 +54,17 @@ public class Radar{
 		this.drawField();
 	}
 
-	protected Map<Colour, Integer> getColour( double distance ){
-		Map<Colour, Integer> colour = new HashMap<Colour, Integer>();
-		colour.put( Colour.RED, 0);
-		colour.put( Colour.GREEN, 0);
-		colour.put( Colour.BLUE, 0);
+	protected byte[] getColour( double distance ){
+		byte[] colour = new byte[3];
+		colour[0] = 0;
+		colour[1] = 0;
+		colour[2] = 0;
 		if( sa == null){
 			return colour;
 		}
 		
 		if( distance <= sa.getSensitivity() ){
-			colour.replace( Colour.RED, 255);
+			colour[0] = (byte) 255;
 			return colour;
 		}
 		if( distance > sa.getRange() )
@@ -71,23 +72,37 @@ public class Radar{
 		return getLinearColour( colour, (int) distance, sa.getRange(), sa.getSensitivity() );
 	}
 	
-	protected Integer[] getIntColour( Map<Colour, Integer> colour ){
-		Integer[] values = new Integer[3];
+	protected byte[] getIntColour( Map<Colour, Byte> colour ){
+		byte[] values = new byte[3];
 		values[0] = colour.get(Colour.RED);
 		values[1] = colour.get(Colour.GREEN);
 		values[2] = colour.get(Colour.BLUE);
 		return values;
 	}
 
-	public static Map<Colour, Integer>  getLinearColour( Map<Colour, Integer> colour, int distance, int range, int sensitivity ){
+	public static byte[]  getLinearColour( byte[] colour, int distance, int range, int sensitivity ){
 		boolean far = ( distance > ( range - sensitivity ));
-		int red = far? 50: (int)( 255 * ( 1 - distance/range ));
-		colour.put(Colour.RED, red );
-		int green = far? 255: (int)( 255 * distance/range );
-		colour.put(Colour.GREEN, green );
-		int blue = 50;
-		colour.put(Colour.BLUE, blue);
+		byte red = (far? (byte) 50: (byte)( 255 * ( 1 - distance/range )));
+		colour[0] = red;
+		byte green = (far? (byte) 255: (byte)( 255 * distance/range ));
+		colour[1] = green;
+		byte blue = 50;
+		colour[2] = blue;
 		return colour;
 	}
 
+	@SuppressWarnings("unused")
+	private class RadarData{
+		private int a;
+		private byte r;
+		private byte g;
+		private byte b;
+		protected RadarData(int angle, byte[] rgb) {
+			super();
+			this.a = angle;
+			this.r = rgb[0];
+			this.g = rgb[1];
+			this.b = rgb[2];
+		}
+	}
 }
