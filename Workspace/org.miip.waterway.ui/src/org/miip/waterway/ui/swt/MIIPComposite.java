@@ -98,11 +98,11 @@ public class MIIPComposite extends Composite {
 	
 	private int hits;
 	
-	private RefreshSession<MIIPEnvironment> session;
-	private ISessionListener<MIIPEnvironment> slistener = new ISessionListener<MIIPEnvironment>(){
+	private RefreshSession session;
+	private ISessionListener<Boolean> slistener = new ISessionListener<Boolean>(){
 
 		@Override
-		public void notifySessionChanged(SessionEvent<MIIPEnvironment> event) {
+		public void notifySessionChanged(SessionEvent<Boolean> event) {
 			layout();
 		}	
 	};
@@ -131,7 +131,7 @@ public class MIIPComposite extends Composite {
 	public MIIPComposite(Composite parent, Integer style) {
 		super(parent, style);
 		this.createComposite(parent, style);
-		this.session = new RefreshSession<MIIPEnvironment>();
+		this.session = new RefreshSession();
 		this.session.addSessionListener(slistener);
 		this.session.start();
 	}
