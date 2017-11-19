@@ -8,8 +8,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import org.condast.commons.latlng.LatLng;
-import org.condast.commons.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;

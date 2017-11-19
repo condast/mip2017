@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.condast.commons.Utils;
-import org.condast.commons.latlng.Vector;
+import org.condast.commons.data.latlng.Vector;
 import org.miip.waterway.sa.SituationalAwareness;
 
 public class Radar{

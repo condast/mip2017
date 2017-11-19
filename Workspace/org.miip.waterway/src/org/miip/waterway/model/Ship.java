@@ -3,8 +3,8 @@ package org.miip.waterway.model;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.condast.commons.latlng.LatLng;
-import org.condast.commons.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.def.IModel;
 

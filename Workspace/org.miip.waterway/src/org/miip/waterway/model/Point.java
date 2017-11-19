@@ -1,7 +1,7 @@
 package org.miip.waterway.model;
 
-import org.condast.commons.latlng.LatLng;
-import org.condast.commons.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.miip.waterway.internal.model.AbstractModel;
 
 /**

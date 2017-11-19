@@ -3,9 +3,9 @@ package org.miip.waterway.model;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import org.condast.commons.latlng.LatLng;
-import org.condast.commons.latlng.LatLngUtils;
-import org.condast.commons.latlng.Vector;
+import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.Vector;
 
 public class CentreShip extends Ship {
 

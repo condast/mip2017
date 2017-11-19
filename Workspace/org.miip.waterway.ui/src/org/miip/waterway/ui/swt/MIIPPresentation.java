@@ -10,7 +10,7 @@ import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.eco.Bank;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
-import org.condast.commons.latlng.Vector;
+import org.condast.commons.data.latlng.Vector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;

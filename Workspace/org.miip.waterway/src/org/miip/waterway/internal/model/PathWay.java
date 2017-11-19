@@ -3,7 +3,7 @@ package org.miip.waterway.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.condast.commons.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLng;
 import org.miip.waterway.model.Ship;
 
 /**

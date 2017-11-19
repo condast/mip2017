@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.data.operations.AbstractOperator;
 import org.condast.commons.data.operations.IOperator;
-import org.condast.commons.latlng.Vector;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;

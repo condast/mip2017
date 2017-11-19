@@ -3,8 +3,8 @@ package org.miip.waterway.model.eco;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.condast.commons.latlng.LatLng;
-import org.condast.commons.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.strings.StringStyler;
 //import org.eclipse.swt.graphics.Rectangle;
 import org.miip.waterway.internal.model.AbstractModel;

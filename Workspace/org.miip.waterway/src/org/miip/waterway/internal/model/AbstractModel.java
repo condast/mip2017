@@ -1,6 +1,6 @@
 package org.miip.waterway.internal.model;
 
-import org.condast.commons.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLng;
 import org.miip.waterway.model.def.IModel;
 
 public abstract class AbstractModel implements IModel{

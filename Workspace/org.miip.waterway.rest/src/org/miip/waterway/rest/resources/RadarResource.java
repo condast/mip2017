@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
-import org.condast.commons.latlng.Vector;
+import org.condast.commons.data.latlng.Vector;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.rest.Dispatcher;
 import org.miip.waterway.rest.model.Radar;

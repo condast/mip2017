@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import org.condast.commons.latlng.LatLng;
-import org.condast.commons.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.strings.StringStyler;
 import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.Ship.Bearing;
