@@ -63,23 +63,13 @@ public class MIIPComposite extends Composite {
 		
 		@Override
 		public void notifyEnvironmentChanged(final EnvironmentEvent event) {
-			if( getDisplay().isDisposed() )
-				return;
-			getDisplay().asyncExec( new Runnable(){
-
-				@Override
-				public void run() {
-					updateView();
-					spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					canvas.redraw();
-					switch( event.getType() ){
-					case INITIALSED:
-						break;
-					default:
-						session.refresh();
-						break;
-					}
-				}
-			});
+			switch( event.getType() ){
+			case INITIALSED:
+				break;
+			default:
+				session.addData(event);
+				break;
+			}
 		}
 	};
 	private PlayerComposite<MIIPEnvironment> playerbar;
@@ -98,12 +88,13 @@ public class MIIPComposite extends Composite {
 	
 	private int hits;
 	
-	private RefreshSession session;
-	private ISessionListener<Boolean> slistener = new ISessionListener<Boolean>(){
+	private RefreshSession<EnvironmentEvent> session;
+	private ISessionListener<EnvironmentEvent> slistener = new ISessionListener<EnvironmentEvent>(){
 
 		@Override
-		public void notifySessionChanged(SessionEvent<Boolean> event) {
-			layout();
+		public void notifySessionChanged(SessionEvent<EnvironmentEvent> event){
+			updateView();
+			spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					canvas.redraw();
 		}	
 	};
 	
@@ -131,7 +122,7 @@ public class MIIPComposite extends Composite {
 	public MIIPComposite(Composite parent, Integer style) {
 		super(parent, style);
 		this.createComposite(parent, style);
-		this.session = new RefreshSession();
+		this.session = new RefreshSession<>();
 		this.session.addSessionListener(slistener);
 		this.session.start();
 	}
