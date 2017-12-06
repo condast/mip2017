@@ -10,7 +10,8 @@ import org.miip.waterway.rest.resources.RadarResource;
 
 public class RestServlet extends AbstractServletWrapper {
 
-	public static final String S_CONTEXT_PATH = "miip";
+	//same as alias in plugin.xml
+	public static final String S_CONTEXT_PATH = "miip2017";
 	
 	public RestServlet() {
 		super( S_CONTEXT_PATH );

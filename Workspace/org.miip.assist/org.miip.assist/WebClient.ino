@@ -23,7 +23,7 @@
 #define CONDAST_PORT 10080
 
 #define MAC { 0x90, 0xA2, 0xDA, 0x11, 0x04, 0x17 }
-#define CONTEXT "/miip2017/neopixel/"
+#define CONTEXT "/miip2017/sa/"
 
 //SERVER
 // Set the static IP address to use if the DHCP fails to assign
@@ -58,10 +58,8 @@ byte mac[] = MAC;//e.g { 0x90, 0xA2, 0xDA, 0x11, 0x12, 0x3A };
 EthernetClient client;
 
 enum request {
-  FIELD,
-  UPDATE,
-  WAYPOINTS,
-  NMEA
+  SETUP,
+  RADAR
 };
 
 void setup_Web() {
@@ -100,32 +98,29 @@ void disconnecting() {
   client.stop();
 }
 
+/**
+   Send an update message
+*/
+String requestSetup( String name, int token ) {
+  connecting();
+  String str = sendHttp( SETUP, name, token, "" );
+  disconnecting();
+  return str;
+}
+
 String requeststr( int request ) {
   String retval = "update";
   switch ( request ) {
-    case FIELD:
-      retval = "field";
+    case SETUP:
+      retval = "setup";
       break;
-    case WAYPOINTS:
-      retval = "waypoints";
-      break;
-    case UPDATE:
-      retval = "update";
+    case RADAR:
+      retval = "radar";
       break;
     default:
       break;
   }
   return retval;
-}
-
-/**
-   Send an update message
-*/
-String requestField( String name, int token, String url ) {
-  connecting();
-  String str = sendHttp( FIELD, name, token, url );
-  disconnecting();
-  return str;
 }
 
 String sendHttp( int request, String id, int token, String url ) {

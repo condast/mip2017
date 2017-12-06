@@ -8,30 +8,55 @@ import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.latlng.BaseData;
 import org.condast.commons.data.latlng.Vector;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.rest.Dispatcher;
 import org.miip.waterway.rest.model.Radar;
+import org.miip.waterway.rest.model.RadarData;
+import org.miip.waterway.rest.model.RadarData.Choices;
 import org.miip.waterway.sa.SituationalAwareness;
 
 import com.google.gson.Gson;
 
 @Path("/sa")
 public class RadarResource{
-
+		
+	private RadarData.Choices choice;
+	
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
+	
+	
+	public RadarResource() {
+		super();
+		choice = RadarData.Choices.ALL;
+	}
+
+	// This method is called if TEXT_PLAIN is request
+	@GET
+	@Path("/setup")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String setupRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
+		logger.info("Query for Radar " + id );
+		RadarData[] data = new RadarData[ 1];
+		data[0] = new RadarData(Choices.COLOUR_WIPE_BLUE);
+		Gson gson = new Gson();
+		return gson.toJson(data);
+	}
+	
 	// This method is called if TEXT_PLAIN is request
 	@GET
 	@Path("/radar")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRadar() {
-		logger.info("Query for Radar" );
+	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
+		logger.info("Query for Radar " + id );
 		IMIIPEnvironment ce = Dispatcher.getInstance().getEnvironment();
 		SituationalAwareness sa = ce.getSituationalAwareness();
 		StringBuffer buffer = new StringBuffer();
