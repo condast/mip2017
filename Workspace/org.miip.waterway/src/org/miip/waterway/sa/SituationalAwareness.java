@@ -22,11 +22,8 @@ import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.CentreShip.Controls;
 
-public class SituationalAwareness {
+public class SituationalAwareness implements ISituationalAwareness {
 
-	public static final int MAX_DEGREES = 360;
-	public static final int STEPS_512 = 512;//a more refined alternative to degrees for quick mathematics
-	
 	private CentreShip ship;
 	
 	private Map<Integer, Double> radar;
@@ -67,30 +64,55 @@ public class SituationalAwareness {
 		radar = new TreeMap<Integer, Double>();
 	}
 
+	@Override
 	public int getRange() {
 		return range;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.sa.ISituationalAwareness#setRange(int)
+	 */
+	@Override
 	public void setRange(int range) {
 		this.range = range;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.sa.ISituationalAwareness#getSensitivity()
+	 */
+	@Override
 	public int getSensitivity() {
 		return sensitivity;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.sa.ISituationalAwareness#setSensitivity(int)
+	 */
+	@Override
 	public void setSensitivity(int sensitivity) {
 		this.sensitivity = sensitivity;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.sa.ISituationalAwareness#getSteps()
+	 */
+	@Override
 	public int getSteps() {
 		return steps;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.sa.ISituationalAwareness#addlistener(org.miip.waterway.sa.IShipMovedListener)
+	 */
+	@Override
 	public void addlistener( IShipMovedListener listener ){
 		this.listeners.add( listener);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.sa.ISituationalAwareness#removelistener(org.miip.waterway.sa.IShipMovedListener)
+	 */
+	@Override
 	public void removelistener( IShipMovedListener listener ){
 		this.listeners.remove(listener);
 	}
@@ -191,6 +213,7 @@ public class SituationalAwareness {
 		return halfwidth/ Math.cos(radian);
 	}
 
+	@Override
 	public Map<Integer, Double> getRadar(){
 		Map<Integer, Double> results = new TreeMap<Integer, Double>();
 		lock.lock();

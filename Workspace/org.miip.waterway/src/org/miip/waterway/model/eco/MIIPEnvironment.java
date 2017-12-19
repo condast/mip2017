@@ -21,6 +21,7 @@ import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.def.IModel;
+import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.sa.SituationalAwareness;
 
 public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
@@ -84,7 +85,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		latlng = this.field.getCentre();
 		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
 
-		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
+		sa = new SituationalAwareness(ship, ISituationalAwareness.STEPS_512);
 		sa.setRange( (int) (field.getLength()/2));
 		
 		//The bank at the bottom

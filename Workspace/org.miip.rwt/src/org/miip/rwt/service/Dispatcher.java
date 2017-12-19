@@ -1,6 +1,7 @@
 package org.miip.rwt.service;
 
 import org.miip.waterway.model.def.IMIIPEnvironment;
+import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.FrontEndComposite;
 
 public class Dispatcher {
@@ -28,6 +29,9 @@ public class Dispatcher {
 			this.frontend.setInput(cenv);
 	}
 	
+	public ISituationalAwareness getSituationalAwareness(){
+		return this.cenv.getSituationalAwareness();
+	}
 	public void dispose(){
 	}
 

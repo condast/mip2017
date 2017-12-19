@@ -1,10 +1,10 @@
-package org.miip.waterway.ui.swt;
+package org.miip.waterway.model.def;
 
 import org.condast.commons.strings.StringStyler;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.sa.SituationalAwareness;
 
-public interface IRadarUI {
+public interface IRadar {
 
 	public static final int DEFAULT_SENSITIVITY = 210;//0-1000
 	public static final int DEFAULT_RANGE = 1200;//max 3000 meters

@@ -30,8 +30,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Ship;
+import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.IShipMovedListener;
+import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.sa.ShipEvent;
 import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.images.MIIPImages;
@@ -79,7 +81,7 @@ public class MIIPComposite extends Composite {
 	private Label lblActiveShips;
 	private Button btn_manual;
 	
-	private IRadarUI radar;
+	private IRadar radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -265,8 +267,8 @@ public class MIIPComposite extends Composite {
 		gd_radar.widthHint = radar_width;
 		combo_radar = new Combo( grp_radar, SWT.BORDER );
 		combo_radar.setLayoutData( gd_radar);		
-		combo_radar.setItems( IRadarUI.RadarSelect.getItems() );
-		combo_radar.select( IRadarUI.RadarSelect.WARP.ordinal() );
+		combo_radar.setItems( IRadar.RadarSelect.getItems() );
+		combo_radar.select( IRadar.RadarSelect.WARP.ordinal() );
 		combo_radar.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
@@ -279,7 +281,7 @@ public class MIIPComposite extends Composite {
 
 					@Override
 					public void run() {
-						switch( IRadarUI.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
+						switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
 						case WARP:
 							radar = new Radar(parent, SWT.BORDER);
 							break;
@@ -306,14 +308,14 @@ public class MIIPComposite extends Composite {
 		slider_sense.setLayoutData( gd_radar);
 		slider_sense.setMinimum(1);
 		slider_sense.setMaximum(900);
-		slider_sense.setSelection( IRadarUI.DEFAULT_SENSITIVITY );
+		slider_sense.setSelection( IRadar.DEFAULT_SENSITIVITY );
 		slider_sense.setIncrement(2);
 		slider_sense.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SituationalAwareness sa = environment.getSituationalAwareness();
+				ISituationalAwareness sa = environment.getSituationalAwareness();
 				sa.setSensitivity( slider_sense.getSelection());
 				lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
 				super.widgetSelected(e);
@@ -328,14 +330,14 @@ public class MIIPComposite extends Composite {
 		slider_range.setLayoutData( gd_radar);
 		slider_range.setMinimum(1);
 		slider_range.setMaximum(3000);
-		slider_range.setSelection( IRadarUI.DEFAULT_RANGE );
+		slider_range.setSelection( IRadar.DEFAULT_RANGE );
 		slider_range.setIncrement(20);
 		slider_range.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SituationalAwareness sa = environment.getSituationalAwareness();
+				ISituationalAwareness sa = environment.getSituationalAwareness();
 				sa.setRange( slider_range.getSelection());
 				lbl_range.setText( String.valueOf( slider_range.getSelection()));
 				super.widgetSelected(e);

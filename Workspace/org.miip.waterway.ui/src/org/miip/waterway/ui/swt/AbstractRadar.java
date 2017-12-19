@@ -16,9 +16,11 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.sa.SituationalAwareness;
 
-public abstract class AbstractRadar extends Canvas implements IRadarUI{
+public abstract class AbstractRadar extends Canvas implements IRadar{
 	private static final long serialVersionUID = 1L;
 	
 	public enum RadarColours{
@@ -110,7 +112,7 @@ public abstract class AbstractRadar extends Canvas implements IRadarUI{
 		super.addPaintListener( listener );
 	}
 
-	protected SituationalAwareness getSituationalAwareness() {
+	protected ISituationalAwareness getSituationalAwareness() {
 		return sa;
 	}
 

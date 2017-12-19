@@ -1,6 +1,5 @@
 package org.miip.rwt.service;
 
-
 import org.miip.waterway.model.def.IDesignFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -17,5 +16,4 @@ public class EnvironmentService {
 
 	public void unbindEnvironment( IDesignFactory ce ){
 	}
-
 }
