@@ -4,7 +4,7 @@
 void setup() {
   Serial.begin(9600);
   Serial.println( "Setup Radar");
-  setup_Web();
+  //setup_Web();
   setup_Pixel();
   setup_Interrupt();
   Serial.println( "Setup Complete, Setting up Remote");

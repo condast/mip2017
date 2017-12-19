@@ -8,6 +8,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.thread.AbstractExecuteThread;
@@ -27,8 +28,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private static final int DEFAULT_TIME_OUT =  1000;
 	
 	private static final String NAME = "HMS Rotterdam";
-	private static final float LONGITUDE = 4.00f;
-	private static final float LATITUDE  = 52.000f;
+	private static final double LONGITUDE = 4.00f;
+	private static final double LATITUDE  = 52.000f;
 	private static final int DEFAULT_LENGTH  = 2000; //2 km
 	private static final int DEFAULT_WIDTH  = 500; //500 m
 
@@ -38,7 +39,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private Lock lock;
 	private int timer;
 	
-	private LatLng position;//The left centre of the course
+	private Field field;//A field is represented by LatLng coordinates for the top-left corner
 	private CentreShip ship;
 	private Bank topBank;
 	private Bank bottomBank;
@@ -47,8 +48,6 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	
 	private Collection<IEnvironmentListener> listeners;
 	private int counter;
-	private int length; //The length of the course in meters
-	private int width; //The width of the course
 	private int bankWidth;
 	private boolean initialsed;
 	private boolean manual;
@@ -59,15 +58,45 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this( DEFAULT_LENGTH, DEFAULT_WIDTH, BANK_WIDTH );
 	}
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
-		this.length = length;
-		this.width = width;
+		this.field = new Field( new LatLng( NAME, LATITUDE, LONGITUDE), length, width);
 		this.bankWidth = bankWidth;
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
 		lock = new ReentrantLock();
 		this.listeners = new ArrayList<IEnvironmentListener>();
 	}
-	
+
+	@Override
+	public boolean onInitialise() {
+		currentTime = Calendar.getInstance().getTime();
+		
+		//The bank on the top
+		Rectangle rectangle = new Rectangle( 0, 0, field.getLength(), this.bankWidth );
+		topBank = new Bank( rectangle );
+		
+		//The actual waterway
+		LatLng latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.bankWidth); 
+		long width = this.field.getWidth() - 2 * this.bankWidth;
+		rectangle = new Rectangle( 0, this.bankWidth, field.getLength(), width );
+		this.waterway = new Waterway( latlng, rectangle, 100);
+		
+		//Position of the ship
+		latlng = this.field.getCentre();
+		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
+
+		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
+		sa.setRange( (int) (field.getLength()/2));
+		
+		//The bank at the bottom
+		rectangle = new Rectangle( 0, (int) (field.getWidth()-this.bankWidth), field.getLength(), this.bankWidth );
+		bottomBank =  new Bank( rectangle );
+		
+		this.initialsed = true;
+		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
+		counter = 0;
+		return true;
+	}
+
 	public boolean isInitialsed() {
 		return initialsed;
 	}
@@ -88,22 +117,10 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.manual = false;
 	}
 	
-	public int getLength() {
-		return length;
+	public Field getField() {
+		return field;
 	}
-	
-	protected void setLength(int length) {
-		this.length = length;
-	}
-	
-	public int getWidth() {
-		return width;
-	}
-	
-	protected void setWidth(int width) {
-		this.width = width;
-	}
-	
+		
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getTimer()
 	 */
@@ -179,68 +196,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		for( IEnvironmentListener listener: listeners)
 			listener.notifyEnvironmentChanged(event);
 	}
-
-	@Override
-	public boolean onInitialise() {
-		currentTime = Calendar.getInstance().getTime();
-		
-		//The left course associates a lnglat coordinate with a position on the course.
-		//In this case we use the left centre
-		float halfWidth = width/2;
-		this.position = new LatLng( LATITUDE, LONGITUDE );
-		
-		Rectangle rect = new Rectangle(0, 0, length, this.bankWidth );
-		topBank = new Bank( Bank.Banks.UPPER, LatLngUtils.extrapolate( this.position, 0, halfWidth), rect );
-		
-		LatLng centre = LatLngUtils.extrapolate( this.position, Bearing.EAST.getAngle(), length/2);
-		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, centre );
-
-		this.waterway = new Waterway(this.position, length, width, 100);
-
-		sa = new SituationalAwareness(ship, SituationalAwareness.STEPS_512);
-		sa.setRange(length/2);
-		
-		counter = 0;
-		rect = new Rectangle(0, this.bankWidth + width, length, this.bankWidth );//also account for the upper bank
-		bottomBank =  new Bank( Bank.Banks.LOWER,LatLngUtils.extrapolate(this.position, 0, halfWidth), rect );
-		
-		this.initialsed = true;
-		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
-		return true;
-	}
 	
-	public Integer[] getXCoordinates(){
-		Collection<Integer> coords = new ArrayList<Integer>();
-		int ref = (int)this.position.getLongitude();
-		float interval = 0.001f;
-		float posx = ref;
-		LatLng end = LatLngUtils.extrapolate(this.position, Bearing.EAST.getAngle(), length);
-		while( posx < end.getLongitude() ){
-			if( posx >= this.position.getLongitude()){
-				LatLng coord = new LatLng( this.position.getLatitude(), posx );
-				coords.add( (int) LatLngUtils.distance(this.position, coord) );
-			}
-			posx += interval;
-		}
-		return coords.toArray( new Integer[ coords.size()]);
-	}
-
-	public Integer[] getYCoordinates(){
-		Collection<Integer> coords = new ArrayList<Integer>();
-		int ref = (int)this.position.getLongitude();
-		float interval = 0.001f;
-		float posy = ref;
-		LatLng end = LatLngUtils.extrapolate(this.position, Bearing.NORTH.getAngle(), width);
-		while( posy < end.getLatitude() ){
-			if( posy >= this.position.getLatitude()){
-				LatLng coord = new LatLng( posy, this.position.getLongitude() );
-				coords.add( (int) LatLngUtils.distance(this.position, coord) );
-			}
-			posy += interval;
-		}
-		return coords.toArray( new Integer[ coords.size()]);
-	}
-
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#onExecute()
 	 */
@@ -250,11 +206,14 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		try{
 			logger.fine("\n\nEXECUTE:");
 			currentTime = Calendar.getInstance().getTime();
+			
 			Location traverse = ship.plotNext(currentTime);
-
-			LatLng course = LatLngUtils.extrapolateEast(this.position, traverse.getX() );
-			this.position = course;
-
+			topBank.update( traverse.getX());
+			bottomBank.update( traverse.getX());
+			
+			LatLng course = LatLngUtils.extrapolateEast( field.getCoordinates(), traverse.getX() );
+			field = new Field( course, field.getLength(), field.getWidth() );
+			
 			ship.sail( currentTime );	
 			//logger.info( "New Position " + this.position + ",\n\t\t   " + ship.getLnglat() );
 			//logger.info( "Diff " + (this.position.getLongitude() - ship.getLnglat().getLongitude() ));
@@ -262,13 +221,10 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			waterway.update( course, currentTime, traverse.getX());
 
 			sa.update(waterway);//after updating waterway
-			float min_distance = manual?this.getLength(): 50;
+			float min_distance = manual?this.field.getLength(): 50;
 			sa.controlShip( min_distance, this.manual );
 			
 			counter = ( counter + 1)%10;
-			topBank.update( traverse.getX());
-			bottomBank.update( traverse.getX());
-			
 			notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
 		}
 		finally{
@@ -284,8 +240,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @return
 	 */
 	public Location getLocation( IModel model ){
-		double x = Math.abs( LatLngUtils.lngDistance( this.position, model.getLatLng(), 0, 0));
-		double y = 1.8* Math.abs( LatLngUtils.latDistance( this.position, model.getLatLng(), 0, 0));
+		double x = Math.abs( LatLngUtils.lngDistance( field.getCoordinates(), model.getLatLng(), 0, 0));
+		double y = 1.8* Math.abs( LatLngUtils.latDistance( field.getCoordinates(), model.getLatLng(), 0, 0));
 		logger.fine("Creating location for " + model.getLatLng() + " = \n\t [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}

@@ -5,66 +5,56 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.condast.commons.strings.StringStyler;
 import org.miip.waterway.internal.model.AbstractModel;
-import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.def.IModel;
+import org.miip.waterway.model.eco.Rectangle;
 
 public class Waterway extends AbstractModel{
 
 	private static final int DEFAULT_NR_OF_SHIPS = 1;
 	private static final int MARGIN_X = 20;//The margin with which ships can disappear behind the visible waterway
 	
-	public enum Banks{
-		UPPER,
-		LOWER;
-
-		@Override
-		public String toString() {
-			return StringStyler.prettyString( super.toString() );
-		}
-		
-	}
 	private Collection<Ship> ships;
 	private int nrOfShips;
 	
-	private int length, width;
+	private Rectangle rectangle;
+	
+	//The distance travelled since the start button was pressed
+	private long travelled;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
-	private LatLng centre;
-
-	public Waterway( LatLng lnglat, int length, int width) {
-		this( lnglat, length, width, DEFAULT_NR_OF_SHIPS );
+	public Waterway( LatLng latlng, Rectangle rectangle) {
+		this( latlng, rectangle, DEFAULT_NR_OF_SHIPS  );
 	}
 	
-	public Waterway( LatLng lnglat, int length, int width, int nrOfShips) {
-		super( IModel.ModelTypes.WATERWAY, lnglat);
-		this.length = length;
-		this.width = width;
+	public Waterway( LatLng latlng, Rectangle rectangle, int nrOfShips) {
+		super( IModel.ModelTypes.WATERWAY, latlng );
+		this.rectangle = rectangle;
 		this.nrOfShips = nrOfShips;
 		ships = new ArrayList<Ship>();
 		this.initialise();
 	}
-	
+
 	protected void initialise(){
-		centre = LatLngUtils.extrapolate( super.getLatLng(), Bearing.EAST.getAngle(), length/2);
-		createShips( super.getLatLng(), (int)(this.nrOfShips/2) );
-		createShips( LatLngUtils.extrapolateEast( super.getLatLng(), length-350 ), (int)( this.nrOfShips/2) );
+		//createShips( 20, (int)(this.nrOfShips/2) );
+		//createShips( rectangle.getLength()-200, (int)( this.nrOfShips/2) );
 	}
 
 	public void clear(){
 		this.ships.clear();
+		this.travelled = 0;
 	}
 	
-	public int getLength() {
-		return length;
+	public Rectangle getRectangle() {
+		return rectangle;
 	}
 
-	public int getWidth() {
-		return width;
+	public long getTravelled() {
+		return travelled;
 	}
 
 	public int getNrOfShips() {
@@ -78,34 +68,35 @@ public class Waterway extends AbstractModel{
 	public Ship[] getShips(){
 		return ships.toArray( new Ship[ ships.size() ]);
 	}
-	
+
+	protected void createShips( long xposition, int amount ){
+		if( this.ships.size() >= nrOfShips )
+			return;
+		Field field = new Field( super.getLatLng(), rectangle.getLength(), rectangle.getWidth() );
+		for( int i=this.ships.size(); i< amount; i++){
+			long yposition = (long) ( Math.random() * rectangle.getWidth());
+			LatLng lnglat = field.transform( xposition, yposition );
+			Ship ship = Ship.createShip( lnglat, "newShip" );
+			logger.fine("Adding ship: " + ship.getLatLng() + " bearing " + ship.getBearing());
+			logger.fine( "Distance to centre: " + LatLngUtils.distance( field.getCentre(), ship.getLatLng()));
+			ships.add( ship );
+		}
+	}
+
 	public void update( LatLng position, Date time, double distance ){
-		super.setLnglat(position);
 		logger.fine( "Update Position " + position );
+		this.travelled += distance;
+		Field field = new Field( super.getLatLng(), rectangle.getLength(), rectangle.getWidth() );
 		for( Ship ship: getShips() ){
 			LatLng ll = ship.sail( time );
-			double dist = LatLngUtils.distance(super.getLatLng(), ll); 
-			if(( dist > -MARGIN_X ) || ( dist < -( this.length + MARGIN_X )))
+			if( !field.isinField(ll, MARGIN_X ))
 				ships.remove( ship );
 			//logger.info( "New Position for spped:" + ship.getSpeed() + ",\n\t" + ship.getLnglat() );
 			//logger.info( "Diff " + (position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(position, ship.getLnglat() ));
 		}
-		createShips( super.getLatLng(), (int)(this.nrOfShips/2) );
-		LatLng east = LatLngUtils.extrapolateEast( super.getLatLng(), length );
-		createShips( east, (int)(this.nrOfShips/2) );
-	}
-
-	protected void createShips( LatLng place, int amount ){
-		if( this.ships.size() >= amount )
-			return;
-		for( int i=this.ships.size(); i< amount; i++){
-			double position = ( Math.random() - 0.5f ) * width;
-			LatLng lnglat = LatLngUtils.extrapolateNorth( place, position );
-			Ship ship = Ship.createShip( lnglat, "newShip" );
-			logger.fine("Adding ship: " + ship.getLatLng() + " bearing " + ship.getBearing());
-			logger.fine( "Distance to centre: " + LatLngUtils.distance(centre, ship.getLatLng()));
-			ships.add( ship );
-		}
+		createShips( 0, 20);//(int)(this.nrOfShips/2) );
+		createShips( this.getRectangle().getLength(), 1 );//(int)(this.nrOfShips/2) );
+		//super.setLnglat(position);
 	}
 }

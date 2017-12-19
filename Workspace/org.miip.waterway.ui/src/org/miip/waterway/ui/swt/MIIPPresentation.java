@@ -7,10 +7,15 @@ import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Ship.Bearing;
+import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.eco.Bank;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
-import org.condast.commons.data.latlng.Vector;
+
+import java.util.Map;
+
+import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.LatLng;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -23,12 +28,20 @@ import org.eclipse.swt.graphics.Rectangle;
 public class MIIPPresentation extends Canvas{
 	private static final long serialVersionUID = 1L;
 
+	public static final int GRIDX = 100;//meters
+	public static final int GRIDY = 20;//meters
+	
 	private PaintListener listener = new PaintListener(){
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void paintControl(PaintEvent event) {
-			drawField( event.gc );
+			try{
+				drawField( event.gc );
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+			}
 		}
 	};
 
@@ -53,6 +66,8 @@ public class MIIPPresentation extends Canvas{
 	public void setInput( MIIPEnvironment environment){
 		this.environment = environment;
 	}
+	
+/*	
 	protected Point drawOffset( CentreShip ship, Point centre ){
 		if( ship == null )
 			return centre;
@@ -64,6 +79,7 @@ public class MIIPPresentation extends Canvas{
 		int yoffset = vector.getKey();//(int)((float)20 * vector.getValue() *  Math.cos( Math.toRadians( vector.getKey())));
 		return new Point( centre.x + xoffset, centre.y + yoffset );
 	}
+*/
 	
 	protected void drawField( GC gc ){
 		if( environment == null )
@@ -82,35 +98,46 @@ public class MIIPPresentation extends Canvas{
 		gc.fillRectangle( rect );
 		gc.drawLine( 0, clientArea.height-bankSize, clientArea.width, clientArea.height-bankSize);
 
-		Point point = new Point( (int)( clientArea.width/2), (int)(clientArea.height/2));
+		//The ship in the centre
 		CentreShip cship = this.environment.getShip();
-		drawImage( gc, drawOffset( cship, point ), MIIPImages.Images.SHIP);
+		Point point = ( cship == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
+			scaleToCanvas(cship.getLatLng());
+		drawImage( gc, point, MIIPImages.Images.SHIP);
 
 		if(!environment.isInitialsed() )
 			return;
 
+		//The raster
 		Color color = gc.getForeground();
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
-		Rectangle waterway = getWaterway();
-		for( Integer loc: environment.getXCoordinates()){
-			int xpos = scaleXToDisplay( loc ); 
-			gc.drawLine( xpos, waterway.y, xpos, waterway.height );
+		Waterway waterway = environment.getWaterway();
+		int i = (int) (-waterway.getTravelled()%GRIDX);
+		while( i < waterway.getRectangle().getLength() ){
+			int xpos = scaleXToDisplay( i ); 
+			int ypos1 = scaleYToDisplay( waterway.getRectangle().getYPos());
+			int ypos2 = scaleYToDisplay( (int) (waterway.getRectangle().getYPos() + waterway.getRectangle().getWidth()));
+			i += GRIDX;
+			gc.drawLine( xpos, ypos1, xpos, ypos2 );
 		}
-		for( Integer loc: environment.getYCoordinates()){
-			int ypos = scaleYToDisplay( loc ); 
-			if( ypos > waterway.y )
-				gc.drawLine( 0, ypos, getClientArea().width, ypos );
+		i =0;
+		while( i < waterway.getRectangle().getWidth()){
+			int xpos1 = scaleXToDisplay( waterway.getRectangle().getXPos());
+			int xpos2 = scaleXToDisplay( (int) (waterway.getRectangle().getXPos() + waterway.getRectangle().getLength()));
+			int ypos = scaleYToDisplay( waterway.getRectangle().getYPos() + i ); 
+			i += GRIDY;
+			gc.drawLine( xpos1, ypos, xpos2, ypos );
 		}
 		gc.setForeground(color);
 
+		//The banks
 		for( Bank bank: environment.getBanks()){
 			for( Location tree: bank.getShoreObjects() )
 				drawImage(gc, scaleToCanvas( tree ), MIIPImages.Images.TREE );
 		}
 
 		for( Ship ship: environment.getWaterway().getShips()){
-			MIIPImages.Images img = Bearing.EAST.equals( ship.getBearing())? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
-			drawImage(gc, scaleWaterwayToCanvas( environment.getLocation( ship )), img );
+			MIIPImages.Images img = ( ship.getBearing() < Bearing.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+			drawImage(gc, scaleToCanvas( ship.getLatLng() ), img );
 		}
 
 		gc.dispose();
@@ -133,35 +160,32 @@ public class MIIPPresentation extends Canvas{
 		return img;
 	}
 
-	protected Point scaleWaterwayToCanvas( Location location ){
+	public Point scaleToCanvas( LatLng location ){
 		Rectangle clientArea = getClientArea();
-		float bankWidth = (float)clientArea.height * environment.getBankWidth()/environment.getWidth();
-		int x = scaleXToDisplay((int) location.getX() );
-		float y = bankWidth + scaleYToDisplay((int)location.getY() );
+		Field field = this.environment.getField();
+		Map.Entry<Double, Double> vector = field.getVector(location);
+		int x= (int)(clientArea.width * vector.getKey()/field.getLength());
+		int y = (int)(clientArea.height * vector.getValue()/field.getWidth());
 		return new Point((int) x, (int) y );
 	}
 
-	protected Rectangle getWaterway(){
+	public Point scaleToCanvas( Location location ){
 		Rectangle clientArea = getClientArea();
-		int bankWidth = (int)((float)clientArea.height * environment.getBankWidth()/environment.getWidth());
-		return new Rectangle(0, bankWidth, getClientArea().width, getClientArea().height - bankWidth );
-	}
-
-	protected Point scaleToCanvas( Location location ){
-		int x = scaleXToDisplay((int) location.getX() );
-		int y = scaleYToDisplay((int)location.getY() );
+		Field field = this.environment.getField();
+		int x=  (int)(location.getX() * clientArea.width/field.getLength());
+		int y = (int)(location.getY() * clientArea.height/field.getWidth());
 		return new Point((int) x, (int) y );
 	}
 
-	protected int scaleYToDisplay( int length ){
+	protected int scaleYToDisplay( int width ){
 		Rectangle clientArea = getClientArea();
-		float scale = ((float)environment.getWidth() + 2*environment.getBankWidth() )/clientArea.height;
-		return (int)( length/scale );
+		float scale = ((float)environment.getField().getWidth())/clientArea.height;
+		return (int)( width/scale );
 	}
 
 	protected int scaleXToDisplay( int length ){
 		Rectangle clientArea = getClientArea();
-		float scale = environment.getLength()/clientArea.width;
+		float scale = ((float)environment.getField().getLength())/clientArea.width;
 		return (int)( length/scale );
 	}
 

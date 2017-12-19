@@ -2,15 +2,31 @@ package org.miip.waterway.model.eco;
 
 public class Rectangle {
 
-	public int x,y;
-	public int height;
-	public int width;
+	private int x,y;
+	private long length;
+	private long width;
 	
-	public Rectangle( int x, int y, int width, int height ) {
+	public Rectangle( int x, int y, long length, long width ) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
-		this.height = height;
+		this.length = length;
+	}
+
+	public int getXPos() {
+		return x;
+	}
+
+	public int getYPos() {
+		return y;
+	}
+
+	public long getLength() {
+		return length;
+	}
+
+	public long getWidth() {
+		return width;
 	}
 
 }

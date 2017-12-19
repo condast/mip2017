@@ -3,15 +3,10 @@ package org.miip.waterway.model.eco;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.condast.commons.data.latlng.LatLng;
-import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.strings.StringStyler;
-//import org.eclipse.swt.graphics.Rectangle;
-import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.Location;
-import org.miip.waterway.model.def.IModel;
 
-public class Bank extends AbstractModel{
+public class Bank{
 
 	private static final int DEFAULT_NR_OF_TREES = 20;
 	
@@ -25,17 +20,25 @@ public class Bank extends AbstractModel{
 		}
 		
 	}
+	
 	private Collection<Location> shore;
 	private int nrOfShoreObjects;
 	
 	private Rectangle rectangle;
 
-	public Bank( Banks bank, LatLng lnglat, Rectangle rectangle) {
-		this( bank, lnglat, rectangle, DEFAULT_NR_OF_TREES );
+	public Bank( Rectangle rectangle ) {
+		this( rectangle, DEFAULT_NR_OF_TREES );
+	}
+
+	public Bank( long length, long width) {
+		this( length, width, DEFAULT_NR_OF_TREES );
 	}
 	
-	public Bank( Banks bank, LatLng lnglat, Rectangle rectangle, int nrOfShoreObjects) {
-		super( bank.toString(), IModel.ModelTypes.BANK, lnglat);
+	public Bank( long length, long width, int nrOfShoreObjects) {
+		this( new Rectangle( 0,0, length, width ), nrOfShoreObjects );
+	}
+	
+	public Bank( Rectangle rectangle, int nrOfShoreObjects) {
 		this.rectangle = rectangle;
 		this.nrOfShoreObjects = nrOfShoreObjects;
 		shore = new ArrayList<Location>();
@@ -43,11 +46,11 @@ public class Bank extends AbstractModel{
 	}
 	
 	protected void initialise(){
-		double offset = rectangle.width/nrOfShoreObjects;
-		double halfWidth = rectangle.height/2;
+		double offset = rectangle.getLength()/nrOfShoreObjects;
+		double halfWidth = rectangle.getWidth()/2;
 		for( int i=0; i< this.nrOfShoreObjects; i++){
-			double x = offset * i * ( 1 + Math.random() );
-			double y = rectangle.y + ( 0.5f + Math.random()) * halfWidth;
+			double x = rectangle.getXPos() + offset * i * Math.random();
+			double y = rectangle.getYPos() + ( 0.5f + Math.random()) * halfWidth;
 			shore.add( new Location((int)x, (int) y));
 		}
 	}
@@ -57,17 +60,16 @@ public class Bank extends AbstractModel{
 	}
 	
 	public void update( double distance ){
-		double offset = rectangle.width/this.nrOfShoreObjects;
+		double offset = rectangle.getLength()/this.nrOfShoreObjects;
 		for( Location location: getShoreObjects() ){
 			shore.remove( location );
 			double x = (double)location.getX() - distance;
 			double y = location.getY();
 			if( x < 0 ){
-				x = rectangle.x + rectangle.width + ( Math.random() - 1 )*offset; 
-				y = rectangle.y + ( 0.5f + Math.random()) * rectangle.height/2;
+				x = rectangle.getXPos() + rectangle.getLength() + ( Math.random() - 1 ) *offset; 
+				y = rectangle.getYPos() + ( 0.5f + Math.random()) * rectangle.getWidth()/2;
 			}
 			shore.add( new Location( x, y ));
 		}
-		super.setLnglat( LatLngUtils.extrapolateEast( super.getLatLng(), distance));	
 	}
 }

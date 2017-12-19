@@ -108,8 +108,7 @@ public class MIIPComposite extends Composite {
 				public void run() {
 					hits++;
 					lblHits.setText( String.valueOf(hits));
-				}
-				
+				}	
 			});
 		}
 	};
@@ -124,6 +123,7 @@ public class MIIPComposite extends Composite {
 		this.createComposite(parent, style);
 		this.session = new RefreshSession<>();
 		this.session.addSessionListener(slistener);
+		this.session.init(getDisplay());
 		this.session.start();
 	}
 
@@ -160,9 +160,14 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection()));
-				environment.setTimer( slider_speed.getSelection());
-				super.widgetSelected(e);
+				try{
+					lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection()));
+					environment.setTimer( slider_speed.getSelection());
+					super.widgetSelected(e);
+				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
 			}
 		});
 
@@ -430,7 +435,7 @@ public class MIIPComposite extends Composite {
 
 		SituationalAwareness sa = this.environment.getSituationalAwareness();
 		this.slider_sense.setSelection( sa.getSensitivity() );
-		this.slider_range.setMaximum( environment.getLength()/2 );
+		this.slider_range.setMaximum( (int) (environment.getField().getLength()/2) );
 		this.slider_range.setSelection( sa.getRange() );
 		this.radar.setInput( sa );
 
