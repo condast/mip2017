@@ -27,4 +27,8 @@ public class RadarData extends BaseData {
 		super(remarks);
 		ch = choice.ordinal();
 	}
+	
+	public int getIndex(){
+		return ch;
+	}
 }

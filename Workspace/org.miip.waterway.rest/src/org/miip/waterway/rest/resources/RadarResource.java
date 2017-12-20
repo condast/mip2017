@@ -17,7 +17,7 @@ import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.rest.model.RadarData;
 import org.miip.waterway.rest.model.RadarData.Choices;
-import org.miip.waterway.rest.service.SADispatcher;
+import org.miip.waterway.rest.service.Dispatcher;
 import org.miip.waterway.sa.ISituationalAwareness;
 
 import com.google.gson.Gson;
@@ -49,7 +49,7 @@ public class RadarResource{
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("leds") String leds ) {
 		logger.info("Query for Radar " + id );
-		ISituationalAwareness sa = SADispatcher.getInstance().getSituationalAwareness();
+		ISituationalAwareness sa = Dispatcher.getInstance().getEnvironment().getSituationalAwareness();
 		if( sa == null )
 			return "[]";
 		SequentialBinaryTreeSet<Vector<Integer>>  data = sa.getBinaryView();
@@ -57,7 +57,7 @@ public class RadarResource{
 			return "[]";
 		
 		int scale = StringUtils.isEmpty( leds )? 0: Integer.parseInt( leds );
-		Iterator<Vector<Integer>> iterator  = data.getValues( data.scale( scale )).iterator();
+		Iterator<Vector<Integer>> iterator  = data.getValues( data.scale( scale ) -1).iterator();
 		Collection<RGB> rgbs = new ArrayList<RGB>();
 		while( iterator.hasNext() ){
 			Map.Entry<Integer, Double> entry = iterator.next();
@@ -89,16 +89,16 @@ public class RadarResource{
 	@SuppressWarnings("unused")
 	private class RGB{
 		private int a;
-		private byte r,g,b;
-		private byte t;
+		private int r,g,b;
+		private int t;
 
 		RGB( int angle, int r, int g, int b, int transparency) {
 			super();
 			this.a = angle;
-			this.r = (byte) r;
-			this.g = (byte) g;
-			this.b = (byte) b;
-			this.t= (byte) transparency;
+			this.r = r;
+			this.g = g;
+			this.b = b;
+			this.t= transparency;
 		}
 	}
 }

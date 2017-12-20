@@ -1,4 +1,4 @@
-package org.miip.waterway.rest;
+package org.miip.waterway.rest.service;
 
 import org.miip.waterway.model.def.IMIIPEnvironment;
 
