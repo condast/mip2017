@@ -7,13 +7,26 @@ import org.miip.waterway.model.Ship;
 public class ShipEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
 	private boolean hit;
-	public ShipEvent( Ship ship ) {
-		this( ship, false); 
+	private int angle;
+	private long distance;
+	
+	public ShipEvent( Ship ship, int angle, long distance ) {
+		this( ship, angle, distance, false); 
 	}
 	
-	public ShipEvent( Ship ship, boolean hit) {
+	public ShipEvent( Ship ship, int angle, long distance, boolean hit) {
 		super(ship );
+		this.angle = angle;
+		this.distance = distance;
 		this.hit = hit;
+	}
+
+	public int getAngle() {
+		return angle;
+	}
+
+	public long getDistance() {
+		return distance;
 	}
 
 	public boolean isHit() {

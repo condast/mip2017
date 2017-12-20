@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
 
 import java.util.EnumSet;
+import java.util.logging.Logger;
 
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.ISessionListener;
@@ -60,61 +61,88 @@ public class MIIPComposite extends Composite {
 	private Label lblHits;
 
 	private MIIPEnvironment environment; 
-	
+
 	private IEnvironmentListener listener = new IEnvironmentListener() {
-		
+
 		@Override
 		public void notifyEnvironmentChanged(final EnvironmentEvent event) {
-			switch( event.getType() ){
-			case INITIALSED:
-				break;
-			default:
-				session.addData(event);
-				break;
+			try{
+				switch( event.getType() ){
+				case INITIALSED:
+					break;
+				default:
+					session.addData(event);
+					break;
+				}
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
 			}
 		}
 	};
 	private PlayerComposite<MIIPEnvironment> playerbar;
-	
+
 	private Slider slider_speed;
 	private Spinner spinner_ships;
 	private Label lblActiveShips;
 	private Button btn_manual;
-	
+
 	private IRadar radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
 	private Slider slider_range;
 	private Label lbl_range;
-	
+
 	private int hits;
-	
+
 	private RefreshSession<EnvironmentEvent> session;
 	private ISessionListener<EnvironmentEvent> slistener = new ISessionListener<EnvironmentEvent>(){
 
 		@Override
 		public void notifySessionChanged(SessionEvent<EnvironmentEvent> event){
-			updateView();
-			spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					canvas.redraw();
+			try{
+				updateView();
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+			}
 		}	
 	};
-	
+
+	private Logger logger = Logger.getLogger(this.getClass().getName());
+
 	private IShipMovedListener shlistener = new IShipMovedListener() {
-		
+
+		private StringBuffer buffer = new StringBuffer();
+
 		@Override
-		public void notifyShipmoved(ShipEvent event) {
+		public void notifyShipMoved(ShipEvent event) {
+			if( event.getAngle() == 0 ){
+				buffer = new StringBuffer();
+				buffer.append( "vectors: " );
+			}else if( event.getAngle() == 511 ){
+				logger.info( buffer.toString() );				
+			}else{
+				buffer.append( "[" + event.getAngle() + ", " + event.getDistance() + "] " );
+			}
+
 			getDisplay().asyncExec( new Runnable(){
 
 				@Override
 				public void run() {
+					try{
 					hits++;
 					lblHits.setText( String.valueOf(hits));
+					}
+					catch( Exception ex ){
+						ex.printStackTrace();
+					}
 				}	
 			});
 		}
 	};
-	
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -123,7 +151,7 @@ public class MIIPComposite extends Composite {
 	public MIIPComposite(Composite parent, Integer style) {
 		super(parent, style);
 		this.createComposite(parent, style);
-		this.session = new RefreshSession<>();
+		this.session = new RefreshSession<>(1000);
 		this.session.addSessionListener(slistener);
 		this.session.init(getDisplay());
 		this.session.start();
@@ -135,7 +163,7 @@ public class MIIPComposite extends Composite {
 		createImageBar(this, style);
 		canvas = new MIIPPresentation(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
-		
+
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new GridLayout(4, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,2,1));
@@ -190,12 +218,17 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				environment.getWaterway().setNrOfShips( spinner_ships.getSelection());
-				super.widgetSelected(e);
+				try{
+					environment.getWaterway().setNrOfShips( spinner_ships.getSelection());
+					super.widgetSelected(e);
+				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
 			}
 		});
 
-		
+
 		lblActiveShips = new Label(group_control, SWT.BORDER);
 		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
@@ -207,34 +240,39 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Button check = (Button) e.widget;
-				environment.setManual( check.getSelection());
-				if( check.getSelection() )
-					canvas.setFocus();
-				super.widgetSelected(e);
+				try{
+					Button check = (Button) e.widget;
+					environment.setManual( check.getSelection());
+					if( check.getSelection() )
+						canvas.setFocus();
+					super.widgetSelected(e);
+				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
 			}
 		});
 		playerbar = new PlayerComposite<MIIPEnvironment>( group_control, SWT.BORDER );
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
-		
+
 		Group group_ship = new Group( composite, SWT.NONE );
 		GridData gd_ship= new GridData( SWT.FILL, SWT.FILL, true, true );
 		gd_ship.widthHint = 120;
 		group_ship.setText("Details Ship");
 		group_ship.setLayout(new GridLayout(3, false));
 		group_ship.setLayoutData(gd_ship);
-		
+
 		Label lblNameLabel = new Label(group_ship, SWT.NONE);
 		lblNameLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblNameLabel.setText("Name:");
-		
+
 		text_name = new Text(group_ship, SWT.BORDER);
 		text_name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		
+
 		Label lblNewLabel_1 = new Label(group_ship, SWT.NONE);
 		lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblNewLabel_1.setText("Speed:");
-		
+
 		text_speed = new Text(group_ship, SWT.BORDER);
 		text_speed.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
@@ -244,24 +282,24 @@ public class MIIPComposite extends Composite {
 		Label lblPosition = new Label(group_ship, SWT.NONE);
 		lblPosition.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		lblPosition.setText("Position:");
-		
+
 		text_lng = new Text(group_ship, SWT.BORDER);
 		text_lng.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));	
-		
+
 		text_lat = new Text(group_ship, SWT.BORDER);
 		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
-		
+
 		Label lbl_hitText = new Label( group_ship, SWT.NONE );
 		lbl_hitText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false ));
 		lbl_hitText.setText("Hits: ");
 		lblHits = new Label( group_ship, SWT.BORDER );
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
-		
+
 		Group grp_radar = new Group(composite, SWT.NONE); 
 		grp_radar.setText("Radar");
 		grp_radar.setLayout(new GridLayout(2, false));
 		grp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
+
 		int radar_width = 80;
 		GridData gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false, 2, 1);
 		gd_radar.widthHint = radar_width;
@@ -281,28 +319,33 @@ public class MIIPComposite extends Composite {
 
 					@Override
 					public void run() {
-						switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
-						case WARP:
-							radar = new Radar(parent, SWT.BORDER);
-							break;
-						case AVERAGE:
-							AveragingRadar avr = new AveragingRadar(parent, SWT.BORDER);
-							//avr.setExpand( 1);
-							radar = avr;
-							break;
-						default:
-							radar = new HumanAssist( parent, SWT.BORDER );	
-							break;
+						try{
+							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
+							case WARP:
+								radar = new Radar(parent, SWT.BORDER);
+								break;
+							case AVERAGE:
+								AveragingRadar avr = new AveragingRadar(parent, SWT.BORDER);
+								//avr.setExpand( 1);
+								radar = avr;
+								break;
+							default:
+								radar = new HumanAssist( parent, SWT.BORDER );	
+								break;
+							}
+							radar.setInput(environment.getSituationalAwareness());
+							radar.refresh();
+							parent.layout();
 						}
-						radar.setInput(environment.getSituationalAwareness());
-						radar.refresh();
-						parent.layout();
+						catch( Exception ex ){
+							ex.printStackTrace();
+						}
 					}
 				});
 				super.widgetSelected(e);
 			}
 		});
-		
+
 		slider_sense = new Slider( grp_radar, SWT.BORDER );
 		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
 		slider_sense.setLayoutData( gd_radar);
@@ -315,16 +358,21 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ISituationalAwareness sa = environment.getSituationalAwareness();
-				sa.setSensitivity( slider_sense.getSelection());
-				lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
-				super.widgetSelected(e);
+				try{
+					ISituationalAwareness sa = environment.getSituationalAwareness();
+					sa.setSensitivity( slider_sense.getSelection());
+					lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
+					super.widgetSelected(e);
+				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
 			}
 		});
 
 		lbl_sense = new Label( grp_radar, SWT.BORDER );
 		lbl_sense.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
-		
+
 		slider_range = new Slider( grp_radar, SWT.BORDER );
 		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
 		slider_range.setLayoutData( gd_radar);
@@ -337,15 +385,20 @@ public class MIIPComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ISituationalAwareness sa = environment.getSituationalAwareness();
-				sa.setRange( slider_range.getSelection());
-				lbl_range.setText( String.valueOf( slider_range.getSelection()));
-				super.widgetSelected(e);
+				try{
+					ISituationalAwareness sa = environment.getSituationalAwareness();
+					sa.setRange( slider_range.getSelection());
+					lbl_range.setText( String.valueOf( slider_range.getSelection()));
+					super.widgetSelected(e);
+				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
 			}
 		});
 		lbl_range = new Label( grp_radar, SWT.BORDER );
 		lbl_range.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
-		
+
 		Composite comp_radar = new Composite( composite, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -353,10 +406,11 @@ public class MIIPComposite extends Composite {
 		canvas.addKeyListener(new KeyAdapter(){
 			private static final long serialVersionUID = 1L;
 
-				public void keyPressed(KeyEvent e)
-				{
-					if( !btn_manual.getSelection())
-						return;
+			public void keyPressed(KeyEvent e)
+			{
+				if( !btn_manual.getSelection())
+					return;
+				try{
 					CentreShip ship = environment.getShip();
 					CentreShip.Controls control = null; 
 					switch( e.keyCode ){
@@ -375,8 +429,12 @@ public class MIIPComposite extends Composite {
 					default: 
 						break;
 					}
-					ship.setControl(control);						
+					ship.setControl(control);	
 				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
+			}
 		});
 	}
 
@@ -391,7 +449,7 @@ public class MIIPComposite extends Composite {
 		createImageButton( comp, Images.KC_DHS, S_KC_DHS_URL );
 		createImageButton( comp, Images.CONDAST, S_CONDAST_URL );
 	}
-	
+
 	private Button createImageButton( Composite parent, Images image, final String url ){
 		Button button = new Button(parent, SWT.FLAT);
 		button.setImage( MIIPImages.getImage( image ));
@@ -404,8 +462,13 @@ public class MIIPComposite extends Composite {
 
 					@Override
 					public void run() {
-						UrlLauncher launcher = RWT.getClient().getService( UrlLauncher.class );
-						launcher.openURL( url );
+						try{
+							UrlLauncher launcher = RWT.getClient().getService( UrlLauncher.class );
+							launcher.openURL( url );
+						}
+						catch( Exception ex ){
+							ex.printStackTrace();
+						}
 					}					
 				});
 			}
@@ -417,20 +480,20 @@ public class MIIPComposite extends Composite {
 
 	public void setInput( MIIPEnvironment environment ){
 		this.environment = environment;
-		this.environment.addListener(listener);
 		this.canvas.setInput(environment);
 	}
-	
+
 	protected void updateView(){
 		Ship ship = environment.getShip();
-		slider_speed.setSelection( environment.getTimer());
+		this.slider_speed.setSelection( environment.getTimer());
+		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					canvas.redraw();
 		this.text_name.setText( ship.getId() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
 		this.text_lng.setText( String.valueOf( ship.getLatLng().getLongitude() ));
 		this.text_lat.setText( String.valueOf( ship.getLatLng().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
-		
+
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
 		this.lblHits.setText(String.valueOf(hits));
@@ -442,7 +505,7 @@ public class MIIPComposite extends Composite {
 		this.radar.setInput( sa );
 
 	}
-	
+
 	public void dispose(){
 		if( this.environment != null ){
 			this.environment.getSituationalAwareness().removelistener(shlistener);
@@ -454,12 +517,12 @@ public class MIIPComposite extends Composite {
 		this.session.dispose();
 		super.dispose();
 	}
-	
+
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-	
+
 	private class PlayerComposite<I extends Object> extends AbstractButtonBar<PlayerImages.Images, I> {
 		private static final long serialVersionUID = 1L;
 
@@ -491,46 +554,52 @@ public class MIIPComposite extends Composite {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					Button button = (Button) e.getSource();
-					PlayerImages.Images image = (PlayerImages.Images) button.getData();
-					switch( image ){
-					case START:
-						environment.start();
-						environment.getSituationalAwareness().addlistener(shlistener);
-						//setModels( environment.getModels());
-						//setInput(ce.getBehaviour());
-						getButton( PlayerImages.Images.STOP).setEnabled(true);
-						button.setEnabled(false);
-						Button clear = (Button) getButton( PlayerImages.Images.RESET);
-						clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
-						//Button btn = (Button) e.widget;
-						//btn.setText( !environment.isPaused()? "Stop": "Start");
-						getDisplay().asyncExec( new Runnable(){
+					try{
+						Button button = (Button) e.getSource();
+						PlayerImages.Images image = (PlayerImages.Images) button.getData();
+						switch( image ){
+						case START:
+							environment.addListener(listener);
+							environment.start();
+							environment.getSituationalAwareness().addlistener(shlistener);
+							//setModels( environment.getModels());
+							//setInput(ce.getBehaviour());
+							getButton( PlayerImages.Images.STOP).setEnabled(true);
+							button.setEnabled(false);
+							Button clear = (Button) getButton( PlayerImages.Images.RESET);
+							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
+							//Button btn = (Button) e.widget;
+							//btn.setText( !environment.isPaused()? "Stop": "Start");
+							getDisplay().asyncExec( new Runnable(){
 
-							@Override
-							public void run() {
-								layout();
-							}		
-						});
-						break;
-					case STOP:
-						environment.stop();
-						environment.removeListener(listener);
-						getButton( PlayerImages.Images.START).setEnabled(true);
-						button.setEnabled(false);
-						clear = (Button) getButton( PlayerImages.Images.RESET);
-						clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
-						break;
-					case NEXT:
-						environment.step();
-						break;
-					case RESET:
-						hits = 0;
-						environment.clear();
-					default:
-						break;
+								@Override
+								public void run() {
+									layout();
+								}		
+							});
+							break;
+						case STOP:
+							environment.stop();
+							environment.removeListener(listener);
+							getButton( PlayerImages.Images.START).setEnabled(true);
+							button.setEnabled(false);
+							clear = (Button) getButton( PlayerImages.Images.RESET);
+							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
+							break;
+						case NEXT:
+							environment.step();
+							break;
+						case RESET:
+							hits = 0;
+							environment.clear();
+						default:
+							break;
+						}
+
 					}
-					
+					catch( Exception ex ){
+						ex.printStackTrace();
+					}
 				}		
 			});
 			button.setImage( PlayerImages.getInstance().getImage(type));

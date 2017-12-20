@@ -8,7 +8,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 @Component( name="org.miip.waterway.rest.service.sa")
 public class SituationalAwarenessService {
 
-	private Dispatcher dispatcher = Dispatcher.getInstance();
+	private SADispatcher dispatcher = SADispatcher.getInstance();
 	
 	@Reference( cardinality = ReferenceCardinality.AT_LEAST_ONE)
 	public void bind( ISituationalAwareness sa){

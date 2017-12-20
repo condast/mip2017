@@ -16,15 +16,16 @@ public class HumanAssist extends AbstractRadar {
 		this.bar = BAR_WIDTH;
 	}
 	
+	@Override
 	protected void drawDegree( GC gc, int angle, double distance ){
 		double centrex = super.getCentre().x;
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 		
 		double xpos1 = centrex + length * Math.sin( toRadians( angle ));
-		double ypos1 = centrey + length * Math.cos( toRadians( angle ));
+		double ypos1 = centrey - length * Math.cos( toRadians( angle ));
 		double xpos2 = centrex + length * Math.sin( toRadians( angle+1 ));
-		double ypos2 = centrey + length * Math.cos( toRadians( angle+1 ));
+		double ypos2 = centrey - length * Math.cos( toRadians( angle+1 ));
 		Color background = gc.getBackground();
 		gc.setBackground( getColour( distance ));
 		gc.fillPolygon(new int[]{(int) centrex, (int)centrey, (int)xpos1, (int)ypos1, (int)xpos2, (int)ypos2});

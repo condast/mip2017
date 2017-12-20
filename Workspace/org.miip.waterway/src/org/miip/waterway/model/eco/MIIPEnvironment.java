@@ -219,7 +219,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			//logger.info( "New Position " + this.position + ",\n\t\t   " + ship.getLnglat() );
 			//logger.info( "Diff " + (this.position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
-			waterway.update( course, currentTime, traverse.getX());
+			waterway.update( currentTime, traverse.getX());
 
 			sa.update(waterway);//after updating waterway
 			float min_distance = manual?this.field.getLength(): 50;
@@ -227,6 +227,9 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			
 			counter = ( counter + 1)%10;
 			notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
 		}
 		finally{
 			lock.unlock();

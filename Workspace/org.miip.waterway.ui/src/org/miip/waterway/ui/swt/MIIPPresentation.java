@@ -131,11 +131,15 @@ public class MIIPPresentation extends Canvas{
 
 		//The banks
 		for( Bank bank: environment.getBanks()){
-			for( Location tree: bank.getShoreObjects() )
+			for( Location tree: bank.getShoreObjects() ){
 				drawImage(gc, scaleToCanvas( tree ), MIIPImages.Images.TREE );
+			}
 		}
 
+		Field field = this.environment.getField();
 		for( Ship ship: environment.getWaterway().getShips()){
+			if( !field.isInField( ship.getLatLng(), 0))
+				continue;
 			MIIPImages.Images img = ( ship.getBearing() < Bearing.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
 			drawImage(gc, scaleToCanvas( ship.getLatLng() ), img );
 		}

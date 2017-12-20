@@ -1,8 +1,9 @@
 package org.miip.waterway.rest.resources;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
@@ -10,33 +11,24 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
-import org.condast.commons.data.latlng.BaseData;
 import org.condast.commons.data.latlng.Vector;
-import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.rest.Dispatcher;
-import org.miip.waterway.rest.model.Radar;
+import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.rest.model.RadarData;
 import org.miip.waterway.rest.model.RadarData.Choices;
-import org.miip.waterway.sa.SituationalAwareness;
+import org.miip.waterway.rest.service.SADispatcher;
+import org.miip.waterway.sa.ISituationalAwareness;
 
 import com.google.gson.Gson;
 
 @Path("/sa")
 public class RadarResource{
 		
-	private RadarData.Choices choice;
-	
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
-	
-	
 	public RadarResource() {
 		super();
-		choice = RadarData.Choices.ALL;
 	}
 
 	// This method is called if TEXT_PLAIN is request
@@ -55,45 +47,58 @@ public class RadarResource{
 	@GET
 	@Path("/radar")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
+	public String getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("leds") String leds ) {
 		logger.info("Query for Radar " + id );
-		IMIIPEnvironment ce = Dispatcher.getInstance().getEnvironment();
-		SituationalAwareness sa = ce.getSituationalAwareness();
-		StringBuffer buffer = new StringBuffer();
+		ISituationalAwareness sa = SADispatcher.getInstance().getSituationalAwareness();
 		if( sa == null )
-			return createResponse(buffer.toString());
+			return "[]";
 		SequentialBinaryTreeSet<Vector<Integer>>  data = sa.getBinaryView();
-		List<Vector<Integer>> vectors = data.getValues(5);
-		if( vectors.isEmpty() )
-			return createResponse(buffer.toString());
-		Collections.sort( vectors, new VectorComparator());
+		if(( data == null ) ||  data.isEmpty())
+			return "[]";
 		
-		for( Vector<Integer> entry: vectors ){
-			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
+		int scale = StringUtils.isEmpty( leds )? 0: Integer.parseInt( leds );
+		Iterator<Vector<Integer>> iterator  = data.getValues( data.scale( scale )).iterator();
+		Collection<RGB> rgbs = new ArrayList<RGB>();
+		while( iterator.hasNext() ){
+			Map.Entry<Integer, Double> entry = iterator.next();
+			rgbs.add( getColour(sa, entry.getKey(), entry.getValue()));
 		}
-		Radar radar = new Radar();
-		radar.setInput(sa);
 		Gson gson = new Gson();
-		return createResponse( String.valueOf( gson.toJson( radar.getColours()) ));
+		return gson.toJson( rgbs.toArray( new RGB[ rgbs.size()]));
 	}
 
-	private class VectorComparator implements Comparator<Vector<Integer>> {
+	protected RGB getColour( ISituationalAwareness sa, int angle, double distance ){
+		if( sa == null)
+			return new RGB( angle, 0, 0, 0, 0 );
+	
+		if( distance <= sa.getSensitivity() )
+			return new RGB( angle, 255, 0, 0, 0 );
+		if( distance > sa.getRange())
+			return new RGB( angle, 255, 0, 0, 255 );
+		return getLinearColour( angle, (int) distance, sa.getRange(), (int)sa.getSensitivity() );
+	}
+	
+	private RGB getLinearColour( int angle, int distance, int range, int sensitivity ){
+		boolean far = ( distance > ( range - sensitivity ));
+		int red = far? 50: (int)( 255 * ( 1 - distance/range ));
+		int green = far? 255: (int)( 255 * distance/range );
+		int blue = 50;
+		return new RGB( angle, red, green, blue, 0 );
+	}
 
-		@Override
-		public int compare(Vector<Integer> arg0, Vector<Integer> arg1) {
-			return (int)( arg0.getValue() - arg1.getValue());
+	@SuppressWarnings("unused")
+	private class RGB{
+		private int a;
+		private byte r,g,b;
+		private byte t;
+
+		RGB( int angle, int r, int g, int b, int transparency) {
+			super();
+			this.a = angle;
+			this.r = (byte) r;
+			this.g = (byte) g;
+			this.b = (byte) b;
+			this.t= (byte) transparency;
 		}
-	}
-
-	private static Response createResponse( String message ){
-		ResponseBuilder builder = Response.ok( message );
-
-		builder.status(200)
-		.header("Access-Control-Allow-Origin", "*")
-		.header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-		.header("Access-Control-Allow-Credentials", "true")
-		.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-		.header("Access-Control-Max-Age", "1209600");
-		return builder.build();
 	}
 }

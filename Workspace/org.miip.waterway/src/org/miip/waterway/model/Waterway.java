@@ -83,20 +83,20 @@ public class Waterway extends AbstractModel{
 		}
 	}
 
-	public void update( LatLng position, Date time, double distance ){
-		logger.fine( "Update Position " + position );
+	public void update( Date time, double distance ){
 		this.travelled += distance;
 		Field field = new Field( super.getLatLng(), rectangle.getLength(), rectangle.getWidth() );
 		for( Ship ship: getShips() ){
 			LatLng ll = ship.sail( time );
-			if( !field.isinField(ll, MARGIN_X ))
+			if( !field.isInField(ll, MARGIN_X ))
 				ships.remove( ship );
 			//logger.info( "New Position for spped:" + ship.getSpeed() + ",\n\t" + ship.getLnglat() );
 			//logger.info( "Diff " + (position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(position, ship.getLnglat() ));
 		}
 		createShips( 0, 20);//(int)(this.nrOfShips/2) );
-		createShips( this.getRectangle().getLength(), 1 );//(int)(this.nrOfShips/2) );
-		//super.setLnglat(position);
+		createShips( this.getRectangle().getLength() -100, 1 );//(int)(this.nrOfShips/2) );
+		super.setLnglat( LatLngUtils.extrapolate( super.getLatLng(), LatLng.Compass.EAST.getAngle(), distance));
+		logger.fine( "Update Position " + super.getLatLng() );
 	}
 }

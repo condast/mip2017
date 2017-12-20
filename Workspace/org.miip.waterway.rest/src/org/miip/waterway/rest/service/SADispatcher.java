@@ -5,17 +5,17 @@ import java.util.Collection;
 
 import org.miip.waterway.sa.ISituationalAwareness;
 
-public class Dispatcher {
+public class SADispatcher {
 
-	private static Dispatcher dispatcher = new Dispatcher();
+	private static SADispatcher dispatcher = new SADispatcher();
 
 	private Collection<ISituationalAwareness> sas;
 	
-	private Dispatcher() {
+	private SADispatcher() {
 		sas = new ArrayList<ISituationalAwareness>();
 	}
 
-	public static Dispatcher getInstance(){
+	public static SADispatcher getInstance(){
 		return dispatcher;
 	}
 

@@ -8,7 +8,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/contribution.xml,
  OSGI-INF/org.miip.rwt.service.EnvironmentService.xml,
  OSGI-INF/org.miip.rwt.service.service.sa.provider.xml
-Import-Package: org.condast.commons.xml,
+Import-Package: org.condast.commons.data.binary,
+ org.condast.commons.data.binary.vector,
+ org.condast.commons.data.latlng,
+ org.condast.commons.xml,
  org.eclipse.rap.rwt.application;version="3.1.0",
  org.eclipse.rap.rwt.client;version="3.1.0",
  org.eclipse.swt,

@@ -2,6 +2,9 @@ package org.miip.waterway.sa;
 
 import java.util.Map;
 
+import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.latlng.Vector;
+
 public interface ISituationalAwareness {
 
 	int MAX_DEGREES = 360;
@@ -22,5 +25,7 @@ public interface ISituationalAwareness {
 	Map<Integer, Double> getRadar();
 
 	int getRange();
+
+	SequentialBinaryTreeSet<Vector<Integer>> getBinaryView();
 
 }

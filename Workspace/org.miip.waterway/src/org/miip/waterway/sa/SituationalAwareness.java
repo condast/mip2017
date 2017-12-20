@@ -117,9 +117,9 @@ public class SituationalAwareness implements ISituationalAwareness {
 		this.listeners.remove(listener);
 	}
 
-	protected void notifylistners( ShipEvent event ){
+	protected void notifylisteners( ShipEvent event ){
 		for( IShipMovedListener listener: listeners )
-			listener.notifyShipmoved(event);	
+			listener.notifyShipMoved(event);	
 	}
 	
 	public void update( Waterway waterway ){
@@ -134,9 +134,7 @@ public class SituationalAwareness implements ISituationalAwareness {
 				if( distance < this.range ){
 					radar.put( i, distance );
 				}
-				logger.fine( "distance: "  + distance );
-				if( distance < 25 )
-					notifylistners( new ShipEvent( ship, true ));
+				notifylisteners( new ShipEvent( ship, i, distance.longValue(), true ));
 			}
 		}
 		catch( Exception ex ){
@@ -151,6 +149,7 @@ public class SituationalAwareness implements ISituationalAwareness {
 	 * subsequent averages of the radar images 
 	 * @return
 	 */
+	@Override
 	public SequentialBinaryTreeSet<Vector<Integer>> getBinaryView(){
 		Iterator<Map.Entry<Integer, Double>> iterator = this.radar.entrySet().iterator();
 		SequentialBinaryTreeSet<Vector<Integer>> data = new SequentialBinaryTreeSet<Vector<Integer>>( operator );
@@ -172,6 +171,8 @@ public class SituationalAwareness implements ISituationalAwareness {
 
 	public void controlShip( float min_distance, boolean max ){
 		SequentialBinaryTreeSet<Vector<Integer>> data = this.getBinaryView();
+		if( data == null )
+			return;
 		List<Vector<Integer>> vectors = data.getValues(5);
 		if( vectors.isEmpty() )
 			return;
@@ -193,7 +194,7 @@ public class SituationalAwareness implements ISituationalAwareness {
 		else if( angle < 448)
 			control = Controls.LEFT;
 		ship.setControl(control);
-		logger.info("Angle: " + angle + ", Distance " + distance + " Control: " + control.name() );
+		logger.fine("Angle: " + angle + ", Distance " + distance + " Control: " + control.name() );
 	}
 	
 	/**
@@ -236,8 +237,9 @@ public class SituationalAwareness implements ISituationalAwareness {
 			double distance = LatLngUtils.distance(latlng, other.getLatLng() );
 			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLatLng(), this.steps );
 			logger.fine( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLatLng() );
-			//logger.info( "Diff " + (latlng.getLongitude() - other.getLnglat().getLongitude() ));
-			logger.fine( "Diff " + distance + "[" + vector.getKey() + ", "+ vector.getValue() + "]");
+			//logger.info( "Diff " + (latlng.getLongitude() - other.getLatLng().getLongitude() ));
+			if( distance < 300 )
+				logger.info( "Diff " + distance + "[" + vector.getKey() + ", "+ vector.getValue() + "]");
 			vectors.put( vector.getKey(), vector.getValue());
 			//if( vector.getValue() < 100 )
 				//logger.info("Vector found for" + ship.getLnglat() + " and\n\t " + 

@@ -2,6 +2,8 @@ package org.miip.rwt.service;
 
 import java.util.Map;
 
+import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.latlng.Vector;
 import org.miip.waterway.sa.IShipMovedListener;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.osgi.service.component.annotations.Component;
@@ -61,5 +63,11 @@ public class SituationalAwarenesssProvider implements ISituationalAwareness{
 	public int getRange() {
 		ISituationalAwareness sa = dispatcher.getSituationalAwareness();
 		return sa.getRange();
+	}
+
+	@Override
+	public SequentialBinaryTreeSet<Vector<Integer>> getBinaryView() {
+		ISituationalAwareness sa = dispatcher.getSituationalAwareness();
+		return sa.getBinaryView();
 	}
 }
