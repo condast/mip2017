@@ -15,8 +15,9 @@ import javax.ws.rs.core.MediaType;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.strings.StringUtils;
+import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.rest.model.RadarData;
-import org.miip.waterway.rest.model.RadarData.Choices;
+import org.miip.waterway.rest.service.CompositeSettings;
 import org.miip.waterway.rest.service.Dispatcher;
 import org.miip.waterway.sa.ISituationalAwareness;
 
@@ -26,6 +27,8 @@ import com.google.gson.Gson;
 public class RadarResource{
 		
 	private Logger logger = Logger.getLogger( this.getClass().getName());
+
+	private CompositeSettings settings = CompositeSettings.getInstance();
 
 	public RadarResource() {
 		super();
@@ -37,8 +40,8 @@ public class RadarResource{
 	@Produces(MediaType.APPLICATION_JSON)
 	public String setupRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
 		logger.info("Query for Radar " + id );
-		RadarData[] data = new RadarData[ 1];
-		data[0] = new RadarData(Choices.COLOUR_WIPE_BLUE);
+		IRadarData[] data = new IRadarData[ 1];
+		data[0] = new RadarData( settings.getChoice(), settings.getRange(), settings.getSensitivity());
 		Gson gson = new Gson();
 		return gson.toJson(data);
 	}

@@ -29,7 +29,8 @@ public class MIIPImages extends AbstractImages{
 		SHIP_RED,
 		SHIP_YLW,
 		SHIP_GRN,
-		TREE;
+		TREE,
+		SETTINGS;
 
 		@Override
 		public String toString() {

@@ -8,8 +8,8 @@ import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.Waterway;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.eco.Bank;
-import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 
 import java.util.Map;
@@ -45,7 +45,7 @@ public class MIIPPresentation extends Canvas{
 		}
 	};
 
-	MIIPEnvironment environment;
+	IMIIPEnvironment environment;
 
 	/**
 	 * Create the composite.
@@ -63,7 +63,7 @@ public class MIIPPresentation extends Canvas{
 		return super.getParent();
 	}
 	
-	public void setInput( MIIPEnvironment environment){
+	public void setInput( IMIIPEnvironment environment){
 		this.environment = environment;
 	}
 	

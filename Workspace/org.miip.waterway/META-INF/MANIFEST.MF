@@ -16,4 +16,5 @@ Export-Package: org.miip.waterway.internal.model,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
  org.miip.waterway.model.eco,
+ org.miip.waterway.radar,
  org.miip.waterway.sa

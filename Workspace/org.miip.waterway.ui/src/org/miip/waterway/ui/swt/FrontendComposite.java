@@ -6,6 +6,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.logging.Logger;
 
@@ -16,6 +18,7 @@ import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
@@ -31,18 +34,21 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Ship;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.IShipMovedListener;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.sa.ShipEvent;
 import org.miip.waterway.sa.SituationalAwareness;
+import org.miip.waterway.ui.dialog.SettingsDialog;
+import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 
-public class MIIPComposite extends Composite {
+public class FrontendComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
 	public static final String S_MIIP_URL = "http://www.maritiemland.nl/news/startbijeenkomst-maritieme-innovatie-impuls-projecten-2017/";
@@ -60,7 +66,9 @@ public class MIIPComposite extends Composite {
 	private Text text_lat;
 	private Label lblHits;
 
-	private MIIPEnvironment environment; 
+	private IMIIPEnvironment environment;
+	private Collection<ICompositeFactory> factories;
+	private Composite frontend;
 
 	private IEnvironmentListener listener = new IEnvironmentListener() {
 
@@ -148,9 +156,11 @@ public class MIIPComposite extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public MIIPComposite(Composite parent, Integer style) {
+	public FrontendComposite(Composite parent, Integer style) {
 		super(parent, style);
 		this.createComposite(parent, style);
+		this.frontend = this;
+		this.factories = new ArrayList<ICompositeFactory>();
 		this.session = new RefreshSession<>(1000);
 		this.session.addSessionListener(slistener);
 		this.session.init(getDisplay());
@@ -442,7 +452,21 @@ public class MIIPComposite extends Composite {
 		Composite comp = new Composite( parent, SWT.NONE );
 		comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false ));
 		comp.setLayout( new GridLayout( 1, false));
+		Button button = new Button( comp, SWT.NONE );
+		button.setImage( MIIPImages.getImage( Images.SETTINGS ));
+		button.setLayoutData( new GridData(SWT.FILL, SWT.TOP, true, true));
+		button.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
 
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				SettingsDialog dialog = new SettingsDialog( frontend, factories.toArray( new ICompositeFactory[ factories.size()]) );
+				if( Dialog.OK == dialog.open()){
+					
+				}
+				super.widgetSelected(e);
+			}			
+		});
 		createImageButton( comp, Images.MIIP, S_MIIP_URL );
 		createImageButton( comp, Images.NMT, S_NMT_URL );
 		createImageButton( comp, Images.RDM_COE, S_RDM_COE_URL );
@@ -478,7 +502,11 @@ public class MIIPComposite extends Composite {
 		return button;
 	}
 
-	public void setInput( MIIPEnvironment environment ){
+	public void setInput( Collection<ICompositeFactory> factories ){
+		this.factories = factories;
+	}
+
+	public void setInput( IMIIPEnvironment environment ){
 		this.environment = environment;
 		this.canvas.setInput(environment);
 	}

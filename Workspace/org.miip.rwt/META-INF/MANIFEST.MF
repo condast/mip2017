@@ -7,7 +7,7 @@ Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/contribution.xml,
  OSGI-INF/org.miip.rwt.service.EnvironmentService.xml,
- OSGI-INF/org.miip.rwt.service.service.sa.provider.xml
+ OSGI-INF/org.miip.rwt.service.composite.xml
 Import-Package: org.condast.commons.data.binary,
  org.condast.commons.data.binary.vector,
  org.condast.commons.data.latlng,
@@ -20,6 +20,7 @@ Import-Package: org.condast.commons.data.binary,
  org.miip.waterway.model.def,
  org.miip.waterway.sa,
  org.miip.waterway.ui,
+ org.miip.waterway.ui.factory,
  org.miip.waterway.ui.swt,
  org.miip.waterway.ui.xml,
  org.osgi.service.component.annotations;version="1.2.0"

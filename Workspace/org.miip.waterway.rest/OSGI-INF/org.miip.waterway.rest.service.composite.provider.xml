@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.miip.waterway.rest.service.composite.provider">
+   <service>
+      <provide interface="org.miip.waterway.ui.factory.ICompositeFactory"/>
+   </service>
+   <implementation class="org.miip.waterway.rest.service.CompositeFactoryProvider"/>
+</scr:component>

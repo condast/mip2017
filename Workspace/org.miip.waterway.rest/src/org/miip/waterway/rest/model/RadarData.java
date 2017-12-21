@@ -1,26 +1,18 @@
 package org.miip.waterway.rest.model;
 
 import org.condast.commons.data.latlng.BaseData;
+import org.miip.waterway.radar.IRadarData;
 
-public class RadarData extends BaseData {
-
-	public enum Choices {
-		  COLOUR_WIPE_RED,
-		  COLOUR_WIPE_GREEN,
-		  COLOUR_WIPE_BLUE,
-		  THEATER_CHASE_RED,
-		  THEATER_CHASE_WHITE,
-		  THEATER_CHASE_BLUE,
-		  RAINBOW,
-		  RAINBOW_CYCLE,
-		  RAINBOW_THEATRE_CHASE,
-		  ALL
-		};	
+public class RadarData extends BaseData implements IRadarData {
 
 	private int ch;//choice
+	private int r;//range
+	private int s;//sensitivity
 
-	public RadarData( Choices choice) {
+	public RadarData( Choices choice, int range, int sensitivity) {
 		ch = choice.ordinal();
+		this.r = range;
+		this.s = sensitivity;
 	}
 
 	public RadarData( Choices choice, String remarks) {
@@ -28,7 +20,19 @@ public class RadarData extends BaseData {
 		ch = choice.ordinal();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.rest.model.IRadarData#getIndex()
+	 */
+	@Override
 	public int getIndex(){
 		return ch;
+	}
+
+	public int getR() {
+		return r;
+	}
+
+	public int getS() {
+		return s;
 	}
 }
