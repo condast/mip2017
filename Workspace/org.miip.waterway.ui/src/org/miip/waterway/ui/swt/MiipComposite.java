@@ -48,8 +48,12 @@ import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 
-public class FrontendComposite extends Composite {
+public class MiipComposite extends Composite {
 	private static final long serialVersionUID = 1L;
+
+	public static enum Tools{
+		SETTINGS
+	}
 
 	public static final String S_MIIP_URL = "http://www.maritiemland.nl/news/startbijeenkomst-maritieme-innovatie-impuls-projecten-2017/";
 	public static final String S_NMT_URL = "http://www.maritiemland.nl/innovatie/projecten/maritieme-innovatie-impuls-projecten/";
@@ -156,7 +160,7 @@ public class FrontendComposite extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public FrontendComposite(Composite parent, Integer style) {
+	public MiipComposite(Composite parent, Integer style) {
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.frontend = this;
@@ -551,6 +555,90 @@ public class FrontendComposite extends Composite {
 		// Disable the check that prevents subclassing of SWT components
 	}
 
+	private class SettingsComposite<I extends Object> extends AbstractButtonBar<PlayerImages.Images, I> {
+		private static final long serialVersionUID = 1L;
+
+		public SettingsComposite(Composite parent, int style) {
+			super(parent, style);
+		}
+
+		@Override
+		protected EnumSet<PlayerImages.Images> setupButtonBar() {
+			return EnumSet.of(PlayerImages.Images.START, 
+					PlayerImages.Images.STOP, 
+					PlayerImages.Images.NEXT,
+					PlayerImages.Images.RESET);
+		}
+
+		@Override
+		protected Control createButton(PlayerImages.Images type) {
+			Button button = new Button( this, SWT.FLAT );
+			switch( type ){
+			case STOP:
+				button.setEnabled(( environment != null ) && environment.isRunning());
+				break;
+			default:
+				break;
+			}
+			button.setData(type);
+			button.addSelectionListener( new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					try{
+						Button button = (Button) e.getSource();
+						PlayerImages.Images image = (PlayerImages.Images) button.getData();
+						switch( image ){
+						case START:
+							environment.addListener(listener);
+							environment.start();
+							environment.getSituationalAwareness().addlistener(shlistener);
+							//setModels( environment.getModels());
+							//setInput(ce.getBehaviour());
+							getButton( PlayerImages.Images.STOP).setEnabled(true);
+							button.setEnabled(false);
+							Button clear = (Button) getButton( PlayerImages.Images.RESET);
+							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
+							//Button btn = (Button) e.widget;
+							//btn.setText( !environment.isPaused()? "Stop": "Start");
+							getDisplay().asyncExec( new Runnable(){
+
+								@Override
+								public void run() {
+									layout();
+								}		
+							});
+							break;
+						case STOP:
+							environment.stop();
+							environment.removeListener(listener);
+							getButton( PlayerImages.Images.START).setEnabled(true);
+							button.setEnabled(false);
+							clear = (Button) getButton( PlayerImages.Images.RESET);
+							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
+							break;
+						case NEXT:
+							environment.step();
+							break;
+						case RESET:
+							hits = 0;
+							environment.clear();
+						default:
+							break;
+						}
+
+					}
+					catch( Exception ex ){
+						ex.printStackTrace();
+					}
+				}		
+			});
+			button.setImage( PlayerImages.getInstance().getImage(type));
+			return button;
+		}
+	}
+
 	private class PlayerComposite<I extends Object> extends AbstractButtonBar<PlayerImages.Images, I> {
 		private static final long serialVersionUID = 1L;
 
@@ -634,5 +722,4 @@ public class FrontendComposite extends Composite {
 			return button;
 		}
 	}
-
 }

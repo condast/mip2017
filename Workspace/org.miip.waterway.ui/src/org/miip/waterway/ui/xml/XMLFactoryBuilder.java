@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.ui.NavigationComposite;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.lang.MIIPLanguage;
-import org.miip.waterway.ui.swt.FrontendComposite;
+import org.miip.waterway.ui.swt.MiipComposite;
 import org.xml.sax.Attributes;
 
 public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryBuilder.Selection> {
@@ -156,7 +156,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Composite, XMLFactoryB
 			Composite widget = null;
 			switch( node ){
 			case FRONTEND:
-				widget = new FrontendComposite(parent, IStyle.SWT.convert( style_str ));
+				widget = new MiipComposite(parent, IStyle.SWT.convert( style_str ));
 				composite = (Composite) widget;
 				retval = widget;
 				break;

@@ -68,10 +68,10 @@ public class RadarSettingsComposite extends Composite {
 		Label lblSensitivity = new Label(this, SWT.NONE);
 		lblSensitivity.setText("Sensitivity:");
 		
-		Spinner senseSpinner = new Spinner(this, SWT.BORDER);
+		this.senseSpinner = new Spinner(this, SWT.BORDER);
 		senseSpinner.setPageIncrement(1);
 		senseSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		setInput(settings);
+		setInput( settings );
 		senseSpinner.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 

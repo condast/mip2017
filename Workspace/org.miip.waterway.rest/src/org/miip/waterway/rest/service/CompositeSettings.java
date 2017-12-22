@@ -10,7 +10,9 @@ public class CompositeSettings {
 	private int range;
 	private int sensitivity;
 	
-	private CompositeSettings() {}
+	private CompositeSettings() {
+		this.choice = Choices.RADAR;
+	}
 
 	public static CompositeSettings getInstance(){
 		return settings;
