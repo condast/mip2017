@@ -3,18 +3,17 @@ package org.miip.rwt.service;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.swt.widgets.Composite;
-import org.miip.rwt.frontend.Frontend;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.factory.ICompositeFactory;
+import org.miip.waterway.ui.swt.MiipComposite;
 
 public class Dispatcher {
 
 	private static Dispatcher dispatcher = new Dispatcher();
 
 	private IMIIPEnvironment cenv;
-	private Composite frontend;
+	private MiipComposite frontend;
 	
 	private Collection<ICompositeFactory> factories;
 	
@@ -28,17 +27,17 @@ public class Dispatcher {
 		return dispatcher;
 	}
 
-	public void startApplication( Frontend frontend ){
+	public void startApplication( MiipComposite frontend ){
 		this.frontend = frontend;
 		if( this.cenv != null ){
-			//this.frontend.setInput(factories);
+			this.frontend.setInput(factories);
 		}
 	}
 
 	public void startApplication( IMIIPEnvironment cenv ){
 		this.cenv = cenv;
 		if( this.frontend != null ){
-			//this.frontend.setInput(cenv);
+			this.frontend.setInput(cenv);
 		}
 	}
 	

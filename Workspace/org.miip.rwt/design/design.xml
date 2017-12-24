@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <design>
 	<frontend title="ACTIVE" id="org.miip.frontend" style="SWT.NONE">
+	<layout name="grid-layout" columns="1"/>
 	<tabfolder>
 		<item name="Main">
-		  <composite class="org.miip.waterway.ui.swt.MiipComposite"/>
+		  <composite class="org.miip.waterway.ui.swt.MiipComposite">
+		    <layout-data type="grid-data">
+		      <horizontal spacing="fill" grab-excess="true" columns="1"/>
+		      <vertical spacing="fill"/>
+		    </layout-data>
+		  </composite>
 		</item>
 		<item name="Debug"/>
 		<item name="Log"/>
