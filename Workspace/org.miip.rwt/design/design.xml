@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <design>
 	<frontend title="ACTIVE" id="org.miip.frontend" style="SWT.NONE">
+	<layout name="grid-layout"/>
 	<tabfolder>
+	   <layout-data>
+	     <horizontal align="fill" grab-excess="true"/>
+	     <vertical   align="fill" grab-excess="true"/>
+	   </layout-data>>
 		<item name="Main">
 		  <composite class="org.miip.waterway.ui.swt.MiipComposite"/>
 		</item>
@@ -18,8 +23,8 @@
 		    <item name="LOGOFF"/>
 		  </menu>
 		</navigation>
- -->
 		<body style="SWT.VERTICAL" data="frontbody"/>
+ -->
 		<status-bar style="SWT.BORDER" data="frontstatus" height="30"/>
 	</frontend>
 </design>
