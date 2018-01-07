@@ -4,7 +4,6 @@ import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
@@ -28,10 +27,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	
 	@Override
     protected void createContents(Composite parent) {
-        parent.setLayout(new FillLayout());
-        //Frontend frontend = new Frontend( parent, SWT.NONE );
-        //frontend.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
-        
+        parent.setLayout(new FillLayout());       
         XMLFactoryBuilder builder = new XMLFactoryBuilder( parent, this.getClass());
         builder.addListener(listener);
         builder.build();

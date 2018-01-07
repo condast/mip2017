@@ -197,7 +197,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, XMLFactoryBuil
 			case TABFOLDER:
 				widget = new TabFolder( (Composite) parent, style);
 				comp = (Composite) widget;
-				//comp.setLayout( new GridLayout());
+				comp.setLayout( new GridLayout());
 				//GridData gd_tab = new GridData(SWT.FILL, SWT.FILL, horizontal, !horizontal);
 				//if( !StringUtils.isEmpty( size_str ))
 				//	gd_tab.widthHint = size;

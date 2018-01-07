@@ -8,15 +8,12 @@ import java.util.Collection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.swt.MiipComposite;
 
 public class Frontend extends Composite {
 	private static final long serialVersionUID = 1L;
 
-	private IMIIPEnvironment env;
-	
 	private MiipComposite miipComposite;
 	
 	/**
@@ -42,10 +39,6 @@ public class Frontend extends Composite {
 		tbtmLog.setText("Log");
 	}
 	
-	public void setInput( IMIIPEnvironment environment ){
-		this.env = environment;
-	}
-
 	public void setInput(Collection<ICompositeFactory> factories) {
 		miipComposite.setInput(factories);
 	}
