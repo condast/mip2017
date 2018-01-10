@@ -2,7 +2,7 @@ package org.miip.waterway.sa;
 
 import java.util.EventObject;
 
-import org.miip.waterway.model.Ship;
+import org.miip.waterway.model.IVessel;
 
 public class ShipEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
@@ -10,11 +10,11 @@ public class ShipEvent extends EventObject {
 	private int angle;
 	private long distance;
 	
-	public ShipEvent( Ship ship, int angle, long distance ) {
+	public ShipEvent( IVessel ship, int angle, long distance ) {
 		this( ship, angle, distance, false); 
 	}
 	
-	public ShipEvent( Ship ship, int angle, long distance, boolean hit) {
+	public ShipEvent( IVessel ship, int angle, long distance, boolean hit) {
 		super(ship );
 		this.angle = angle;
 		this.distance = distance;

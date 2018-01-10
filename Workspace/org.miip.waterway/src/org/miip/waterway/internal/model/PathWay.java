@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.data.latlng.LatLng;
-import org.miip.waterway.model.Ship;
+import org.miip.waterway.model.IVessel;
 
 /**
  * The pathway is the neighbourhood for a ship. A pathway is
@@ -16,11 +16,11 @@ import org.miip.waterway.model.Ship;
  */
 public class PathWay {
 
-	private Ship ship;
+	private IVessel ship;
 	
 	private Map<LatLng, Float> paths; 
 	
-	public PathWay( Ship ship ) {
+	public PathWay( IVessel ship ) {
 		this.ship = ship;
 		paths = new HashMap<LatLng, Float>();
 	}

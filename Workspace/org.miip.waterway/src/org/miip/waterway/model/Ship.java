@@ -9,7 +9,7 @@ import org.condast.commons.data.latlng.LatLngUtils;
 import org.miip.waterway.internal.model.AbstractModel;
 import org.miip.waterway.model.def.IModel;
 
-public class Ship extends AbstractModel{
+public class Ship extends AbstractModel implements IVessel{
 	
 	private static final int DEFAULT_LENGTH = 20;//m
 	
@@ -61,17 +61,33 @@ public class Ship extends AbstractModel{
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.IVessel#getTurn(long)
+	 */
+	@Override
 	public double getTurn( long timemsec ){
 		return timemsec * this.rot * 60000;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.IVessel#getMinTurnDistance()
+	 */
+	@Override
 	public double getMinTurnDistance(){
 		return this.rotation * Math.tan( Math.toRadians(1));//the distance of a one degree turn
 	}
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.IVessel#getSpeed()
+	 */
+	@Override
 	public float getSpeed() {
 		return speed;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.IVessel#getBearing()
+	 */
+	@Override
 	public int getBearing() {
 		return bearing;
 	}
@@ -80,11 +96,10 @@ public class Ship extends AbstractModel{
 		this.bearing = angle;
 	}
 
-	/**
-	 * Plot the next location, based on speed and bearing
-	 * @param next
-	 * @return
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.IVessel#plotNext(java.util.Date)
 	 */
+	@Override
 	public Location plotNext( Date next ){
 		long interval = next.getTime() - this.currentTime.getTime();//msec
 		double distance = this.speed * interval / TO_HOURS;
@@ -94,6 +109,10 @@ public class Ship extends AbstractModel{
 		return new Location((float) x, (float)y );
 	}
 
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.IVessel#sail(java.util.Date)
+	 */
+	@Override
 	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;

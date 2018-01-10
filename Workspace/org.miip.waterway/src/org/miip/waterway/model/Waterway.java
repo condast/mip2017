@@ -86,7 +86,7 @@ public class Waterway extends AbstractModel{
 	public void update( Date time, double distance ){
 		this.travelled += distance;
 		Field field = new Field( super.getLatLng(), rectangle.getLength(), rectangle.getWidth() );
-		for( Ship ship: getShips() ){
+		for( IVessel ship: getShips() ){
 			LatLng ll = ship.sail( time );
 			if( !field.isInField(ll, MARGIN_X ))
 				ships.remove( ship );
