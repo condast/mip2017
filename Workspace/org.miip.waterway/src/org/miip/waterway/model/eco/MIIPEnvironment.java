@@ -58,6 +58,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public MIIPEnvironment() {
 		this( DEFAULT_LENGTH, DEFAULT_WIDTH, BANK_WIDTH );
 	}
+	
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
 		this.field = new Field( new LatLng( NAME, LATITUDE, LONGITUDE), length, width);
 		this.bankWidth = bankWidth;
@@ -65,6 +66,11 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.manual = false;
 		lock = new ReentrantLock();
 		this.listeners = new ArrayList<IEnvironmentListener>();
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 
 	@Override
@@ -79,7 +85,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		LatLng latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.bankWidth); 
 		long width = this.field.getWidth() - 2 * this.bankWidth;
 		rectangle = new Rectangle( 0, this.bankWidth, field.getLength(), width );
-		this.waterway = new Waterway( latlng, rectangle, 100);
+		this.waterway = new Waterway( latlng, field, 100);
 		
 		//Position of the ship
 		latlng = this.field.getCentre();

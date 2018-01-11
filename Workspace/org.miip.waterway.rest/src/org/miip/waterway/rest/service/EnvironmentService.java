@@ -2,6 +2,7 @@ package org.miip.waterway.rest.service;
 
 
 import org.miip.waterway.model.def.IDesignFactory;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -12,7 +13,7 @@ public class EnvironmentService {
 	
 	@Reference
 	public void bindEnvironment( IDesignFactory factory){
-		this.dispatcher.startApplication( factory.createEnvironment());
+		this.dispatcher.startApplication( (IMIIPEnvironment) factory.createEnvironment());
 	}
 
 	public void unbindEnvironment( IDesignFactory ce ){

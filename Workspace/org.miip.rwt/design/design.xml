@@ -16,6 +16,14 @@
 					</layout-data>
 				</composite>
 			</item>
+			<item name="Test">
+				<composite class="org.miip.waterway.ui.swt.MiipComposite">
+					<layout-data type="grid-data">
+						<horizontal spacing="fill" grab-excess="true" columns="1" />
+						<vertical spacing="fill"/>
+					</layout-data>
+				</composite>
+			</item>
 			<item name="Debug" />
 			<item name="Log" />
 		</tabfolder>

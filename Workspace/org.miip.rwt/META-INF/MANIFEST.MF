@@ -8,7 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/contribution.xml,
  OSGI-INF/org.miip.rwt.service.EnvironmentService.xml,
  OSGI-INF/org.miip.rwt.service.composite.xml
-Import-Package: org.condast.commons.data.binary,
+Import-Package: org.condast.commons,
+ org.condast.commons.data.binary,
  org.condast.commons.data.binary.vector,
  org.condast.commons.data.latlng,
  org.condast.commons.xml,

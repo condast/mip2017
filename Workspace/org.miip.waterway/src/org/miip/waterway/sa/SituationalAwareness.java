@@ -208,7 +208,7 @@ public class SituationalAwareness implements ISituationalAwareness {
 	}
 
 	private double getBankDistance( Waterway waterway, int i ){
-		double halfwidth = waterway.getRectangle().getWidth()/2;
+		double halfwidth = waterway.getField().getWidth()/2;
 		int quarter = this.steps / 4;
 		double radian = (i < quarter )|| (i>3*quarter)?toRadians(i): toRadians(2*quarter - i);
 		return halfwidth/ Math.cos(radian);

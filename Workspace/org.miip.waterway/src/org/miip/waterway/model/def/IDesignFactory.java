@@ -6,5 +6,5 @@ public interface IDesignFactory {
 	 * Create a new environment
 	 * @return
 	 */
-	public IMIIPEnvironment createEnvironment();
+	public ISimpleEnvironment createEnvironment();
 }

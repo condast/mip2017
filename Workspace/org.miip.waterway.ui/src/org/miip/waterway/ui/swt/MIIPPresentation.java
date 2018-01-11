@@ -111,19 +111,21 @@ public class MIIPPresentation extends Canvas{
 		Color color = gc.getForeground();
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
 		Waterway waterway = environment.getWaterway();
+		org.miip.waterway.model.eco.Rectangle rectangle = new org.miip.waterway.model.eco.Rectangle( 0, environment.getBankWidth(), environment.getField().getLength(), environment.getField().getWidth());
+
 		int i = (int) (-waterway.getTravelled()%GRIDX);
-		while( i < waterway.getRectangle().getLength() ){
+		while( i < rectangle.getLength() ){
 			int xpos = scaleXToDisplay( i ); 
-			int ypos1 = scaleYToDisplay( waterway.getRectangle().getYPos());
-			int ypos2 = scaleYToDisplay( (int) (waterway.getRectangle().getYPos() + waterway.getRectangle().getWidth()));
+			int ypos1 = scaleYToDisplay( rectangle.getYPos());
+			int ypos2 = scaleYToDisplay( (int) (rectangle.getYPos() + rectangle.getWidth()));
 			i += GRIDX;
 			gc.drawLine( xpos, ypos1, xpos, ypos2 );
 		}
 		i =0;
-		while( i < waterway.getRectangle().getWidth()){
-			int xpos1 = scaleXToDisplay( waterway.getRectangle().getXPos());
-			int xpos2 = scaleXToDisplay( (int) (waterway.getRectangle().getXPos() + waterway.getRectangle().getLength()));
-			int ypos = scaleYToDisplay( waterway.getRectangle().getYPos() + i ); 
+		while( i < rectangle.getWidth()){
+			int xpos1 = scaleXToDisplay( rectangle.getXPos());
+			int xpos2 = scaleXToDisplay( (int) (rectangle.getXPos() + rectangle.getLength()));
+			int ypos = scaleYToDisplay( rectangle.getYPos() + i ); 
 			i += GRIDY;
 			gc.drawLine( xpos1, ypos, xpos2, ypos );
 		}
