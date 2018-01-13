@@ -3,10 +3,8 @@ package org.miip.waterway.model.def;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
-import org.miip.waterway.model.CentreShip;
-import org.miip.waterway.sa.SituationalAwareness;
 
-public interface ISimpleEnvironment extends IExecuteThread {
+public interface IEnvironment extends IExecuteThread {
 
 	//void setManual(boolean manual);
 
@@ -19,10 +17,6 @@ public interface ISimpleEnvironment extends IExecuteThread {
 	int getTimer();
 
 	void setTimer(int timer);
-
-	CentreShip getShip();
-
-	SituationalAwareness getSituationalAwareness();
 
 	void addListener(IEnvironmentListener listener);
 

@@ -76,21 +76,6 @@ public class Ship extends AbstractModel implements IVessel{
 	public double getMinTurnDistance(){
 		return this.rotation * Math.tan( Math.toRadians(1));//the distance of a one degree turn
 	}
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.model.IVessel#getSpeed()
-	 */
-	@Override
-	public float getSpeed() {
-		return speed;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.model.IVessel#getBearing()
-	 */
-	@Override
-	public int getBearing() {
-		return bearing;
-	}
 
 	protected void setBearing( int angle ){
 		this.bearing = angle;
@@ -99,7 +84,6 @@ public class Ship extends AbstractModel implements IVessel{
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#plotNext(java.util.Date)
 	 */
-	@Override
 	public Location plotNext( Date next ){
 		long interval = next.getTime() - this.currentTime.getTime();//msec
 		double distance = this.speed * interval / TO_HOURS;
@@ -112,7 +96,6 @@ public class Ship extends AbstractModel implements IVessel{
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#sail(java.util.Date)
 	 */
-	@Override
 	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;
@@ -134,5 +117,41 @@ public class Ship extends AbstractModel implements IVessel{
 		double speed = 10 + ( 60 * Math.random());
 		Bearing bearing = ( Math.random() < 0.5f)? Bearing.EAST: Bearing.WEST;
 		return new Ship( name, lnglat, (float) speed, bearing);
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LatLng getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getSpeed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getBearing() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public LatLng plotNext(long timeinMillis) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LatLng sail(long timeinMillis) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

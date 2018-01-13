@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: MIIP 2017 Designer Bundle
-Bundle-SymbolicName: org.miip.waterway.designer
+Bundle-SymbolicName: org.miip.waterway.designer;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.miip.waterway.designer.Activator
 Bundle-Vendor: Condast

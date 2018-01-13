@@ -1,58 +1,42 @@
 package org.miip.rwt.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.condast.commons.Utils;
-import org.miip.waterway.model.def.ISimpleEnvironment;
-import org.miip.waterway.ui.factory.ICompositeFactory;
-import org.miip.waterway.ui.swt.MiipComposite;
+import org.miip.waterway.model.def.IDesignFactory;
+import org.miip.waterway.model.def.IEnvironment;
 
 public class Dispatcher {
 
 	private static Dispatcher dispatcher = new Dispatcher();
 
-	private MiipComposite frontend;
+	private Map<String, IEnvironment> environments;
 	
-	private Collection<ICompositeFactory> factories;
-	
-	private Map<String, ISimpleEnvironment> environments;
-	
-	//private IXMLFactoryListener listener = new IX
 	
 	private Dispatcher() {
-		factories = new ArrayList<ICompositeFactory>();
-		environments = new HashMap<String, ISimpleEnvironment>();
+		environments = new HashMap<String, IEnvironment>();
 	}
 
 	public static Dispatcher getInstance(){
 		return dispatcher;
 	}
 
-	public void startApplication( MiipComposite frontend ){
-		this.frontend = frontend;
-		if( !Utils.assertNull( this.environments )){
-			this.frontend.setInput(factories);
-		}
+	public IEnvironment getEnvironment( String id ) {
+		if( Utils.assertNull(this.environments))
+			return null;
+		return this.environments.get(id);
 	}
 
-	public void startApplication( ISimpleEnvironment cenv ){
-		this.environments.put( cenv.getName(), cenv );
-		//if( this.frontend != null ){
-		//	this.frontend.setInput(cenv);
-		//}
-	}
-		
-	public void addCompositeFactory( ICompositeFactory factory ) {
-		this.factories.add( factory );
+	public void addEnvironment( IDesignFactory factory ){
+		this.environments.put( factory.getId(), factory.createEnvironment() );
 	}
 
-	public void removeCompositeFactory( ICompositeFactory factory ) {
-		this.factories.remove( factory );
+	public void addEnvironment( String id, IEnvironment cenv ){
+		this.environments.put( id, cenv );
 	}
 
-	public void removeCompositeFactory( ISimpleEnvironment environment ) {
-		this.environments.remove( environment.getName() );
+	public void removeEnvironment( String id ){
+		this.environments.remove( id );
 	}
 }

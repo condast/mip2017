@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Pond Environment with Limited Vessels
-Bundle-SymbolicName: org.miip.pond
+Bundle-SymbolicName: org.miip.pond;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -10,6 +10,10 @@ Import-Package: org.condast.commons.data.latlng,
  org.condast.symbiotic.core.environment,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
- org.miip.waterway.model.eco,
  org.miip.waterway.sa,
+ org.osgi.framework;version="1.8.0",
  org.osgi.service.component.annotations;version="1.2.0"
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.miip.pond.Activator
+Service-Component: OSGI-INF/org.miip.pond.services.DesignFactory.xml
+Export-Package: org.miip.pond.core

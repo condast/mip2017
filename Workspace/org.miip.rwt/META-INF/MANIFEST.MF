@@ -6,23 +6,29 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/contribution.xml,
- OSGI-INF/org.miip.rwt.service.EnvironmentService.xml,
- OSGI-INF/org.miip.rwt.service.composite.xml
+ OSGI-INF/org.miip.rwt.service.environment.xml
 Import-Package: org.condast.commons,
- org.condast.commons.data.binary,
- org.condast.commons.data.binary.vector,
- org.condast.commons.data.latlng,
+ org.condast.commons.strings,
+ org.condast.commons.swt,
+ org.condast.commons.ui.image,
+ org.condast.commons.ui.swt,
+ org.condast.commons.ui.widgets,
  org.condast.commons.xml,
+ org.eclipse.rap.rwt;version="3.4.0",
  org.eclipse.rap.rwt.application;version="3.1.0",
  org.eclipse.rap.rwt.client;version="3.1.0",
  org.eclipse.swt,
+ org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
+ org.miip.waterway.internal.model,
  org.miip.waterway.model.def,
- org.miip.waterway.sa,
+ org.miip.waterway.model.eco,
  org.miip.waterway.ui,
  org.miip.waterway.ui.factory,
+ org.miip.waterway.ui.images,
+ org.miip.waterway.ui.lang,
  org.miip.waterway.ui.swt,
- org.miip.waterway.ui.xml,
+ org.miip.waterway.ui.swt.pond,
  org.osgi.service.component.annotations;version="1.2.0"
 Bundle-ActivationPolicy: lazy

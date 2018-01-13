@@ -1,6 +1,5 @@
 package org.miip.waterway.sa;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
@@ -22,17 +19,10 @@ import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.CentreShip.Controls;
 
-public class SituationalAwareness implements ISituationalAwareness {
+public class SituationalAwareness extends AbstractSituationalAwareness<Waterway> {
 
 	private CentreShip ship;
 	
-	private Map<Integer, Double> radar;
-	private Lock lock;
-	private int range;
-	private int sensitivity;
-	
-	private int steps;
-		
 	private AbstractOperator<Vector<Integer>, Vector<Integer>> operator = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
 
 		@Override
@@ -50,98 +40,24 @@ public class SituationalAwareness implements ISituationalAwareness {
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
-	private Collection<IShipMovedListener> listeners;
-
 	public SituationalAwareness( CentreShip ship ) {
 		this( ship, MAX_DEGREES);
 	}
 	
 	public SituationalAwareness( CentreShip ship, int steps ) {
 		this.ship = ship;
-		this.steps = steps;
-		lock = new ReentrantLock();
-		this.listeners = new ArrayList<IShipMovedListener>();
-		radar = new TreeMap<Integer, Double>();
 	}
 
 	@Override
-	public int getRange() {
-		return range;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.sa.ISituationalAwareness#setRange(int)
-	 */
-	@Override
-	public void setRange(int range) {
-		this.range = range;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.sa.ISituationalAwareness#getSensitivity()
-	 */
-	@Override
-	public int getSensitivity() {
-		return sensitivity;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.sa.ISituationalAwareness#setSensitivity(int)
-	 */
-	@Override
-	public void setSensitivity(int sensitivity) {
-		this.sensitivity = sensitivity;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.sa.ISituationalAwareness#getSteps()
-	 */
-	@Override
-	public int getSteps() {
-		return steps;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.sa.ISituationalAwareness#addlistener(org.miip.waterway.sa.IShipMovedListener)
-	 */
-	@Override
-	public void addlistener( IShipMovedListener listener ){
-		this.listeners.add( listener);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.sa.ISituationalAwareness#removelistener(org.miip.waterway.sa.IShipMovedListener)
-	 */
-	@Override
-	public void removelistener( IShipMovedListener listener ){
-		this.listeners.remove(listener);
-	}
-
-	protected void notifylisteners( ShipEvent event ){
-		for( IShipMovedListener listener: listeners )
-			listener.notifyShipMoved(event);	
-	}
-	
-	public void update( Waterway waterway ){
+	protected long onSetInput(Waterway waterway, int step) {
 		Map<Integer, Double> vectors = getVectors( waterway );
-		lock.lock();
-		try{
-			radar.clear();
-			for( int i=0; i< steps; i++ ){
-				double bank =  getBankDistance(waterway, i); 
-				double shipdist = vectors.containsKey(i)? vectors.get(i):(double)Integer.MAX_VALUE;
-				Double distance = ( shipdist < bank)? shipdist: bank;
-				if( distance < this.range ){
-					radar.put( i, distance );
-				}
-				notifylisteners( new ShipEvent( ship, i, distance.longValue(), true ));
-			}
+		double bank =  getBankDistance(waterway, step); 
+		double shipdist = vectors.containsKey(step)? vectors.get(step):(double)Integer.MAX_VALUE;
+		Double distance = ( shipdist < bank)? shipdist: bank;
+		if( distance < this.getRange() ){
+			getRadar().put( step, distance );
 		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-		}finally{
-			lock.unlock();
-		}
+		return 0;
 	}
 	
 	/**
@@ -151,7 +67,7 @@ public class SituationalAwareness implements ISituationalAwareness {
 	 */
 	@Override
 	public SequentialBinaryTreeSet<Vector<Integer>> getBinaryView(){
-		Iterator<Map.Entry<Integer, Double>> iterator = this.radar.entrySet().iterator();
+		Iterator<Map.Entry<Integer, Double>> iterator = this.getRadar().entrySet().iterator();
 		SequentialBinaryTreeSet<Vector<Integer>> data = new SequentialBinaryTreeSet<Vector<Integer>>( operator );
 		while( iterator.hasNext() ){
 			Map.Entry<Integer, Double> entry = iterator.next();
@@ -209,22 +125,9 @@ public class SituationalAwareness implements ISituationalAwareness {
 
 	private double getBankDistance( Waterway waterway, int i ){
 		double halfwidth = waterway.getField().getWidth()/2;
-		int quarter = this.steps / 4;
+		int quarter = this.getSteps() / 4;
 		double radian = (i < quarter )|| (i>3*quarter)?toRadians(i): toRadians(2*quarter - i);
 		return halfwidth/ Math.cos(radian);
-	}
-
-	@Override
-	public Map<Integer, Double> getRadar(){
-		Map<Integer, Double> results = new TreeMap<Integer, Double>();
-		lock.lock();
-		try{
-			results.putAll(radar);
-		}
-		finally{
-			lock.unlock();
-		}
-		return results;
 	}
 	
 	protected Map<Integer, Double> getVectors( Waterway waterway ){
@@ -232,10 +135,10 @@ public class SituationalAwareness implements ISituationalAwareness {
 		Map<Integer, Double> vectors = new TreeMap<Integer, Double>();
 		for( Ship other: waterway.getShips() ){
 			double hordistance = LatLngUtils.lngDistance(latlng, other.getLatLng(), 0, 0 );
-			if( Math.abs( hordistance) > 2*this.range )
+			if( Math.abs( hordistance) > 2*this.getRange() )
 				continue;
 			double distance = LatLngUtils.distance(latlng, other.getLatLng() );
-			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLatLng(), this.steps );
+			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLatLng(), this.getSteps() );
 			logger.fine( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLatLng() );
 			//logger.info( "Diff " + (latlng.getLongitude() - other.getLatLng().getLongitude() ));
 			if( distance < 300 )

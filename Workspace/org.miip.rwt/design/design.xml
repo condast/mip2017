@@ -14,14 +14,16 @@
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill" />
 					</layout-data>
+					<input use="org.miip.waterway.model.eco.MIIPEnvironment"/>
 				</composite>
 			</item>
 			<item name="Test">
-				<composite class="org.miip.waterway.ui.swt.MiipComposite">
+				<composite class="org.miip.waterway.ui.swt.pond.PondComposite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill"/>
 					</layout-data>
+					<input use="org.miip.pond.model.PondEnvironment"/>
 				</composite>
 			</item>
 			<item name="Debug" />

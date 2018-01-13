@@ -227,7 +227,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
 			waterway.update( currentTime, traverse.getX());
 
-			sa.update(waterway);//after updating waterway
+			sa.setInput(waterway);//after updating waterway
 			float min_distance = manual?this.field.getLength(): 50;
 			sa.controlShip( min_distance, this.manual );
 			

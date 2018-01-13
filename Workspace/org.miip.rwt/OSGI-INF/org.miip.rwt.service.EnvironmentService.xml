@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.miip.rwt.service.EnvironmentService">
-   <reference bind="bindEnvironment" cardinality="1..1" interface="org.miip.waterway.model.def.IDesignFactory" name="Environment" policy="static" unbind="unbindEnvironment"/>
-   <implementation class="org.miip.rwt.service.EnvironmentService"/>
-</scr:component>

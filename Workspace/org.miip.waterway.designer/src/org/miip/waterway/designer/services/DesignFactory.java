@@ -8,15 +8,23 @@ import org.osgi.service.component.annotations.Component;
 @Component
 public class DesignFactory implements IDesignFactory{
 
+	private static final String ID = "org.miip.waterway.model.eco.MIIPEnvironment";
+	
 	private static IMIIPEnvironment environment = new MIIPEnvironment();
 	
 	public DesignFactory() {
 		super();
 	}
 
+	
 	@Override
 	public IMIIPEnvironment createEnvironment() {
 		return environment;
+	}
+
+	@Override
+	public String getId() {
+		return ID;
 	}
 
 }

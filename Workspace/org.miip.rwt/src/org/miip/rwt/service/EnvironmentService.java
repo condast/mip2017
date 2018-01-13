@@ -3,17 +3,19 @@ package org.miip.rwt.service;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
-@Component
+@Component( name="org.miip.rwt.service.environment",
+immediate=true)
 public class EnvironmentService {
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
-	
-	@Reference
-	public void bindEnvironment( IDesignFactory factory){
-		this.dispatcher.startApplication( factory.createEnvironment());
+
+	@Reference( cardinality = ReferenceCardinality.MULTIPLE)
+	public void addEnvironment( IDesignFactory factory){
+		this.dispatcher.addEnvironment( factory );
 	}
 
-	public void unbindEnvironment( IDesignFactory ce ){
+	public void removeEnvironment( IDesignFactory ce ){
 	}
 }

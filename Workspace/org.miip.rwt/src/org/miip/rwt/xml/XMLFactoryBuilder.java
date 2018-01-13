@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.apache.org/licenses/LICENSE-2.0.html
  *******************************************************************************/
-package org.miip.waterway.ui.xml;
+package org.miip.rwt.xml;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -14,6 +14,7 @@ import java.util.EnumSet;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.swt.IStyle;
+import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.widgets.StatusBar;
 import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.AbstractXmlHandler;
@@ -33,73 +34,8 @@ import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.lang.MIIPLanguage;
 import org.xml.sax.Attributes;
 
-public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, XMLFactoryBuilder.Selection> {
-
-	public static String S_DEFAULT_FOLDER = "/design";
-	public static String S_DEFAULT_DESIGN_FILE = "design.xml";
-	public static String S_SCHEMA_LOCATION =  S_DEFAULT_FOLDER + "/rdm-schema.xsd";
+public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBuilder.Selection> {
 	
-	public static enum Selection{
-		DESIGN,
-		DEFAULT,
-		ENTRY,
-		COMPOSITE,
-		LAYOUT,
-		LAYOUT_DATA,
-		HORIZONTAL,
-		VERTICAL,
-		FRONTEND,
-		NAVIGATION,
-		TABFOLDER,
-		ITEM,
-		IMAGE,
-		BODY,
-		STATUS_BAR,
-		REPORTS,
-		ADVANCED,
-		HELP;
-
-		@Override
-		public String toString() {
-			return MIIPLanguage.getInstance().getString( super.toString() );
-		}
-	}
-
-	public enum AttributeNames{
-		CLASS,
-		ID,
-		NAME,
-		URL,
-		LINK,
-		SELECT,
-		STYLE,
-		SCOPE,
-		TYPE,
-		DATA,
-		DESCRIPTION,
-		HEIGHT,
-		WIDTH,
-		SIZE;
-
-		@Override
-		public String toString() {
-			return StringStyler.prettyString( super.toString() );
-		}
-
-		public String toXmlStyle() {
-			return StringStyler.xmlStyleString( super.toString() );
-		}
-
-		public static boolean isAttribute( String value ){
-			if( StringUtils.isEmpty( value ))
-				return false;
-			for( AttributeNames attr: values() ){
-				if( attr.toString().equals( value ))
-					return true;
-			}
-			return false;
-		}
-	}
 
 	private Class<?> clss;
 	
@@ -152,6 +88,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, XMLFactoryBuil
 			return comps;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		protected Widget parseNode( Selection node, Attributes attributes) {
 			Widget  retval = null;
@@ -165,6 +102,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, XMLFactoryBuil
 			int size = StringUtils.isEmpty( size_str )? 50: Integer.parseInt( size_str );
 			int style = StringUtils.isEmpty(style_str)? SWT.NONE: IStyle.SWT.convert( style_str );
 			boolean horizontal = SWT.HORIZONTAL == style;
+			String class_str = getAttribute( attributes, AttributeNames.CLASS );
 
 			//String width_str = getAttribute( attributes, AttributeNames.WIDTH );
 			//int width = StringUtils.isEmpty( width_str )? 50: Integer.parseInt( width_str );
@@ -206,7 +144,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, XMLFactoryBuil
 				retval = (Composite) widget;
 				break;
 			case COMPOSITE:
-				String class_str = getAttribute( attributes, AttributeNames.CLASS );
 				if( parent instanceof Composite ){
 					widget = createComposite( class_str, (Composite) parent, style );
 				}else if( parent instanceof TabItem ){
@@ -215,6 +152,14 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, XMLFactoryBuil
 					widget = createComposite( class_str, folder, style );
 					item.setControl((Control) widget);
 				}
+				break;
+			case INPUT:
+				if( !StringUtils.isEmpty( class_str )) {
+					Object input = createObject(clss, class_str);
+					IInputWidget<Object> inpwid = (IInputWidget<Object>) parent;
+					inpwid.setInput(input);
+				}
+				widget = parent;
 				break;
 			case LAYOUT_DATA:
 				this.databuilder = new LayoutDataBuilder();

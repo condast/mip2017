@@ -18,9 +18,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.sa.ISituationalAwareness;
-import org.miip.waterway.sa.SituationalAwareness;
 
-public abstract class AbstractRadar extends Canvas implements IRadar{
+public abstract class AbstractRadar<I extends Object> extends Canvas implements IRadar<I>{
 	private static final long serialVersionUID = 1L;
 	
 	public enum RadarColours{
@@ -97,7 +96,7 @@ public abstract class AbstractRadar extends Canvas implements IRadar{
 		}
 	};
 
-	private SituationalAwareness sa;
+	private ISituationalAwareness<I> sa;
 	
 	private int range;
 	private int sensitivity; //part of the range
@@ -112,7 +111,7 @@ public abstract class AbstractRadar extends Canvas implements IRadar{
 		super.addPaintListener( listener );
 	}
 
-	protected ISituationalAwareness getSituationalAwareness() {
+	protected ISituationalAwareness<I> getSituationalAwareness() {
 		return sa;
 	}
 
@@ -196,7 +195,7 @@ public abstract class AbstractRadar extends Canvas implements IRadar{
 	protected abstract void drawDegree( GC gc, int angle, double distance );
 	
 	@Override
-	public void setInput( SituationalAwareness sa ){
+	public void setInput( ISituationalAwareness<I> sa ){
 		this.sa = sa;
 		this.setRange( sa.getRange());
 		this.setSensitivity( sa.getSensitivity());

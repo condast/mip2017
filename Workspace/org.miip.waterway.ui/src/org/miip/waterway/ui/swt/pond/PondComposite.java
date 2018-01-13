@@ -1,4 +1,4 @@
-package org.miip.waterway.ui.swt;
+package org.miip.waterway.ui.swt.pond;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -23,33 +23,29 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
-import org.miip.waterway.model.CentreShip;
-import org.miip.waterway.model.Ship;
-import org.miip.waterway.model.def.IMIIPEnvironment;
+import org.miip.pond.core.PondSituationalAwareness;
+import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IInhabitedEnvironment;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.IShipMovedListener;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.sa.ShipEvent;
-import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.dialog.SettingsDialog;
 import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.images.MIIPImages.Images;
+import org.miip.waterway.ui.swt.Radar;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 
-public class MiipComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
+public class PondComposite extends Composite implements IInputWidget<IInhabitedEnvironment<IVessel[]>> {
 	private static final long serialVersionUID = 1L;
 
 	public static enum Tools{
@@ -62,7 +58,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	public static final String S_RDM_COE_URL = "http://www.rdmcoe.nl//";
 	public static final String S_CONDAST_URL = "http://www.condast.com/";
 
-	private MIIPPresentation canvas;
+	private PondPresentation canvas;
 	private Text text_name;
 	private Label lblSpeedLabel;
 	private Text text_speed;
@@ -71,9 +67,11 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Text text_lat;
 	private Label lblHits;
 
-	private IMIIPEnvironment environment;
+	private IInhabitedEnvironment<IVessel[]> environment;
 	private Collection<ICompositeFactory> factories;
 	private Composite frontend;
+	
+	private ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa; 
 
 	private IEnvironmentListener listener = new IEnvironmentListener() {
 
@@ -96,12 +94,9 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private PlayerComposite<MIIPEnvironment> playerbar;
 
 	private Slider slider_speed;
-	private Spinner spinner_ships;
 	private Label lblActiveShips;
-	private Button btn_manual;
 
 	private IRadar radar;
-	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
 	private Slider slider_range;
@@ -161,10 +156,12 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	 * @param parent
 	 * @param style
 	 */
-	public MiipComposite(Composite parent, Integer style) {
+	public PondComposite(Composite parent, Integer style) {
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.frontend = this;
+		this.sa = new PondSituationalAwareness(); 
+
 		this.factories = new ArrayList<ICompositeFactory>();
 		this.session = new RefreshSession<>(1000);
 		this.session.addSessionListener(slistener);
@@ -176,7 +173,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		setLayout(new GridLayout(2, false));
 
 		createImageBar(this, style);
-		canvas = new MIIPPresentation(this, SWT.BORDER );
+		canvas = new PondPresentation(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 
 		Composite composite = new Composite(this, SWT.NONE);
@@ -224,49 +221,10 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblShipsLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		lblShipsLabel.setText("Amount:");
 
-		spinner_ships = new Spinner( group_control, SWT.BORDER );
-		spinner_ships.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false ));
-		spinner_ships.setMaximum(10);
-		spinner_ships.setMaximum( 50 );
-		spinner_ships.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try{
-					environment.getWaterway().setNrOfShips( spinner_ships.getSelection());
-					super.widgetSelected(e);
-				}
-				catch( Exception ex ){
-					ex.printStackTrace();
-				}
-			}
-		});
-
 
 		lblActiveShips = new Label(group_control, SWT.BORDER);
 		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		btn_manual = new Button( group_control, SWT.CHECK );
-		btn_manual.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		btn_manual.setText("Manual");
-		btn_manual.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try{
-					Button check = (Button) e.widget;
-					environment.setManual( check.getSelection());
-					if( check.getSelection() )
-						canvas.setFocus();
-					super.widgetSelected(e);
-				}
-				catch( Exception ex ){
-					ex.printStackTrace();
-				}
-			}
-		});
 		playerbar = new PlayerComposite<MIIPEnvironment>( group_control, SWT.BORDER );
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 
@@ -318,48 +276,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		int radar_width = 80;
 		GridData gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false, 2, 1);
 		gd_radar.widthHint = radar_width;
-		combo_radar = new Combo( grp_radar, SWT.BORDER );
-		combo_radar.setLayoutData( gd_radar);		
-		combo_radar.setItems( IRadar.RadarSelect.getItems() );
-		combo_radar.select( IRadar.RadarSelect.WARP.ordinal() );
-		combo_radar.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				final Composite parent = radar.getParent();
-				for( Control child: parent.getChildren() )
-					child.dispose();
-				getDisplay().asyncExec( new Runnable(){
-
-					@Override
-					public void run() {
-						try{
-							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
-							case WARP:
-								radar = new Radar(parent, SWT.BORDER);
-								break;
-							case AVERAGE:
-								AveragingRadar avr = new AveragingRadar(parent, SWT.BORDER);
-								//avr.setExpand( 1);
-								radar = avr;
-								break;
-							default:
-								radar = new HumanAssist( parent, SWT.BORDER );	
-								break;
-							}
-							radar.setInput(environment.getSituationalAwareness());
-							radar.refresh();
-							parent.layout();
-						}
-						catch( Exception ex ){
-							ex.printStackTrace();
-						}
-					}
-				});
-				super.widgetSelected(e);
-			}
-		});
 
 		slider_sense = new Slider( grp_radar, SWT.BORDER );
 		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
@@ -374,7 +290,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					ISituationalAwareness sa = environment.getSituationalAwareness();
+					ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa = new PondSituationalAwareness(); 
+					sa.setInput( environment );
 					sa.setSensitivity( slider_sense.getSelection());
 					lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
 					super.widgetSelected(e);
@@ -401,7 +318,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					ISituationalAwareness sa = environment.getSituationalAwareness();
+					ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa = new PondSituationalAwareness(); 
+					sa.setInput( environment );
 					sa.setRange( slider_range.getSelection());
 					lbl_range.setText( String.valueOf( slider_range.getSelection()));
 					super.widgetSelected(e);
@@ -418,39 +336,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		radar = new Radar( comp_radar, SWT.BORDER );	
-		canvas.addKeyListener(new KeyAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			public void keyPressed(KeyEvent e)
-			{
-				if( !btn_manual.getSelection())
-					return;
-				try{
-					CentreShip ship = environment.getShip();
-					CentreShip.Controls control = null; 
-					switch( e.keyCode ){
-					case SWT.ARROW_UP:
-						control = CentreShip.Controls.UP;
-						break;
-					case SWT.ARROW_DOWN:
-						control = CentreShip.Controls.DOWN;
-						break;
-					case SWT.ARROW_LEFT:
-						control = CentreShip.Controls.LEFT;
-						break;
-					case SWT.ARROW_RIGHT:
-						control = CentreShip.Controls.RIGHT;
-						break;
-					default: 
-						break;
-					}
-					ship.setControl(control);	
-				}
-				catch( Exception ex ){
-					ex.printStackTrace();
-				}
-			}
-		});
 	}
 
 	private void createImageBar(Composite parent, int style) {
@@ -512,38 +397,41 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	}
 
 	@Override
-	public IMIIPEnvironment getInput() {
+	public IInhabitedEnvironment<IVessel[]> getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IMIIPEnvironment environment ){
+	public void setInput( IInhabitedEnvironment<IVessel[]> environment){
+		if(( this.environment != null ) && ( this.environment.equals( environment )))
+			return;
 		this.environment = environment;
+		this.sa.setInput(this.environment);
 		this.canvas.setInput(environment);
+		if( this.environment != null )
+			this.environment.addListener(listener);
+		this.playerbar.getButton(PlayerImages.Images.START).setEnabled( this.environment != null );
 	}
 
 	protected void updateView(){
-		Ship ship = environment.getShip();
+		IVessel ship = environment.getInhabitant()[0];
 		this.slider_speed.setSelection( environment.getTimer());
-		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					
-		canvas.redraw();
-		this.text_name.setText( ship.getId() );
+		this.text_name.setText( ship.getName() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
-		this.text_lng.setText( String.valueOf( ship.getLatLng().getLongitude() ));
-		this.text_lat.setText( String.valueOf( ship.getLatLng().getLatitude() ));
-		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
+		this.text_lng.setText( String.valueOf( ship.getLocation().getLongitude() ));
+		this.text_lat.setText( String.valueOf( ship.getLocation().getLatitude() ));
 
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
 		this.lblHits.setText(String.valueOf(hits));
 
-		SituationalAwareness sa = this.environment.getSituationalAwareness();
 		this.slider_sense.setSelection( sa.getSensitivity() );
 		this.slider_range.setMaximum( (int) (environment.getField().getLength()/2) );
 		this.slider_range.setSelection( sa.getRange() );
 		this.radar.setInput( sa );
-
+		this.canvas.redraw();
+		layout(false);
 	}
 
 	public void dispose(){
@@ -578,10 +466,19 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 					PlayerImages.Images.RESET);
 		}
 
+		
+		@Override
+		public Control getButton(Enum<org.condast.commons.ui.player.PlayerImages.Images> type) {
+				return super.getButton(type);
+		}
+
 		@Override
 		protected Control createButton(PlayerImages.Images type) {
 			Button button = new Button( this, SWT.FLAT );
 			switch( type ){
+			case START:
+				button.setEnabled( environment != null );
+				break;
 			case STOP:
 				button.setEnabled(( environment != null ) && environment.isRunning());
 				break;
@@ -601,7 +498,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 						case START:
 							environment.addListener(listener);
 							environment.start();
-							environment.getSituationalAwareness().addlistener(shlistener);
+							//environment.getSituationalAwareness().addlistener(shlistener);
 							//setModels( environment.getModels());
 							//setInput(ce.getBehaviour());
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
