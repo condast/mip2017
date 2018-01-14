@@ -27,13 +27,11 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.pond.core.PondSituationalAwareness;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IInhabitedEnvironment;
-import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.IShipMovedListener;
 import org.miip.waterway.sa.ISituationalAwareness;
@@ -42,7 +40,7 @@ import org.miip.waterway.ui.dialog.SettingsDialog;
 import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.images.MIIPImages.Images;
-import org.miip.waterway.ui.swt.Radar;
+import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
 public class PondComposite extends Composite implements IInputWidget<IInhabitedEnvironment<IVessel[]>> {
@@ -96,11 +94,7 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 	private Slider slider_speed;
 	private Label lblActiveShips;
 
-	private IRadar radar;
-	private Slider slider_sense;
-	private Label lbl_sense;
-	private Slider slider_range;
-	private Label lbl_range;
+	private RadarGroup<IInhabitedEnvironment<IVessel[]>> radarGroup;
 
 	private int hits;
 
@@ -120,12 +114,12 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private IShipMovedListener shlistener = new IShipMovedListener() {
+	private IShipMovedListener<IVessel> shlistener = new IShipMovedListener<IVessel>() {
 
 		private StringBuffer buffer = new StringBuffer();
 
 		@Override
-		public void notifyShipMoved(ShipEvent event) {
+		public void notifyShipMoved( ShipEvent<IVessel> event ) {
 			if( event.getAngle() == 0 ){
 				buffer = new StringBuffer();
 				buffer.append( "vectors: " );
@@ -268,74 +262,8 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 		lblHits = new Label( group_ship, SWT.BORDER );
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 
-		Group grp_radar = new Group(composite, SWT.NONE); 
-		grp_radar.setText("Radar");
-		grp_radar.setLayout(new GridLayout(2, false));
-		grp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-		int radar_width = 80;
-		GridData gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false, 2, 1);
-		gd_radar.widthHint = radar_width;
-
-		slider_sense = new Slider( grp_radar, SWT.BORDER );
-		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
-		slider_sense.setLayoutData( gd_radar);
-		slider_sense.setMinimum(1);
-		slider_sense.setMaximum(900);
-		slider_sense.setSelection( IRadar.DEFAULT_SENSITIVITY );
-		slider_sense.setIncrement(2);
-		slider_sense.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try{
-					ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa = new PondSituationalAwareness(); 
-					sa.setInput( environment );
-					sa.setSensitivity( slider_sense.getSelection());
-					lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
-					super.widgetSelected(e);
-				}
-				catch( Exception ex ){
-					ex.printStackTrace();
-				}
-			}
-		});
-
-		lbl_sense = new Label( grp_radar, SWT.BORDER );
-		lbl_sense.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
-
-		slider_range = new Slider( grp_radar, SWT.BORDER );
-		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
-		slider_range.setLayoutData( gd_radar);
-		slider_range.setMinimum(1);
-		slider_range.setMaximum(3000);
-		slider_range.setSelection( IRadar.DEFAULT_RANGE );
-		slider_range.setIncrement(20);
-		slider_range.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try{
-					ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa = new PondSituationalAwareness(); 
-					sa.setInput( environment );
-					sa.setRange( slider_range.getSelection());
-					lbl_range.setText( String.valueOf( slider_range.getSelection()));
-					super.widgetSelected(e);
-				}
-				catch( Exception ex ){
-					ex.printStackTrace();
-				}
-			}
-		});
-		lbl_range = new Label( grp_radar, SWT.BORDER );
-		lbl_range.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
-
-		Composite comp_radar = new Composite( composite, SWT.NONE); 
-		comp_radar.setLayout(new FillLayout());
-		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new Radar( comp_radar, SWT.BORDER );	
+		radarGroup = new RadarGroup<IInhabitedEnvironment<IVessel[]>>(composite, SWT.NONE); 
+		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 
 	private void createImageBar(Composite parent, int style) {
@@ -422,14 +350,9 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 		this.text_lng.setText( String.valueOf( ship.getLocation().getLongitude() ));
 		this.text_lat.setText( String.valueOf( ship.getLocation().getLatitude() ));
 
-		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
-		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
 		this.lblHits.setText(String.valueOf(hits));
 
-		this.slider_sense.setSelection( sa.getSensitivity() );
-		this.slider_range.setMaximum( (int) (environment.getField().getLength()/2) );
-		this.slider_range.setSelection( sa.getRange() );
-		this.radar.setInput( sa );
+		this.radarGroup.setInput( sa );
 		this.canvas.redraw();
 		layout(false);
 	}

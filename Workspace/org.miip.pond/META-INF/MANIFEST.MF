@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.miip.pond;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.condast.commons.data.latlng,
+Import-Package: org.condast.commons,
+ org.condast.commons.data.latlng,
  org.condast.commons.thread,
  org.condast.symbiotic.core.environment,
  org.miip.waterway.model,
@@ -15,5 +16,5 @@ Import-Package: org.condast.commons.data.latlng,
  org.osgi.service.component.annotations;version="1.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.miip.pond.Activator
-Service-Component: OSGI-INF/org.miip.pond.services.DesignFactory.xml
+Service-Component: OSGI-INF/org.miip.pond.design.factory.xml
 Export-Package: org.miip.pond.core

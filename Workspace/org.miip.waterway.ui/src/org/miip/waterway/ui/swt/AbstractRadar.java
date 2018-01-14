@@ -111,10 +111,6 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 		super.addPaintListener( listener );
 	}
 
-	protected ISituationalAwareness<I> getSituationalAwareness() {
-		return sa;
-	}
-
 	@Override
 	public int getSensitivity() {
 		return sensitivity;
@@ -193,15 +189,22 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 	}
 	
 	protected abstract void drawDegree( GC gc, int angle, double distance );
-	
+
+	protected ISituationalAwareness<I> getInput() {
+		return sa;
+	}
+
+
 	@Override
 	public void setInput( ISituationalAwareness<I> sa ){
 		this.sa = sa;
-		this.setRange( sa.getRange());
-		this.setSensitivity( sa.getSensitivity());
+		if( sa != null ) {
+			this.setRange( sa.getRange());
+			this.setSensitivity( sa.getSensitivity());
+		}
 		refresh();
 	}
-	
+
 	public void refresh(){
 		if( Display.getCurrent().isDisposed() )
 			return;

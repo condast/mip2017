@@ -1,5 +1,6 @@
 package org.miip.pond.core;
 
+import org.condast.commons.Utils;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IInhabitedEnvironment;
 import org.miip.waterway.sa.AbstractSituationalAwareness;
@@ -14,6 +15,8 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<IInha
 
 	@Override
 	protected long onSetInput(IInhabitedEnvironment<IVessel[]> input, int step) {
+		if(( input == null ) ||( Utils.assertNull( input.getInhabitant() )))
+			return Long.MAX_VALUE;
 		this.vessel = input.getInhabitant()[0];
 		this.input = input;
 		return 0;

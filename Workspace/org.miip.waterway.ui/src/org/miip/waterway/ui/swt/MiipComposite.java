@@ -140,6 +140,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				buffer.append( "[" + event.getAngle() + ", " + event.getDistance() + "] " );
 			}
 
+			if( getDisplay().isDisposed())
+				return;
 			getDisplay().asyncExec( new Runnable(){
 
 				@Override

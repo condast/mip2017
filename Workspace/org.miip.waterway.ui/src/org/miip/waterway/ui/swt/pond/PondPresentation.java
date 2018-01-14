@@ -3,9 +3,11 @@ package org.miip.waterway.ui.swt.pond;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.miip.pond.core.PondSituationalAwareness;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.def.IInhabitedEnvironment;
+import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.images.MIIPImages;
 
 import java.util.Map;
@@ -42,7 +44,9 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 		}
 	};
 
-	IInhabitedEnvironment<IVessel[]> environment;
+	private IInhabitedEnvironment<IVessel[]> environment;
+	private ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa;
+	
 
 	/**
 	 * Create the composite.
@@ -53,6 +57,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 		super(parent, style);
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener(listener);
+		sa = new PondSituationalAwareness();
 	}
 
 	@Override
@@ -68,6 +73,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 	@Override
 	public void setInput( IInhabitedEnvironment<IVessel[]> environment){
 		this.environment = environment;
+		sa.setInput(environment);
 	}
 	
 /*	
@@ -82,54 +88,57 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 		int yoffset = vector.getKey();//(int)((float)20 * vector.getValue() *  Math.cos( Math.toRadians( vector.getKey())));
 		return new Point( centre.x + xoffset, centre.y + yoffset );
 	}
-*/
-	
+ */
+
 	protected void drawField( GC gc ){
 		if( environment == null )
 			return;
 		Rectangle clientArea = getClientArea();
 
+		try {
+			//The ship in the centre
+			IVessel[] vessels = this.environment.getInhabitant();
+			IVessel vessel = vessels[0];
+			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
+				scaleToCanvas(vessel.getLocation());
+			drawImage( gc, point, MIIPImages.Images.SHIP);
 
-		//The ship in the centre
-		IVessel[] vessels = this.environment.getInhabitant();
-		IVessel vessel = vessels[0];
-		Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
-			scaleToCanvas(vessel.getLocation());
-		drawImage( gc, point, MIIPImages.Images.SHIP);
+			if(!environment.isInitialsed() )
+				return;
 
-		if(!environment.isInitialsed() )
-			return;
+			//The raster
+			Color color = gc.getForeground();
+			gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
 
-		//The raster
-		Color color = gc.getForeground();
-		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
-		
-		Field field = environment.getField();
-		int i = 0;
-		while( i < field.getLength() ){
-			int xpos = scaleXToDisplay( i ); 
-			int ypos1 = 0;
-			int ypos2 = scaleYToDisplay( (int) (field.getWidth() ));
-			i += GRIDX;
-			gc.drawLine( xpos, ypos1, xpos, ypos2 );
-		}
-		i =0;
-		while( i < field.getWidth()){
-			int xpos1 = scaleXToDisplay( 0 );
-			int xpos2 = scaleXToDisplay( (int) field.getLength());
-			int ypos = scaleYToDisplay( i ); 
-			i += GRIDY;
-			gc.drawLine( xpos1, ypos, xpos2, ypos );
-		}
-		gc.setForeground(color);
+			Field field = environment.getField();
+			int i = 0;
+			while( i < field.getLength() ){
+				int xpos = scaleXToDisplay( i ); 
+				int ypos1 = 0;
+				int ypos2 = scaleYToDisplay( (int) (field.getWidth() ));
+				i += GRIDX;
+				gc.drawLine( xpos, ypos1, xpos, ypos2 );
+			}
+			i =0;
+			while( i < field.getWidth()){
+				int xpos1 = scaleXToDisplay( 0 );
+				int xpos2 = scaleXToDisplay( (int) field.getLength());
+				int ypos = scaleYToDisplay( i ); 
+				i += GRIDY;
+				gc.drawLine( xpos1, ypos, xpos2, ypos );
+			}
+			gc.setForeground(color);
 
-		IVessel ship;
-		for( int j=1; j<vessels.length; j++ ){
-			ship = vessels[j];
-			if( !field.isInField( ship.getLocation(), 0))
-				continue;
-			MIIPImages.Images img = ( ship.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
-			drawImage(gc, scaleToCanvas( ship.getLocation() ), img );
+			IVessel ship;
+			for( int j=1; j<vessels.length; j++ ){
+				ship = vessels[j];
+				if( !field.isInField( ship.getLocation(), 0))
+					continue;
+				MIIPImages.Images img = ( ship.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+				drawImage(gc, scaleToCanvas( ship.getLocation() ), img );
+			}
+		}catch( Exception ex ) {
+			ex.printStackTrace();
 		}
 
 		gc.dispose();

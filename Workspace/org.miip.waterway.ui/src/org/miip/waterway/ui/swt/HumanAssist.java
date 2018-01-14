@@ -4,7 +4,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 
-public class HumanAssist extends AbstractRadar {
+public class HumanAssist<I extends Object> extends AbstractRadar<I> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int BAR_WIDTH = 20;

@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 
-public class AveragingRadar extends AbstractRadar{
+public class AveragingRadar<I extends Object>  extends AbstractRadar<I>{
 	private static final long serialVersionUID = 1L;
 
 	private IBinaryTreeSet<Vector<Integer>> data;
@@ -45,7 +45,7 @@ public class AveragingRadar extends AbstractRadar{
 	@Override
 	protected void onDrawStart(GC gc) {
 		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
-		Map<Integer, Double> radar = super.getSituationalAwareness().getRadar();
+		Map<Integer, Double> radar = super.getInput().getRadar();
 		Iterator<Map.Entry<Integer, Double>> iterator = radar.entrySet().iterator();
 		while( iterator.hasNext() ){
 			Map.Entry<Integer, Double> entry = iterator.next();

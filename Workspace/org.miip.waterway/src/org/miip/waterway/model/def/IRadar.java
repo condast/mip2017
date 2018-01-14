@@ -12,7 +12,8 @@ public interface IRadar<I extends Object> {
 	public enum RadarSelect{
 		WARP,
 		HUMAN_ASSIST,
-		AVERAGE;
+		AVERAGE,
+		POND;
 
 		@Override
 		public String toString() {

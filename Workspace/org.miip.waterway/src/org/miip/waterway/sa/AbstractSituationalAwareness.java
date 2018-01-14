@@ -125,6 +125,8 @@ public abstract class AbstractSituationalAwareness<I extends Object> implements 
 	
 	@Override
 	public void setInput( I input ){
+		if( input == null )
+			return;
 		lock.lock();
 		try{
 			radar.clear();

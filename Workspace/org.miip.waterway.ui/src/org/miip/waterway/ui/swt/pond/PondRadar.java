@@ -7,10 +7,13 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
+import org.miip.pond.core.PondSituationalAwareness;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IInhabitedEnvironment;
+import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AbstractRadar;
 
-public class PondRadar extends AbstractRadar<IVessel>{
+public class PondRadar<I extends Object> extends AbstractRadar<I>{
 	private static final long serialVersionUID = 1L;
 
 	private static final int CORRECTION = 100;//To fill the screen
@@ -38,7 +41,7 @@ public class PondRadar extends AbstractRadar<IVessel>{
 		Calendar next = Calendar.getInstance();
 		for( int i=0; i < time; i++ ){
 			try {
-				Field field = null;//super.getSituationalAwareness().getgetInput().g
+				Field field = null;//super.getInput().getField();
 				long interval = ( next.getTimeInMillis() - current.getTimeInMillis())*i;
 				buffer.append("Interval: " + ( interval/1000) + ":\t" + field.printCoordinates(newpos, false ));
 				buffer.append( "\t" + field.printCoordinates(newotherpos, false ));
@@ -64,6 +67,7 @@ public class PondRadar extends AbstractRadar<IVessel>{
 		//logger.info( buffer.toString());
 	}
 
+	
 	@Override
 	protected void drawDegree( GC gc, int angle, double distance ){
 		if( distance > super.getRange() )
@@ -71,7 +75,7 @@ public class PondRadar extends AbstractRadar<IVessel>{
 		double centrex = getCentre().x;
 		double centrey = getCentre().y;
 		double length = CORRECTION + Math.sqrt( centrex * centrex + centrey * centrey);
-		double offset = distance * length/getSituationalAwareness().getRange();
+		double offset = distance * length/getInput().getRange();
 		
 		double xpos1 = centrex + offset * Math.sin( toRadians( angle ));
 		double ypos1 = centrey + offset * Math.cos( toRadians( angle ));
