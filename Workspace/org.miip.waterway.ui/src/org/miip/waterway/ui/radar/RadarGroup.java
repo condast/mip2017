@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
-import org.miip.waterway.model.def.IInhabitedEnvironment;
+import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AveragingRadar;
@@ -20,10 +20,10 @@ import org.miip.waterway.ui.swt.HumanAssist;
 import org.miip.waterway.ui.swt.Radar;
 import org.miip.waterway.ui.swt.pond.PondRadar;
 
-public class RadarGroup<I extends Object> extends Group {
+public class RadarGroup<I> extends Group {
 	private static final long serialVersionUID = 1L;
 
-	private IRadar<IInhabitedEnvironment<I>> radar;
+	private IRadar<I,IVessel> radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -31,7 +31,7 @@ public class RadarGroup<I extends Object> extends Group {
 	private Label lbl_range;
 	private Composite composite;
 
-	private ISituationalAwareness<IInhabitedEnvironment<I>> sa;
+	private ISituationalAwareness<I,IVessel> sa;
 
 	/**
 	 * Create the composite.
@@ -72,7 +72,8 @@ public class RadarGroup<I extends Object> extends Group {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					sa.setSensitivity( slider_sense.getSelection());
+					if( radar != null )
+						radar.setSensitivity( slider_sense.getSelection());
 					lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
 					super.widgetSelected(e);
 				}
@@ -99,7 +100,8 @@ public class RadarGroup<I extends Object> extends Group {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					sa.setRange( slider_range.getSelection());
+					if( radar != null )
+						radar.setRange( slider_range.getSelection());
 					lbl_range.setText( String.valueOf( slider_range.getSelection()));
 					super.widgetSelected(e);
 				}
@@ -111,7 +113,6 @@ public class RadarGroup<I extends Object> extends Group {
 		lbl_range = new Label( composite, SWT.BORDER );
 		lbl_range.setText("Range");
 		lbl_range.setSize(153, 17);
-
 
 		combo_radar.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
@@ -128,23 +129,25 @@ public class RadarGroup<I extends Object> extends Group {
 						try{
 							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
 							case WARP:
-								radar = new Radar<IInhabitedEnvironment<I>>(parent, SWT.BORDER);
+								radar = new Radar<I>(parent, SWT.BORDER);
 								break;
 							case AVERAGE:
-								AveragingRadar<IInhabitedEnvironment<I>> avr = new AveragingRadar<IInhabitedEnvironment<I>>(parent, SWT.BORDER);
+								AveragingRadar<I> avr = new AveragingRadar<I>(parent, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = avr;
 								break;
 							case POND:
-								PondRadar<IInhabitedEnvironment<I>> pondr = new PondRadar<IInhabitedEnvironment<I>>(parent, SWT.BORDER);
+								PondRadar<I> pondr = new PondRadar<I>(parent, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = pondr;
 								break;
 							default:
-								radar = new HumanAssist<IInhabitedEnvironment<I>>( parent, SWT.BORDER );	
+								radar = new HumanAssist<I>( parent, SWT.BORDER );	
 								break;
 							}
 							radar.setInput(sa);
+							radar.setRange( slider_range.getSelection());
+							radar.setSensitivity( slider_sense.getSelection());
 							radar.refresh();
 							parent.layout();
 						}
@@ -160,19 +163,19 @@ public class RadarGroup<I extends Object> extends Group {
 		Composite comp_radar = new Composite( this, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new Radar<IInhabitedEnvironment<I>>( comp_radar, SWT.BORDER );
+		radar = new Radar<I>( comp_radar, SWT.BORDER );
 	}
 
-	public void setInput( ISituationalAwareness<IInhabitedEnvironment<I>> sa ) {
+	public void setInput( ISituationalAwareness<I,IVessel> sa ) {
 		this.sa = sa;
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
-		if( sa != null ) {
-			this.slider_sense.setSelection( sa.getSensitivity() );
-			this.slider_range.setMaximum( (int) (sa.getInput().getField().getLength()/2) );
-			this.slider_range.setSelection( sa.getRange() );
-		}
 		this.radar.setInput( sa );
+		if( sa != null ) {
+			this.slider_range.setMaximum( (int) (sa.getField().getLength()) );
+		}
+		this.slider_sense.setSelection( radar.getSensitivity() );
+		this.slider_range.setSelection( (int)radar.getRange() );
 	}
 
 	@Override

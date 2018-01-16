@@ -6,8 +6,7 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.pond.core.PondSituationalAwareness;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
-import org.miip.waterway.model.def.IInhabitedEnvironment;
-import org.miip.waterway.sa.ISituationalAwareness;
+import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 
 import java.util.Map;
@@ -24,7 +23,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class PondPresentation extends Canvas implements IInputWidget<IInhabitedEnvironment<IVessel[]>>{
+public class PondPresentation extends Canvas implements IInputWidget<IReferenceEnvironment<IVessel>>{
 	private static final long serialVersionUID = 1L;
 
 	public static final int GRIDX = 100;//meters
@@ -44,8 +43,8 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 		}
 	};
 
-	private IInhabitedEnvironment<IVessel[]> environment;
-	private ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa;
+	private IReferenceEnvironment<IVessel> environment;
+	private PondSituationalAwareness sa;
 	
 
 	/**
@@ -66,12 +65,12 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 	}
 	
 	@Override
-	public IInhabitedEnvironment<IVessel[]> getInput() {
+	public IReferenceEnvironment<IVessel> getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IInhabitedEnvironment<IVessel[]> environment){
+	public void setInput( IReferenceEnvironment<IVessel> environment){
 		this.environment = environment;
 		sa.setInput(environment);
 	}
@@ -97,8 +96,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 
 		try {
 			//The ship in the centre
-			IVessel[] vessels = this.environment.getInhabitant();
-			IVessel vessel = vessels[0];
+			IVessel vessel = this.environment.getInhabitant();
 			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
 				scaleToCanvas(vessel.getLocation());
 			drawImage( gc, point, MIIPImages.Images.SHIP);
@@ -129,9 +127,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IInhabitedE
 			}
 			gc.setForeground(color);
 
-			IVessel ship;
-			for( int j=1; j<vessels.length; j++ ){
-				ship = vessels[j];
+			for( IVessel ship: this.environment.getOthers() ){
 				if( !field.isInField( ship.getLocation(), 0))
 					continue;
 				MIIPImages.Images img = ( ship.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	

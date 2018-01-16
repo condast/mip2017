@@ -13,6 +13,10 @@ public class Vessel implements IVessel {
 		this( new LatLng(name, latitude, longitude ), bearing, speed );
 	}
 
+	public Vessel( String name, LatLng location, double bearing, double speed) {
+		this( name, location.getLatitude(), location.getLongitude(), bearing, speed );
+	}
+	
 	public Vessel( LatLng location, double bearing, double speed) {
 		this.location = location;
 		this.speed = speed;

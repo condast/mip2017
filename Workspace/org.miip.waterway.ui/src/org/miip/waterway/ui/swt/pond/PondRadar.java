@@ -7,13 +7,10 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
-import org.miip.pond.core.PondSituationalAwareness;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IInhabitedEnvironment;
-import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AbstractRadar;
 
-public class PondRadar<I extends Object> extends AbstractRadar<I>{
+public class PondRadar<I extends Object> extends AbstractRadar<I,IVessel>{
 	private static final long serialVersionUID = 1L;
 
 	private static final int CORRECTION = 100;//To fill the screen
@@ -69,16 +66,19 @@ public class PondRadar<I extends Object> extends AbstractRadar<I>{
 
 	
 	@Override
-	protected void drawDegree( GC gc, int angle, double distance ){
+	protected void drawDegree( GC gc, IVessel vessel ){
+		IVessel reference = getInput().getReference(); 
+		double distance = LatLngUtils.getDistance(reference.getLocation(), vessel.getLocation());
+		double angle = LatLngUtils.getBearing(reference.getLocation(), vessel.getLocation());
 		if( distance > super.getRange() )
 			return;
 		double centrex = getCentre().x;
 		double centrey = getCentre().y;
 		double length = CORRECTION + Math.sqrt( centrex * centrex + centrey * centrey);
-		double offset = distance * length/getInput().getRange();
+		double offset = distance * length/getRange();
 		
-		double xpos1 = centrex + offset * Math.sin( toRadians( angle ));
-		double ypos1 = centrey + offset * Math.cos( toRadians( angle ));
+		double xpos1 = centrex + offset * Math.sin( toRadians( (int) angle ));
+		double ypos1 = centrey + offset * Math.cos( toRadians( (int) angle ));
 		gc.setForeground( getColour( distance ));
 		gc.drawLine((int)centrex, (int)centrey, (int)xpos1, (int)ypos1);
 		

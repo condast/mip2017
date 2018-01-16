@@ -5,20 +5,20 @@ import java.util.Collection;
 import java.util.List;
 
 import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
-import org.miip.waterway.model.def.IInhabitedEnvironment;
+import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.model.def.MapLocation;
-import org.miip.waterway.sa.SituationalAwareness;
 
-public class PondEnvironment implements IInhabitedEnvironment<IVessel[]> {
+public class PondEnvironment implements IReferenceEnvironment<IVessel> {
 
 	private Field field;
-	private IVessel vessel;
+	private IVessel reference;
 	private List<IVessel> others;
 	
 	private Collection<IEnvironmentListener> listeners;
@@ -27,21 +27,39 @@ public class PondEnvironment implements IInhabitedEnvironment<IVessel[]> {
 	private PondEnvironment pe;
 	
 	public PondEnvironment() {
-		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
-		vessel = new Vessel( field.transform(0, field.getWidth()/2), 90, 10);//bearing east, 10 km/h
-		IVessel other = new Vessel( field.transform(field.getLength()/2, 0), 180, 10);//bearing south, 10 km/h
 		this.others = new ArrayList<IVessel>();
-		this.others.add( other );
 		this.listeners = new ArrayList<IEnvironmentListener>();
+		this.clear();
 		pe = this; 
 	}
 
 	@Override
-	public IVessel[] getInhabitant() {
+	public void clear() {
+		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
+		LatLng latlng = field.transform(0, field.getWidth()/2);
+		reference = new Vessel( "Reference", latlng, 90, 10);//bearing east, 10 km/h
+		this.others.clear();
+		latlng = field.transform(0, field.getWidth()/2);
+		IVessel other = new Vessel( "Other", field.transform(field.getLength()/2, 0), 180, 10);//bearing south, 10 km/h
+		this.others.add(other);
+	}
+
+	@Override
+	public IVessel getInhabitant() {
+		return reference;
+	}
+	
+	@Override
+	public Collection<IVessel> getOthers() {
+		return this.others;
+	}
+
+	@Override
+	public Collection<IVessel> getAll() {
 		Collection<IVessel> vessels = new ArrayList<IVessel>();
-		vessels.add( vessel );
-		vessels.addAll( this.others);
-		return vessels.toArray( new IVessel[vessels.size()]);
+		vessels.add(reference);
+		vessels.addAll(this.others);
+		return vessels;
 	}
 
 	@Override
@@ -72,12 +90,6 @@ public class PondEnvironment implements IInhabitedEnvironment<IVessel[]> {
 	@Override
 	public void stop() {
 		thread.stop();
-	}
-
-	@Override
-	public void clear() {
-		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
-		vessel = new Vessel( field.transform(0, field.getWidth()/2), 90, 10);//bearing east, 10 km/h
 	}
 
 	@Override
@@ -134,7 +146,7 @@ public class PondEnvironment implements IInhabitedEnvironment<IVessel[]> {
 
 		@Override
 		public void onExecute() {
-			vessel.sail(time);
+			reference.sail(time);
 			for(IVessel other: others )
 				other.sail(time);
 			super.sleep(time);

@@ -92,7 +92,6 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
 
 		sa = new SituationalAwareness(ship, ISituationalAwareness.STEPS_512);
-		sa.setRange( (int) (field.getLength()/2));
 		
 		//The bank at the bottom
 		rectangle = new Rectangle( 0, (int) (field.getWidth()-this.bankWidth), field.getLength(), this.bankWidth );
@@ -227,7 +226,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
 			waterway.update( currentTime, traverse.getX());
 
-			sa.setInput(waterway);//after updating waterway
+			sa.setInput(this);//after updating waterway
 			float min_distance = manual?this.field.getLength(): 50;
 			sa.controlShip( min_distance, this.manual );
 			

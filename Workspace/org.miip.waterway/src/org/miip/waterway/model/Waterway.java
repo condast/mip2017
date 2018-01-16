@@ -16,7 +16,7 @@ public class Waterway extends AbstractModel{
 	private static final int DEFAULT_NR_OF_SHIPS = 1;
 	private static final int MARGIN_X = 20;//The margin with which ships can disappear behind the visible waterway
 	
-	private Collection<Ship> ships;
+	private Collection<IVessel> ships;
 	private int nrOfShips;
 	
 	private Field field;
@@ -34,7 +34,7 @@ public class Waterway extends AbstractModel{
 		super( IModel.ModelTypes.WATERWAY, latlng );
 		this.field = field;
 		this.nrOfShips = nrOfShips;
-		ships = new ArrayList<Ship>();
+		ships = new ArrayList<IVessel>();
 		this.initialise();
 	}
 
@@ -64,7 +64,7 @@ public class Waterway extends AbstractModel{
 		this.nrOfShips = nrOfShips;
 	}
 
-	public Ship[] getShips(){
+	public IVessel[] getShips(){
 		return ships.toArray( new Ship[ ships.size() ]);
 	}
 

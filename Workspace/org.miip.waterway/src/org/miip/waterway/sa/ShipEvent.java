@@ -7,7 +7,11 @@ public class ShipEvent<V extends Object> extends EventObject {
 	private boolean hit;
 	private int angle;
 	private long distance;
-	
+
+	public ShipEvent( V ship ) {
+		this( ship, 0, 0, false); 
+	}
+
 	public ShipEvent( V ship, int angle, long distance ) {
 		this( ship, angle, distance, false); 
 	}

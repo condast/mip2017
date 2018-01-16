@@ -1,25 +1,18 @@
 package org.miip.waterway.sa;
 
-import java.util.Map;
+import java.util.Collection;
 
-import org.condast.commons.data.binary.SequentialBinaryTreeSet;
-import org.condast.commons.data.latlng.Vector;
+import org.condast.commons.data.latlng.Field;
 
-public interface ISituationalAwareness<I extends Object> {
+public interface ISituationalAwareness<I,V extends Object> {
 
 	int MAX_DEGREES = 360;
 	int STEPS_512 = 512;//a more refined alternative to degrees for quick mathematics
 
-	int getRange();
-
-	void setRange(int range);
-
-	int getSensitivity();
-
-	void setSensitivity(int sensitivity);
-
-	int getSteps();
-
+	public Field getField();
+	
+	public V getReference();
+	
 	void addlistener(IShipMovedListener listener);
 
 	void removelistener(IShipMovedListener listener);
@@ -28,8 +21,5 @@ public interface ISituationalAwareness<I extends Object> {
 	
 	public void setInput( I input );
 
-	Map<Integer, Double> getRadar();
-
-	SequentialBinaryTreeSet<Vector<Integer>> getBinaryView();
-
+	public Collection<V> getRadar();
 }

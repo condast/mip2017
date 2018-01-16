@@ -31,7 +31,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.pond.core.PondSituationalAwareness;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IInhabitedEnvironment;
+import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.IShipMovedListener;
 import org.miip.waterway.sa.ISituationalAwareness;
@@ -43,7 +43,7 @@ import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
-public class PondComposite extends Composite implements IInputWidget<IInhabitedEnvironment<IVessel[]>> {
+public class PondComposite extends Composite implements IInputWidget<IReferenceEnvironment<IVessel>> {
 	private static final long serialVersionUID = 1L;
 
 	public static enum Tools{
@@ -55,21 +55,6 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 	public static final String S_KC_DHS_URL = "https://www.hogeschoolrotterdam.nl/onderzoek/kenniscentra/duurzame-havenstad/over-het-kenniscentrum/";
 	public static final String S_RDM_COE_URL = "http://www.rdmcoe.nl//";
 	public static final String S_CONDAST_URL = "http://www.condast.com/";
-
-	private PondPresentation canvas;
-	private Text text_name;
-	private Label lblSpeedLabel;
-	private Text text_speed;
-	private Text text_bearing;
-	private Text text_lng;
-	private Text text_lat;
-	private Label lblHits;
-
-	private IInhabitedEnvironment<IVessel[]> environment;
-	private Collection<ICompositeFactory> factories;
-	private Composite frontend;
-	
-	private ISituationalAwareness<IInhabitedEnvironment<IVessel[]>> sa; 
 
 	private IEnvironmentListener listener = new IEnvironmentListener() {
 
@@ -89,14 +74,6 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 			}
 		}
 	};
-	private PlayerComposite<MIIPEnvironment> playerbar;
-
-	private Slider slider_speed;
-	private Label lblActiveShips;
-
-	private RadarGroup<IInhabitedEnvironment<IVessel[]>> radarGroup;
-
-	private int hits;
 
 	private RefreshSession<EnvironmentEvent> session;
 	private ISessionListener<EnvironmentEvent> slistener = new ISessionListener<EnvironmentEvent>(){
@@ -111,6 +88,29 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 			}
 		}	
 	};
+
+	private PondPresentation canvas;
+	private Text text_name;
+	private Label lblSpeedLabel;
+	private Text text_speed;
+	private Text text_bearing;
+	private Text text_lng;
+	private Text text_lat;
+	private Label lblHits;
+
+	private Collection<ICompositeFactory> factories;
+	private Composite frontend;
+	
+	private PlayerComposite<MIIPEnvironment> playerbar;
+
+	private Slider slider_speed;
+	private Label lblActiveShips;
+
+	private RadarGroup<IReferenceEnvironment<IVessel>> radarGroup;
+	private ISituationalAwareness<IReferenceEnvironment<IVessel>,IVessel> sa; 
+	private IReferenceEnvironment<IVessel> environment;
+
+	private int hits;
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -262,7 +262,7 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 		lblHits = new Label( group_ship, SWT.BORDER );
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 
-		radarGroup = new RadarGroup<IInhabitedEnvironment<IVessel[]>>(composite, SWT.NONE); 
+		radarGroup = new RadarGroup<IReferenceEnvironment<IVessel>>(composite, SWT.NONE); 
 		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 
@@ -325,24 +325,24 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 	}
 
 	@Override
-	public IInhabitedEnvironment<IVessel[]> getInput() {
+	public IReferenceEnvironment<IVessel> getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IInhabitedEnvironment<IVessel[]> environment){
+	public void setInput( IReferenceEnvironment<IVessel> environment){
 		if(( this.environment != null ) && ( this.environment.equals( environment )))
 			return;
 		this.environment = environment;
 		this.sa.setInput(this.environment);
-		this.canvas.setInput(environment);
+		this.canvas.setInput( this.environment);
 		if( this.environment != null )
 			this.environment.addListener(listener);
 		this.playerbar.getButton(PlayerImages.Images.START).setEnabled( this.environment != null );
 	}
 
 	protected void updateView(){
-		IVessel ship = environment.getInhabitant()[0];
+		IVessel ship = environment.getInhabitant();
 		this.slider_speed.setSelection( environment.getTimer());
 		this.text_name.setText( ship.getName() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
@@ -452,6 +452,7 @@ public class PondComposite extends Composite implements IInputWidget<IInhabitedE
 						case RESET:
 							hits = 0;
 							environment.clear();
+							getButton( PlayerImages.Images.RESET).setEnabled(false);
 						default:
 							break;
 						}

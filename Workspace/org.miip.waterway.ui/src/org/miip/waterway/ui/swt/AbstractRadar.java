@@ -1,10 +1,17 @@
 package org.miip.waterway.ui.swt;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.latlng.Vector;
+import org.condast.commons.data.operations.AbstractOperator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -19,7 +26,7 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.sa.ISituationalAwareness;
 
-public abstract class AbstractRadar<I extends Object> extends Canvas implements IRadar<I>{
+public abstract class AbstractRadar<I,V extends Object> extends Canvas implements IRadar<I,V>{
 	private static final long serialVersionUID = 1L;
 	
 	public enum RadarColours{
@@ -78,7 +85,7 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 			return getColour( device, colour);
 		}
 
-		public static Color getLinearColour( Device device, int distance, int range, int sensitivity ){
+		public static Color getLinearColour( Device device, int distance, long range, int sensitivity ){
 			boolean far = ( distance > ( range - sensitivity ));
 			int red = far? 50: (int)( 255 * ( 1 - distance/range ));
 			int green = far? 255: (int)( 255 * distance/range );
@@ -96,10 +103,27 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 		}
 	};
 
-	private ISituationalAwareness<I> sa;
+	private AbstractOperator<Vector<Double>, Vector<Double>> operator = new AbstractOperator<Vector<Double>, Vector<Double>>(){
+
+		@Override
+		public Vector<Double> calculate(Collection<Vector<Double>> input) {
+			float angle = 0;
+			double distance = Integer.MAX_VALUE;
+			for( Vector<Double> vector: input ){
+				angle += vector.getKey();
+				if( vector.getValue() < distance )
+					distance = vector.getValue();
+			}
+			return new Vector<Double>( (double) (angle/input.size()), distance);
+		}
+	};
+
+	private ISituationalAwareness<I,V> sa;
+	private Map<Double, Double> vectors;
 	
-	private int range;
+	private long range;
 	private int sensitivity; //part of the range
+	private int steps;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
@@ -109,6 +133,7 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 		this.range = DEFAULT_RANGE;
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_DARK_GRAY));
 		super.addPaintListener( listener );
+		vectors = new TreeMap<Double, Double>();
 	}
 
 	@Override
@@ -116,17 +141,27 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 		return sensitivity;
 	}
 
-	protected void setSensitivity( int sensitivity) {
+	@Override
+	public void setSensitivity( int sensitivity) {
 		this.sensitivity = sensitivity;
 	}
 
 	@Override
-	public int getRange() {
+	public long getRange() {
 		return range;
 	}
 
-	protected void setRange(int range) {
+	@Override
+	public void setRange(int range) {
 		this.range = range;
+	}
+
+	protected int getSteps() {
+		return steps;
+	}
+
+	protected void setSteps(int steps) {
+		this.steps = steps;
 	}
 
 	/**
@@ -146,7 +181,7 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 	 * @return
 	 */
 	protected double toRadians( int step ){
-		double part = (double)step/sa.getSteps();
+		double part = (double)step/steps;
 		return 2*Math.PI*part;
 	}
 
@@ -160,13 +195,8 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 		if( sa == null )
 			return;
 		this.onDrawStart(gc);
-		TreeMap<Integer, Double> drawMap = new TreeMap<Integer, Double>( sa.getRadar());
-		logger.fine( "Radar values found: " + drawMap.size() );
-		Iterator<Map.Entry<Integer, Double>> iterator = drawMap.descendingMap().entrySet().iterator();
-		while( iterator.hasNext() ){
-			Map.Entry<Integer, Double> entry = iterator.next();
-			if( entry.getValue() <= range )
-				drawDegree(gc, entry.getKey(), entry.getValue());
+		for( V obj: sa.getRadar() ){
+			drawDegree(gc, obj );
 		}
 		this.onDrawEnd(gc);
 	}
@@ -188,19 +218,17 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 		//return new Color (getDisplay(), red, green, 0);
 	}
 	
-	protected abstract void drawDegree( GC gc, int angle, double distance );
+	protected abstract void drawDegree( GC gc, V object );
 
-	protected ISituationalAwareness<I> getInput() {
+	protected ISituationalAwareness<I,V> getInput() {
 		return sa;
 	}
 
-
 	@Override
-	public void setInput( ISituationalAwareness<I> sa ){
+	public void setInput( ISituationalAwareness<I,V> sa ){
 		this.sa = sa;
 		if( sa != null ) {
-			this.setRange( sa.getRange());
-			this.setSensitivity( sa.getSensitivity());
+			this.range = (long) sa.getField().getLongest();
 		}
 		refresh();
 	}
@@ -218,5 +246,37 @@ public abstract class AbstractRadar<I extends Object> extends Canvas implements 
 			}
 			
 		});
+	}
+	
+	/**
+	 * Create a binary view of the situational awareness. This view creates
+	 * subsequent averages of the radar images 
+	 * @return
+	 */
+	protected SequentialBinaryTreeSet<Vector<Double>> getBinaryView(){
+		Iterator<Map.Entry<Double, Double>> iterator = this.vectors.entrySet().iterator();
+		SequentialBinaryTreeSet<Vector<Double>> data = new SequentialBinaryTreeSet<Vector<Double>>( operator );
+		while( iterator.hasNext() ){
+			Map.Entry<Double, Double> entry = iterator.next();
+			data.add( new Vector<Double>( entry.getKey(), entry.getValue()));
+			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
+		}
+		List<Vector<Double>> vectors = data.getValues(5);
+		if( vectors.isEmpty() )
+			return null;
+		Collections.sort( vectors, new VectorComparator());
+		for( Vector<Double> entry: vectors ){
+			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
+		}
+		return data;
+	}
+
+	protected class VectorComparator implements Comparator<Vector<Double>> {
+
+		@Override
+		public int compare(Vector<Double> arg0, Vector<Double> arg1) {
+			return (int)( arg0.getValue() - arg1.getValue());
+		}
+		
 	}
 }

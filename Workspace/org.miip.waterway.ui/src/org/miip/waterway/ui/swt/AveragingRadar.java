@@ -7,14 +7,16 @@ import java.util.Map;
 
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.data.operations.AbstractOperator;
 import org.condast.commons.data.operations.IOperator;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
+import org.miip.waterway.model.IVessel;
 
-public class AveragingRadar<I extends Object>  extends AbstractRadar<I>{
+public class AveragingRadar<I extends Object>  extends AbstractRadar<I,IVessel>{
 	private static final long serialVersionUID = 1L;
 
 	private IBinaryTreeSet<Vector<Integer>> data;
@@ -45,7 +47,7 @@ public class AveragingRadar<I extends Object>  extends AbstractRadar<I>{
 	@Override
 	protected void onDrawStart(GC gc) {
 		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
-		Map<Integer, Double> radar = super.getInput().getRadar();
+		Map<Integer, Double> radar = null;//super.getInput().getRadar();
 		Iterator<Map.Entry<Integer, Double>> iterator = radar.entrySet().iterator();
 		while( iterator.hasNext() ){
 			Map.Entry<Integer, Double> entry = iterator.next();
@@ -62,10 +64,14 @@ public class AveragingRadar<I extends Object>  extends AbstractRadar<I>{
 	 * @param angle
 	 * @param adist
 	 */
-	protected void drawDegree( GC gc, int angle, double adist ){
+	@Override
+	protected void drawDegree( GC gc, IVessel ship ){
 		
 		List<Vector<Integer>> results = this.data.getValues(0);
 		Vector<Integer> vect = null;
+		IVessel reference = getInput().getReference(); 
+		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
+		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
 		for( Vector<Integer> vector: results ){
 			if( vector.getKey() != angle )
 				continue;
@@ -80,10 +86,10 @@ public class AveragingRadar<I extends Object>  extends AbstractRadar<I>{
 		double length = (centrex < centrey )? centrex: centrey;
 		length = length * ( vect.getValue() / super.getRange());
 		
-		double xpos1 = centrex + length * Math.sin( toRadians( angle ));
-		double ypos1 = centrey + length * Math.cos( toRadians( angle ));
-		double xpos2 = centrex + length * Math.sin( toRadians( angle+1 ));
-		double ypos2 = centrey + length * Math.cos( toRadians( angle+1 ));
+		double xpos1 = centrex + length * Math.sin( toRadians( (int) angle ));
+		double ypos1 = centrey + length * Math.cos( toRadians( (int) angle ));
+		double xpos2 = centrex + length * Math.sin( toRadians( (int) (angle+1) ));
+		double ypos2 = centrey + length * Math.cos( toRadians( (int) (angle+1) ));
 		Color background = gc.getBackground();
 		gc.setBackground( getColour( vect.getValue() ));
 		gc.fillPolygon(new int[]{(int) centrex, (int)centrey, (int)xpos1, (int)ypos1, (int)xpos2, (int)ypos2});

@@ -50,7 +50,7 @@ public class Radar{
 
 	public void setInput( SituationalAwareness sa ){
 		this.sa = sa;
-		vectors = sa.getBinaryView().getValues(5);
+		vectors = getBinaryView().getValues(5);
 		this.drawField();
 	}
 

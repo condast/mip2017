@@ -4,7 +4,7 @@ import org.condast.commons.strings.StringStyler;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.sa.ISituationalAwareness;
 
-public interface IRadar<I extends Object> {
+public interface IRadar<I,V extends Object> {
 
 	public static final int DEFAULT_SENSITIVITY = 210;//0-1000
 	public static final int DEFAULT_RANGE = 1200;//max 3000 meters
@@ -39,7 +39,7 @@ public interface IRadar<I extends Object> {
 	 * set the input for this radar by adding the SA and the range (m)
 	 * @param sa
 	 */
-	void setInput( ISituationalAwareness<I> sa);
+	void setInput( ISituationalAwareness<I,V> sa);
 
 	/**
 	 * Get the sensitivity of the radar
@@ -51,10 +51,14 @@ public interface IRadar<I extends Object> {
 	 * get the range of the radar
 	 * @return
 	 */
-	public int getRange();
+	public long getRange();
 	
 	/**
 	 * redraw the canvas
 	 */
 	public void refresh();
+
+	void setSensitivity(int sensitivity);
+
+	void setRange(int range);
 }
