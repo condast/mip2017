@@ -20,10 +20,10 @@ import org.miip.waterway.ui.swt.HumanAssist;
 import org.miip.waterway.ui.swt.Radar;
 import org.miip.waterway.ui.swt.pond.PondRadar;
 
-public class RadarGroup<I> extends Group {
+public class RadarGroup extends Group {
 	private static final long serialVersionUID = 1L;
 
-	private IRadar<I,IVessel> radar;
+	private IRadar<IVessel> radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -31,7 +31,7 @@ public class RadarGroup<I> extends Group {
 	private Label lbl_range;
 	private Composite composite;
 
-	private ISituationalAwareness<I,IVessel> sa;
+	private ISituationalAwareness<?,IVessel> sa;
 
 	/**
 	 * Create the composite.
@@ -129,20 +129,20 @@ public class RadarGroup<I> extends Group {
 						try{
 							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
 							case WARP:
-								radar = new Radar<I>(parent, SWT.BORDER);
+								radar = new Radar(parent, SWT.BORDER);
 								break;
 							case AVERAGE:
-								AveragingRadar<I> avr = new AveragingRadar<I>(parent, SWT.BORDER);
+								AveragingRadar<IVessel> avr = new AveragingRadar<IVessel>(parent, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = avr;
 								break;
 							case POND:
-								PondRadar<I> pondr = new PondRadar<I>(parent, SWT.BORDER);
+								PondRadar<IVessel> pondr = new PondRadar<IVessel>(parent, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = pondr;
 								break;
 							default:
-								radar = new HumanAssist<I>( parent, SWT.BORDER );	
+								radar = new HumanAssist<IVessel>( parent, SWT.BORDER );	
 								break;
 							}
 							radar.setInput(sa);
@@ -159,14 +159,14 @@ public class RadarGroup<I> extends Group {
 				super.widgetSelected(e);
 			}
 		});
-
+		combo_radar.select(IRadar.RadarSelect.POND.ordinal());
 		Composite comp_radar = new Composite( this, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new Radar<I>( comp_radar, SWT.BORDER );
+		radar = new PondRadar<IVessel>( comp_radar, SWT.BORDER );
 	}
 
-	public void setInput( ISituationalAwareness<I,IVessel> sa ) {
+	public void setInput( ISituationalAwareness<?, IVessel> sa ) {
 		this.sa = sa;
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));

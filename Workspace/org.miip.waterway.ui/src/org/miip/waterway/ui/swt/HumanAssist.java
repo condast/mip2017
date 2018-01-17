@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class HumanAssist<I> extends AbstractRadar<I, IVessel> {
+public class HumanAssist<I> extends AbstractRadar<IVessel> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int BAR_WIDTH = 20;
@@ -19,7 +19,7 @@ public class HumanAssist<I> extends AbstractRadar<I, IVessel> {
 	}
 	
 	@Override
-	protected void drawDegree( GC gc, IVessel ship ){
+	protected void drawObject( GC gc, IVessel ship ){
 		double centrex = super.getCentre().x;
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;

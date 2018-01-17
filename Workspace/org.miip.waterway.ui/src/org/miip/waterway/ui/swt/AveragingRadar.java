@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class AveragingRadar<I extends Object>  extends AbstractRadar<I,IVessel>{
+public class AveragingRadar<I extends Object>  extends AbstractRadar<IVessel>{
 	private static final long serialVersionUID = 1L;
 
 	private IBinaryTreeSet<Vector<Integer>> data;
@@ -65,7 +65,7 @@ public class AveragingRadar<I extends Object>  extends AbstractRadar<I,IVessel>{
 	 * @param adist
 	 */
 	@Override
-	protected void drawDegree( GC gc, IVessel ship ){
+	protected void drawObject( GC gc, IVessel ship ){
 		
 		List<Vector<Integer>> results = this.data.getValues(0);
 		Vector<Integer> vect = null;

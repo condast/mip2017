@@ -100,7 +100,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Label lblActiveShips;
 	private Button btn_manual;
 
-	private IRadar<IMIIPEnvironment, IVessel> radar;
+	private IRadar<IVessel> radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -418,7 +418,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		Composite comp_radar = new Composite( composite, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new Radar<IMIIPEnvironment>( comp_radar, SWT.BORDER );	
+		radar = new Radar( comp_radar, SWT.BORDER );	
 		canvas.addKeyListener(new KeyAdapter(){
 			private static final long serialVersionUID = 1L;
 

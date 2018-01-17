@@ -3,17 +3,17 @@ package org.miip.waterway.ui.swt.pond;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.miip.pond.core.PondSituationalAwareness;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.Location;
 import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 
-import java.util.Map;
+import java.util.logging.Logger;
 
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.ui.swt.IInputWidget;
+import org.condast.commons.ui.utils.ScalingUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -44,9 +44,9 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	};
 
 	private IReferenceEnvironment<IVessel> environment;
-	private PondSituationalAwareness sa;
 	
-
+	private Logger logger = Logger.getLogger( this.getClass().getName() );
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -56,7 +56,6 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 		super(parent, style);
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener(listener);
-		sa = new PondSituationalAwareness();
 	}
 
 	@Override
@@ -72,7 +71,6 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	@Override
 	public void setInput( IReferenceEnvironment<IVessel> environment){
 		this.environment = environment;
-		sa.setInput(environment);
 	}
 	
 /*	
@@ -97,8 +95,9 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 		try {
 			//The ship in the centre
 			IVessel vessel = this.environment.getInhabitant();
+			ScalingUtils su = new ScalingUtils( this, this.environment.getField());
 			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
-				scaleToCanvas(vessel.getLocation());
+				su.scaleToCanvas(vessel.getLocation());
 			drawImage( gc, point, MIIPImages.Images.SHIP);
 
 			if(!environment.isInitialsed() )
@@ -111,17 +110,17 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 			Field field = environment.getField();
 			int i = 0;
 			while( i < field.getLength() ){
-				int xpos = scaleXToDisplay( i ); 
+				int xpos = su.scaleXToDisplay( i ); 
 				int ypos1 = 0;
-				int ypos2 = scaleYToDisplay( (int) (field.getWidth() ));
+				int ypos2 = su.scaleYToDisplay( (int) (field.getWidth() ));
 				i += GRIDX;
 				gc.drawLine( xpos, ypos1, xpos, ypos2 );
 			}
 			i =0;
 			while( i < field.getWidth()){
-				int xpos1 = scaleXToDisplay( 0 );
-				int xpos2 = scaleXToDisplay( (int) field.getLength());
-				int ypos = scaleYToDisplay( i ); 
+				int xpos1 = su.scaleXToDisplay( 0 );
+				int xpos2 = su.scaleXToDisplay( (int) field.getLength());
+				int ypos = su.scaleYToDisplay( i ); 
 				i += GRIDY;
 				gc.drawLine( xpos1, ypos, xpos2, ypos );
 			}
@@ -130,8 +129,9 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 			for( IVessel ship: this.environment.getOthers() ){
 				if( !field.isInField( ship.getLocation(), 0))
 					continue;
+				logger.info("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), ship.getLocation()) );
 				MIIPImages.Images img = ( ship.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
-				drawImage(gc, scaleToCanvas( ship.getLocation() ), img );
+				drawImage(gc, su.scaleToCanvas( ship.getLocation() ), img );
 			}
 		}catch( Exception ex ) {
 			ex.printStackTrace();
@@ -155,35 +155,6 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 			ex.printStackTrace();
 		}
 		return img;
-	}
-
-	public Point scaleToCanvas( LatLng location ){
-		Rectangle clientArea = getClientArea();
-		Field field = this.environment.getField();
-		Map.Entry<Double, Double> vector = field.getVector(location);
-		int x= (int)(clientArea.width * vector.getKey()/field.getLength());
-		int y = (int)(clientArea.height * vector.getValue()/field.getWidth());
-		return new Point((int) x, (int) y );
-	}
-
-	public Point scaleToCanvas( Location location ){
-		Rectangle clientArea = getClientArea();
-		Field field = this.environment.getField();
-		int x=  (int)(location.getX() * clientArea.width/field.getLength());
-		int y = (int)(location.getY() * clientArea.height/field.getWidth());
-		return new Point((int) x, (int) y );
-	}
-
-	protected int scaleYToDisplay( int width ){
-		Rectangle clientArea = getClientArea();
-		float scale = ((float)environment.getField().getWidth())/clientArea.height;
-		return (int)( width/scale );
-	}
-
-	protected int scaleXToDisplay( int length ){
-		Rectangle clientArea = getClientArea();
-		float scale = ((float)environment.getField().getLength())/clientArea.width;
-		return (int)( length/scale );
 	}
 
 	@Override

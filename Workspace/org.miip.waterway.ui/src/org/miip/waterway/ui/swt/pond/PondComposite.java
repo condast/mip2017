@@ -106,7 +106,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private Slider slider_speed;
 	private Label lblActiveShips;
 
-	private RadarGroup<IReferenceEnvironment<IVessel>> radarGroup;
+	private RadarGroup radarGroup;
 	private ISituationalAwareness<IReferenceEnvironment<IVessel>,IVessel> sa; 
 	private IReferenceEnvironment<IVessel> environment;
 
@@ -262,7 +262,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		lblHits = new Label( group_ship, SWT.BORDER );
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 
-		radarGroup = new RadarGroup<IReferenceEnvironment<IVessel>>(composite, SWT.NONE); 
+		radarGroup = new RadarGroup(composite, SWT.NONE); 
 		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 

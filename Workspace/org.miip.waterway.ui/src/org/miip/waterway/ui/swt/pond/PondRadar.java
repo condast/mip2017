@@ -1,19 +1,23 @@
 package org.miip.waterway.ui.swt.pond;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.Vector;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.ui.swt.AbstractRadar;
 
-public class PondRadar<I extends Object> extends AbstractRadar<I,IVessel>{
+public class PondRadar<I extends Object> extends AbstractRadar<IVessel>{
 	private static final long serialVersionUID = 1L;
 
-	private static final int CORRECTION = 100;//To fill the screen
+	private int  totalTime = 360000;//3 mins
 	
 	public PondRadar(Composite parent, int style) {
 		super(parent, style);
@@ -21,12 +25,12 @@ public class PondRadar<I extends Object> extends AbstractRadar<I,IVessel>{
 
 	/**
 	 * Predict the future in the given time (in seconds)
-	 * @param time
+	 * @param interval
 	 * @param router
 	 * @param bearing
 	 * @param speed
 	 */
-	private void testPredictFuture( int time, IVessel reference, IVessel other ){
+	private Map<Long, Vector<Double>> predictFuture( int time, IVessel reference, IVessel other ){
 		Calendar current = Calendar.getInstance();
 		LatLng position = reference.getLocation();
 		//logger.info("START POSITION: " + position.toString());
@@ -36,9 +40,10 @@ public class PondRadar<I extends Object> extends AbstractRadar<I,IVessel>{
 		LatLng newotherpos = other.getLocation();
 		//logger.fine("Start Time: " + current.getTime());
 		Calendar next = Calendar.getInstance();
+		Map<Long, Vector<Double>> timemap = new HashMap<Long, Vector<Double>>();
 		for( int i=0; i < time; i++ ){
 			try {
-				Field field = null;//super.getInput().getField();
+				Field field = getInput().getField();
 				long interval = ( next.getTimeInMillis() - current.getTimeInMillis())*i;
 				buffer.append("Interval: " + ( interval/1000) + ":\t" + field.printCoordinates(newpos, false ));
 				buffer.append( "\t" + field.printCoordinates(newotherpos, false ));
@@ -51,9 +56,11 @@ public class PondRadar<I extends Object> extends AbstractRadar<I,IVessel>{
 				newotherpos = other.plotNext(interval);
 				if(!field.isInField( newotherpos, 10 ))
 					continue;
-				long diff = (long) LatLngUtils.distance(newpos, newotherpos);		
-				int bearing = (int) LatLngUtils.getBearingInDegrees(newpos,newotherpos);		
+				double diff = LatLngUtils.distance(newpos, newotherpos);		
+				double bearing = LatLngUtils.getBearingInDegrees(newpos,newotherpos);		
 				buffer.append( "\t bearing and distance is {" + bearing + ", " + diff + "}\n");
+				Vector<Double> vector = new Vector<Double>( bearing, diff );
+				timemap.put(interval,  vector );
 				next.set( Calendar.SECOND, current.get( Calendar.SECOND ) + 1 );
 			}
 			catch( Exception ex ) {
@@ -61,26 +68,36 @@ public class PondRadar<I extends Object> extends AbstractRadar<I,IVessel>{
 				break;
 			}
 		}
-		//logger.info( buffer.toString());
+		return timemap;
 	}
 
 	
 	@Override
-	protected void drawDegree( GC gc, IVessel vessel ){
+	protected void drawObject( GC gc, IVessel vessel ){
 		IVessel reference = getInput().getReference(); 
-		double distance = LatLngUtils.getDistance(reference.getLocation(), vessel.getLocation());
-		double angle = LatLngUtils.getBearing(reference.getLocation(), vessel.getLocation());
-		if( distance > super.getRange() )
-			return;
 		double centrex = getCentre().x;
 		double centrey = getCentre().y;
-		double length = CORRECTION + Math.sqrt( centrex * centrex + centrey * centrey);
-		double offset = distance * length/getRange();
+		double length = Math.sqrt( centrex * centrex + centrey * centrey);
+		//double offset = distance * length/getRange();
 		
-		double xpos1 = centrex + offset * Math.sin( toRadians( (int) angle ));
-		double ypos1 = centrey + offset * Math.cos( toRadians( (int) angle ));
-		gc.setForeground( getColour( distance ));
-		gc.drawLine((int)centrex, (int)centrey, (int)xpos1, (int)ypos1);
-		
+		Map<Long, Vector<Double>> timemap = predictFuture(this.totalTime, reference, vessel);
+		Iterator<Map.Entry<Long, Vector<Double>>> iterator = timemap.entrySet().iterator();
+		int counter = 0;
+		int y = getClientArea().height;
+		int offset = (int)(this.totalTime/getClientArea().width);
+		int xpos = 0;
+		int ypos = 0;
+		while( iterator.hasNext() ) {
+			Map.Entry<Long, Vector<Double>> entry = iterator.next();
+			double angle = entry.getValue().getKey();
+			double distance = entry.getValue().getValue() * length/getRange();
+			int xpos1 = counter*offset;
+			int ypos1 = (int)( angle );
+			gc.setForeground( getColour( distance ));
+			gc.drawLine(xpos, ypos, xpos1, ypos1);
+			xpos = xpos1;
+			ypos = ypos1;
+			counter++;
+		}
 	}
 }

@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.sa.ISituationalAwareness;
 
-public abstract class AbstractRadar<I,V extends Object> extends Canvas implements IRadar<I,V>{
+public abstract class AbstractRadar<V extends Object> extends Canvas implements IRadar<V>{
 	private static final long serialVersionUID = 1L;
 	
 	public enum RadarColours{
@@ -118,7 +118,7 @@ public abstract class AbstractRadar<I,V extends Object> extends Canvas implement
 		}
 	};
 
-	private ISituationalAwareness<I,V> sa;
+	private ISituationalAwareness<?, V> sa;
 	private Map<Double, Double> vectors;
 	
 	private long range;
@@ -196,7 +196,7 @@ public abstract class AbstractRadar<I,V extends Object> extends Canvas implement
 			return;
 		this.onDrawStart(gc);
 		for( V obj: sa.getRadar() ){
-			drawDegree(gc, obj );
+			drawObject(gc, obj );
 		}
 		this.onDrawEnd(gc);
 	}
@@ -218,14 +218,14 @@ public abstract class AbstractRadar<I,V extends Object> extends Canvas implement
 		//return new Color (getDisplay(), red, green, 0);
 	}
 	
-	protected abstract void drawDegree( GC gc, V object );
+	protected abstract void drawObject( GC gc, V object );
 
-	protected ISituationalAwareness<I,V> getInput() {
+	protected ISituationalAwareness<?,V> getInput() {
 		return sa;
 	}
 
 	@Override
-	public void setInput( ISituationalAwareness<I,V> sa ){
+	public void setInput( ISituationalAwareness<?,V> sa ){
 		this.sa = sa;
 		if( sa != null ) {
 			this.range = (long) sa.getField().getLongest();

@@ -39,8 +39,8 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel> {
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		reference = new Vessel( "Reference", latlng, 90, 10);//bearing east, 10 km/h
 		this.others.clear();
-		latlng = field.transform(0, field.getWidth()/2);
-		IVessel other = new Vessel( "Other", field.transform(field.getLength()/2, 0), 180, 10);//bearing south, 10 km/h
+		latlng = field.transform(field.getLength()/2,0);
+		IVessel other = new Vessel( "Other", latlng, 180, 10);//bearing south, 10 km/h
 		this.others.add(other);
 	}
 

@@ -9,13 +9,11 @@ import org.miip.waterway.sa.AbstractSituationalAwareness;
 
 public class PondSituationalAwareness extends AbstractSituationalAwareness<IReferenceEnvironment<IVessel>, IVessel> {
 
-	private IVessel vessel;
-	
 	public PondSituationalAwareness() {
 	}
 
 	public IVessel getReference() {
-		return vessel;
+		return getInput().getInhabitant();
 	}
 
 	@Override
@@ -30,8 +28,5 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<IRefe
 
 	@Override
 	protected void onSetInput(IReferenceEnvironment<IVessel> input) {
-		if( input == null )
-			return;
-		this.vessel = input.getInhabitant();
 	}
 }
