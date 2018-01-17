@@ -40,7 +40,6 @@ public class Ship extends AbstractModel implements IVessel{
 	
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
-
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
 	public Ship( String id, LatLng position, float speed, Bearing bearing) {
@@ -121,26 +120,22 @@ public class Ship extends AbstractModel implements IVessel{
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getId();
 	}
 
 	@Override
 	public LatLng getLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getLatLng();
 	}
 
 	@Override
 	public double getSpeed() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.speed;
 	}
 
 	@Override
 	public double getBearing() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.bearing;
 	}
 
 	@Override

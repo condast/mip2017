@@ -1,4 +1,4 @@
-package org.miip.pond.core;
+package org.miip.waterway.model.eco;
 
 import java.util.Collection;
 

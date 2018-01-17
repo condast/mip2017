@@ -66,8 +66,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 	
 	@Override
 	public IMIIPEnvironment getInput() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.environment;
 	}
 
 	@Override
