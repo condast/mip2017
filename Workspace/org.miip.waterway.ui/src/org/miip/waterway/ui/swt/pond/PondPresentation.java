@@ -4,6 +4,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 
@@ -23,7 +24,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class PondPresentation extends Canvas implements IInputWidget<IReferenceEnvironment<IVessel>>{
+public class PondPresentation extends Canvas implements IInputWidget<IReferenceEnvironment<IPhysical>>{
 	private static final long serialVersionUID = 1L;
 
 	public static final int GRIDX = 100;//meters
@@ -43,7 +44,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 		}
 	};
 
-	private IReferenceEnvironment<IVessel> environment;
+	private IReferenceEnvironment<IPhysical> environment;
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
@@ -64,12 +65,12 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	}
 	
 	@Override
-	public IReferenceEnvironment<IVessel> getInput() {
+	public IReferenceEnvironment<IPhysical> getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IReferenceEnvironment<IVessel> environment){
+	public void setInput( IReferenceEnvironment<IPhysical> environment){
 		this.environment = environment;
 	}
 	
@@ -94,7 +95,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 
 		try {
 			//The ship in the centre
-			IVessel vessel = this.environment.getInhabitant();
+			IVessel vessel = (IVessel) this.environment.getInhabitant();
 			ScalingUtils su = new ScalingUtils( this, this.environment.getField());
 			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
 				su.scaleToCanvas(vessel.getLocation());
@@ -126,12 +127,13 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 			}
 			gc.setForeground(color);
 
-			for( IVessel ship: this.environment.getOthers() ){
-				if( !field.isInField( ship.getLocation(), 0))
+			for( IPhysical phobj: this.environment.getOthers() ){
+				if(( !( phobj instanceof IVessel )) || ( !field.isInField( phobj.getLocation(), 0)))
 					continue;
-				logger.info("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), ship.getLocation()) );
-				MIIPImages.Images img = ( ship.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
-				drawImage(gc, su.scaleToCanvas( ship.getLocation() ), img );
+				IVessel other = (IVessel) phobj;
+				logger.info("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
+				MIIPImages.Images img = ( other.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+				drawImage(gc, su.scaleToCanvas( phobj.getLocation() ), img );
 			}
 		}catch( Exception ex ) {
 			ex.printStackTrace();

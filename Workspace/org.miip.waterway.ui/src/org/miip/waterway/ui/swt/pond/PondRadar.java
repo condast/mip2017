@@ -12,9 +12,10 @@ import org.condast.commons.data.latlng.Vector;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.ui.swt.AbstractRadar;
 
-public class PondRadar<I extends Object> extends AbstractRadar<IVessel>{
+public class PondRadar<I extends Object> extends AbstractRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private int  totalTime = 360000;//3 mins
@@ -73,17 +74,20 @@ public class PondRadar<I extends Object> extends AbstractRadar<IVessel>{
 
 	
 	@Override
-	protected void drawObject( GC gc, IVessel vessel ){
-		IVessel reference = getInput().getReference(); 
+	protected void drawObject( GC gc, IPhysical physicalobj ){
+		IVessel reference = (IVessel) getInput().getReference(); 
 		double centrex = getCentre().x;
 		double centrey = getCentre().y;
 		double length = Math.sqrt( centrex * centrex + centrey * centrey);
 		//double offset = distance * length/getRange();
 		
-		Map<Long, Vector<Double>> timemap = predictFuture(this.totalTime, reference, vessel);
+		if(!( physicalobj instanceof IVessel ))
+			return;
+				
+		Map<Long, Vector<Double>> timemap = predictFuture(this.totalTime, reference, (IVessel) physicalobj);
 		Iterator<Map.Entry<Long, Vector<Double>>> iterator = timemap.entrySet().iterator();
 		int counter = 0;
-		int y = getClientArea().height;
+		//int y = getClientArea().height;
 		int offset = (int)(this.totalTime/getClientArea().width);
 		int xpos = 0;
 		int ypos = 0;

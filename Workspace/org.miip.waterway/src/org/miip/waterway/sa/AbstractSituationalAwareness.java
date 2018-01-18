@@ -10,26 +10,33 @@ public abstract class AbstractSituationalAwareness<I,V extends Object> implement
 	private Lock lock;
 	
 	private I input;
+	
+	private V owner;
 			
-	private Collection<IShipMovedListener> listeners;
+	private Collection<ISituationListener<V>> listeners;
 
-	protected AbstractSituationalAwareness( ) {
-		this( MAX_DEGREES);
+	protected AbstractSituationalAwareness( V owner) {
+		this( owner, MAX_DEGREES);
 	}
 	
-	protected AbstractSituationalAwareness( int steps ) {
+	protected AbstractSituationalAwareness( V owner, int steps ) {
 		lock = new ReentrantLock();
-		this.listeners = new ArrayList<IShipMovedListener>();
+		this.owner = owner;
+		this.listeners = new ArrayList<ISituationListener<V>>();
 	}
 
 	protected void clear() {
 	}
 	
+	protected V getOwner() {
+		return owner;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.sa.ISituationalAwareness#addlistener(org.miip.waterway.sa.IShipMovedListener)
 	 */
 	@Override
-	public void addlistener( IShipMovedListener listener ){
+	public void addlistener( ISituationListener<V> listener ){
 		this.listeners.add( listener);
 	}
 
@@ -37,12 +44,12 @@ public abstract class AbstractSituationalAwareness<I,V extends Object> implement
 	 * @see org.miip.waterway.sa.ISituationalAwareness#removelistener(org.miip.waterway.sa.IShipMovedListener)
 	 */
 	@Override
-	public void removelistener( IShipMovedListener listener ){
+	public void removelistener( ISituationListener<V> listener ){
 		this.listeners.remove(listener);
 	}
 
-	protected void notifylisteners( ShipEvent<I> event ){
-		for( IShipMovedListener listener: listeners )
+	protected void notifylisteners( SituationEvent<V> event ){
+		for( ISituationListener<V> listener: listeners )
 			listener.notifyShipMoved(event);	
 	}
 	
@@ -60,9 +67,9 @@ public abstract class AbstractSituationalAwareness<I,V extends Object> implement
 		lock.lock();
 		try{
 			clear();
-			this.input = input;
 			this.onSetInput(input);
-			notifylisteners( new ShipEvent<I>( input ));
+			this.input = input;
+			notifylisteners( new SituationEvent<V>( this.owner ));
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

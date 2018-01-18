@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.miip.waterway.model.def.IModel;
+import org.miip.waterway.model.def.IPhysical;
 
 public class Representation {
 	
@@ -16,7 +16,7 @@ public class Representation {
 		representations = new TreeMap<Integer,ModelData>();
 	}
 	
-	public void addModel( IModel model, int distance ){
+	public void addModel( IPhysical model, int distance ){
 		ModelData data = representations.get( distance);
 		if( data == null ){
 			data = new ModelData( model );
@@ -24,11 +24,11 @@ public class Representation {
 		representations.put(distance, data);
 	}
 
-	public void removeModel( IModel model ){
+	public void removeModel( IPhysical model ){
 		Iterator<Map.Entry<Integer, ModelData>> iterator = representations.entrySet().iterator();
 		while( iterator.hasNext() ){
 			Map.Entry<Integer, ModelData> entry = iterator.next();
-			Collection<IModel> models = entry.getValue().models;
+			Collection<IPhysical> models = entry.getValue().models;
 			if( models.contains( model )){
 				models.remove( model);
 				if( models.isEmpty())
@@ -38,22 +38,22 @@ public class Representation {
 	}
 	
 	private class ModelData{
-		private Collection<IModel> models;
+		private Collection<IPhysical> models;
 
-		public ModelData( IModel model) {
+		public ModelData( IPhysical model) {
 			this();
 			this.addModel(model);
 		}
 		
 		public ModelData() {
-			models = new ArrayList<IModel>();
+			models = new ArrayList<IPhysical>();
 		}
 		
-		public void addModel( IModel model ){
+		public void addModel( IPhysical model ){
 			this.models.add( model);
 		}
 
-		public void removeModel( IModel model ){
+		public void removeModel( IPhysical model ){
 			this.models.remove( model);
 		}
 	}

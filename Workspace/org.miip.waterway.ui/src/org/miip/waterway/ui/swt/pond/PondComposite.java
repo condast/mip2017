@@ -9,7 +9,6 @@ import org.eclipse.swt.layout.GridLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.logging.Logger;
 
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.ISessionListener;
@@ -30,12 +29,9 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.model.eco.MIIPEnvironment;
-import org.miip.waterway.model.eco.PondSituationalAwareness;
-import org.miip.waterway.sa.IShipMovedListener;
-import org.miip.waterway.sa.ISituationalAwareness;
-import org.miip.waterway.sa.ShipEvent;
 import org.miip.waterway.ui.dialog.SettingsDialog;
 import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.images.MIIPImages;
@@ -43,7 +39,7 @@ import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
-public class PondComposite extends Composite implements IInputWidget<IReferenceEnvironment<IVessel>> {
+public class PondComposite extends Composite implements IInputWidget<IReferenceEnvironment<IPhysical>> {
 	private static final long serialVersionUID = 1L;
 
 	public static enum Tools{
@@ -107,43 +103,9 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private Label lblActiveShips;
 
 	private RadarGroup radarGroup;
-	private ISituationalAwareness<IReferenceEnvironment<IVessel>,IVessel> sa; 
-	private IReferenceEnvironment<IVessel> environment;
+	private IReferenceEnvironment<IPhysical> environment;
 
 	private int hits;
-
-	private Logger logger = Logger.getLogger(this.getClass().getName());
-
-	private IShipMovedListener<IVessel> shlistener = new IShipMovedListener<IVessel>() {
-
-		private StringBuffer buffer = new StringBuffer();
-
-		@Override
-		public void notifyShipMoved( ShipEvent<IVessel> event ) {
-			if( event.getAngle() == 0 ){
-				buffer = new StringBuffer();
-				buffer.append( "vectors: " );
-			}else if( event.getAngle() == 511 ){
-				logger.info( buffer.toString() );				
-			}else{
-				buffer.append( "[" + event.getAngle() + ", " + event.getDistance() + "] " );
-			}
-
-			getDisplay().asyncExec( new Runnable(){
-
-				@Override
-				public void run() {
-					try{
-					hits++;
-					lblHits.setText( String.valueOf(hits));
-					}
-					catch( Exception ex ){
-						ex.printStackTrace();
-					}
-				}	
-			});
-		}
-	};
 
 	/**
 	 * Create the composite.
@@ -154,7 +116,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.frontend = this;
-		this.sa = new PondSituationalAwareness(); 
+		//this.sa = new PondSituationalAwareness(); 
 
 		this.factories = new ArrayList<ICompositeFactory>();
 		this.session = new RefreshSession<>(1000);
@@ -325,24 +287,27 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	}
 
 	@Override
-	public IReferenceEnvironment<IVessel> getInput() {
+	public IReferenceEnvironment<IPhysical> getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IReferenceEnvironment<IVessel> environment){
+	public void setInput( IReferenceEnvironment<IPhysical> environment){
 		if(( this.environment != null ) && ( this.environment.equals( environment )))
 			return;
 		this.environment = environment;
-		this.sa.setInput(this.environment);
+		if( this.environment == null )
+			return;
 		this.canvas.setInput( this.environment);
+		IVessel reference = (IVessel) this.environment.getInhabitant();
+		this.radarGroup.setInput( reference.getSituationalAwareness() );
 		if( this.environment != null )
 			this.environment.addListener(listener);
 		this.playerbar.getButton(PlayerImages.Images.START).setEnabled( this.environment != null );
 	}
 
 	protected void updateView(){
-		IVessel ship = environment.getInhabitant();
+		IVessel ship = (IVessel) environment.getInhabitant();
 		this.slider_speed.setSelection( environment.getTimer());
 		this.text_name.setText( ship.getName() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
@@ -352,7 +317,6 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 		this.lblHits.setText(String.valueOf(hits));
 
-		this.radarGroup.setInput( sa );
 		this.canvas.redraw();
 		layout(false);
 	}

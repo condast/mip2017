@@ -3,6 +3,8 @@ package org.miip.waterway.model.eco;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.strings.StringStyler;
 import org.miip.waterway.model.Location;
 
@@ -24,33 +26,40 @@ public class Bank{
 	private Collection<Location> shore;
 	private int nrOfShoreObjects;
 	
-	private Rectangle rectangle;
+	private Field field;
+	private int xoffset, yoffset;
 
-	public Bank( Rectangle rectangle ) {
-		this( rectangle, DEFAULT_NR_OF_TREES );
+	public Bank( Field field ) {
+		this( field, 0, 0, DEFAULT_NR_OF_TREES );
 	}
 
-	public Bank( long length, long width) {
-		this( length, width, DEFAULT_NR_OF_TREES );
+	public Bank( Field field, int xoffset, int yoffset ) {
+		this( field, xoffset, yoffset, DEFAULT_NR_OF_TREES );
+	}
+
+	public Bank( LatLng location, int xoffset, int yoffset, long length, long width) {
+		this( location, xoffset, yoffset, length, width, DEFAULT_NR_OF_TREES );
 	}
 	
-	public Bank( long length, long width, int nrOfShoreObjects) {
-		this( new Rectangle( 0,0, length, width ), nrOfShoreObjects );
+	public Bank( LatLng location, int xoffset, int yoffset, long length, long width, int nrOfShoreObjects) {
+		this( new Field( location, length, width ), xoffset, yoffset, nrOfShoreObjects );
 	}
 	
-	public Bank( Rectangle rectangle, int nrOfShoreObjects) {
-		this.rectangle = rectangle;
+	public Bank( Field field, int xoffset, int yoffset, int nrOfShoreObjects) {
+		this.field = field;
+		this.xoffset = xoffset;
+		this.yoffset = yoffset;
 		this.nrOfShoreObjects = nrOfShoreObjects;
 		shore = new ArrayList<Location>();
 		this.initialise();
 	}
 	
 	protected void initialise(){
-		double offset = rectangle.getLength()/nrOfShoreObjects;
-		double halfWidth = rectangle.getWidth()/2;
+		double offset = field.getLength()/nrOfShoreObjects;
+		double halfWidth = field.getWidth()/2;
 		for( int i=0; i< this.nrOfShoreObjects; i++){
-			double x = rectangle.getXPos() + offset * i * Math.random();
-			double y = rectangle.getYPos() + ( 0.5f + Math.random()) * halfWidth;
+			double x =  offset * i * Math.random();
+			double y = ( 0.5f + Math.random()) * halfWidth;
 			shore.add( new Location((int)x, (int) y));
 		}
 	}
@@ -60,14 +69,14 @@ public class Bank{
 	}
 	
 	public void update( double distance ){
-		double offset = rectangle.getLength()/this.nrOfShoreObjects;
+		double offset = field.getLength()/this.nrOfShoreObjects;
 		for( Location location: getShoreObjects() ){
 			shore.remove( location );
 			double x = (double)location.getX() - distance;
 			double y = location.getY();
 			if( x < 0 ){
-				x = rectangle.getXPos() + rectangle.getLength() + ( Math.random() - 1 ) *offset; 
-				y = rectangle.getYPos() + ( 0.5f + Math.random()) * rectangle.getWidth()/2;
+				x = xoffset + field.getLength() + ( Math.random() - 1 ) *offset; 
+				y = yoffset + ( 0.5f + Math.random()) * field.getWidth()/2;
 			}
 			shore.add( new Location( x, y ));
 		}

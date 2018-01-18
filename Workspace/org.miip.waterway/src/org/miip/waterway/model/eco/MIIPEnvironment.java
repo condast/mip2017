@@ -20,8 +20,7 @@ import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.model.def.IModel;
-import org.miip.waterway.sa.ISituationalAwareness;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.sa.SituationalAwareness;
 
 public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
@@ -78,24 +77,25 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		currentTime = Calendar.getInstance().getTime();
 		
 		//The bank on the top
-		Rectangle rectangle = new Rectangle( 0, 0, field.getLength(), this.bankWidth );
-		topBank = new Bank( rectangle );
+		Field section = new Field( this.field.getCoordinates(), this.field.getLength(), this.bankWidth );
+		topBank = new Bank( section );
 		
 		//The actual waterway
 		LatLng latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.bankWidth); 
 		long width = this.field.getWidth() - 2 * this.bankWidth;
-		rectangle = new Rectangle( 0, this.bankWidth, field.getLength(), width );
-		this.waterway = new Waterway( latlng, field, 100);
+		section = new Field( latlng, this.field.getLength(), width );
+		this.waterway = new Waterway( latlng, section, 100);
 		
 		//Position of the ship
 		latlng = this.field.getCentre();
 		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
 
-		sa = new SituationalAwareness(ship, ISituationalAwareness.STEPS_512);
+		sa = new SituationalAwareness(ship);
 		
 		//The bank at the bottom
-		rectangle = new Rectangle( 0, (int) (field.getWidth()-this.bankWidth), field.getLength(), this.bankWidth );
-		bottomBank =  new Bank( rectangle );
+		latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
+		section = new Field( latlng, field.getLength(), this.bankWidth );
+		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
 		
 		this.initialsed = true;
 		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
@@ -248,10 +248,10 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @param model
 	 * @return
 	 */
-	public Location getLocation( IModel model ){
-		double x = Math.abs( LatLngUtils.lngDistance( field.getCoordinates(), model.getLatLng(), 0, 0));
-		double y = 1.8* Math.abs( LatLngUtils.latDistance( field.getCoordinates(), model.getLatLng(), 0, 0));
-		logger.fine("Creating location for " + model.getLatLng() + " = \n\t [" + x + ",  " + y  );
+	public Location getLocation( IPhysical model ){
+		double x = Math.abs( LatLngUtils.lngDistance( field.getCoordinates(), model.getLocation(), 0, 0));
+		double y = 1.8* Math.abs( LatLngUtils.latDistance( field.getCoordinates(), model.getLocation(), 0, 0));
+		logger.fine("Creating location for " + model.getLocation() + " = \n\t [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}
 }

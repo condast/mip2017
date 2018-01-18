@@ -3,14 +3,14 @@ package org.miip.waterway.model.def;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.strings.StringStyler;
 
-public interface IModel {
+public interface IPhysical {
 
 	public enum ModelTypes{
 		POINT,
 		COURSE,
 		BANK,
 		WATERWAY,
-		SHIP;
+		VESSEL;
 		
 		public String getImage(){
 			/*
@@ -42,7 +42,7 @@ public interface IModel {
 
 	String getId();
 
-	LatLng getLatLng();
+	LatLng getLocation();
 
 	ModelTypes getType();
 }

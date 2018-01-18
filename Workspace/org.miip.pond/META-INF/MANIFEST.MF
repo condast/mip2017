@@ -11,6 +11,7 @@ Import-Package: org.condast.commons,
  org.condast.symbiotic.core.environment,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
+ org.miip.waterway.model.eco,
  org.miip.waterway.sa,
  org.osgi.framework;version="1.8.0",
  org.osgi.service.component.annotations;version="1.2.0"

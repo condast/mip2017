@@ -5,13 +5,13 @@ import java.util.logging.Logger;
 
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.condast.commons.ui.utils.ScalingUtils;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.sa.ISituationalAwareness;
 
-public class Radar extends AbstractRadar<IVessel>{
+public class Radar extends AbstractRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
@@ -21,9 +21,9 @@ public class Radar extends AbstractRadar<IVessel>{
 	}
 	
 	@Override
-	protected void drawObject( GC gc, IVessel ship ){
-		ISituationalAwareness<?, IVessel> sa = super.getInput();
-		IVessel reference = sa.getReference(); 
+	protected void drawObject( GC gc, IPhysical ship ){
+		ISituationalAwareness<?, IPhysical> sa = super.getInput();
+		IVessel reference = (IVessel) sa.getReference(); 
 		if( ship.equals( reference ))
 			return;
 		
@@ -33,16 +33,14 @@ public class Radar extends AbstractRadar<IVessel>{
 		double angle = vector.getKey();
 		if( distance > super.getRange() )
 			return;
-		logger.fine("Comparing " + reference.getName() + " and " + ship.getName() + "}" );
-		logger.fine("Other is " + ship.getName() + " is " + ship.getLocation().toLocation() + "}" );
 		logger.fine("Ships at {" + distance + ", " + angle + "}" );
-		logger.info("Distance: " + LatLngUtils.getDistance( reference.getLocation(), ship.getLocation()) + " compare with " + distance );
+		logger.fine("Distance: " + LatLngUtils.getDistance( reference.getLocation(), ship.getLocation()) + " compare with " + distance );
 
 		double centrex = getCentre().x;
 		double centrey = getCentre().y;
 		double length = Math.sqrt( centrex * centrex + centrey * centrey);
 		
-		ScalingUtils su = new ScalingUtils( this, sa.getField());
+		//ScalingUtils su = new ScalingUtils( this, sa.getField());
 		double offset = distance * length/getRange();
 		double xpos1 = centrex + offset * Math.sin( angle );
 		double ypos1 = centrey - offset * Math.cos( angle );//correction for different positioning

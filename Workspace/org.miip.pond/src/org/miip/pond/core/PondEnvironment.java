@@ -10,16 +10,20 @@ import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
+import org.miip.waterway.model.AbstractCollisionAvoidance;
+import org.miip.waterway.model.ICollisionAvoidance;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.model.def.MapLocation;
+import org.miip.waterway.model.eco.PondSituationalAwareness;
 
-public class PondEnvironment implements IReferenceEnvironment<IVessel> {
+public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 
 	private Field field;
 	private IVessel reference;
-	private List<IVessel> others;
+	private List<IPhysical> others;
 	
 	private Collection<IEnvironmentListener> listeners;
 	
@@ -27,10 +31,10 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel> {
 	private PondEnvironment pe;
 	
 	public PondEnvironment() {
-		this.others = new ArrayList<IVessel>();
+		this.others = new ArrayList<IPhysical>();
 		this.listeners = new ArrayList<IEnvironmentListener>();
-		this.clear();
 		pe = this; 
+		this.clear();
 	}
 
 	@Override
@@ -38,9 +42,14 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel> {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		reference = new Vessel( "Reference", latlng, 90, 10);//bearing east, 10 km/h
+		ICollisionAvoidance ca = new DefaultCollisionAvoidance( reference); 
+		reference.setCollisionAvoidance(ca);
+		
 		this.others.clear();
 		latlng = field.transform(field.getLength()/2,0);
-		IVessel other = new Vessel( "Other", latlng, 180, 10);//bearing south, 10 km/h
+		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
+		ca = new DefaultCollisionAvoidance( other); 
+		other.setCollisionAvoidance(ca);
 		this.others.add(other);
 	}
 
@@ -50,13 +59,13 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel> {
 	}
 	
 	@Override
-	public Collection<IVessel> getOthers() {
+	public Collection<IPhysical> getOthers() {
 		return this.others;
 	}
 
 	@Override
-	public Collection<IVessel> getAll() {
-		Collection<IVessel> vessels = new ArrayList<IVessel>();
+	public Collection<IPhysical> getAll() {
+		Collection<IPhysical> vessels = new ArrayList<IPhysical>();
 		vessels.add(reference);
 		vessels.addAll(this.others);
 		return vessels;
@@ -147,11 +156,23 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel> {
 		@Override
 		public void onExecute() {
 			reference.sail(time);
-			for(IVessel other: others )
-				other.sail(time);
+			for(IPhysical other: others ) {
+				IVessel vessel = (IVessel) other;
+				vessel.sail(time);
+			}
 			super.sleep(time);
 			notifyEnvironmentChanged( new EnvironmentEvent(pe));
+		}	
+	}
+	
+	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
+
+		public DefaultCollisionAvoidance( IVessel vessel ) {
+			super( vessel, new PondSituationalAwareness( vessel ));
+			PondSituationalAwareness psa = (PondSituationalAwareness) super.getSituationalAwareness();
+			psa.setInput( pe);
 		}
 		
 	}
+
 }

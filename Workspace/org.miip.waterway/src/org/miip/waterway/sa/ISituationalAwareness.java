@@ -13,9 +13,9 @@ public interface ISituationalAwareness<I,V extends Object> {
 	
 	public V getReference();
 	
-	void addlistener(IShipMovedListener listener);
+	void addlistener(ISituationListener<V> listener);
 
-	void removelistener(IShipMovedListener listener);
+	void removelistener(ISituationListener<V> listener);
 	
 	public I getInput();
 	

@@ -2,15 +2,18 @@ package org.miip.waterway.model;
 
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.miip.waterway.internal.model.AbstractModel;
+import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.sa.ISituationalAwareness;
 
-public class Vessel implements IVessel {
+public class Vessel extends AbstractModel implements IVessel {
 
-	private LatLng location;
 	private double speed;
 	private double bearing;
+	private ICollisionAvoidance ca;
 
-	public Vessel(String name, double latitude, double longitude, double bearing, double speed ) {
-		this( new LatLng(name, latitude, longitude ), bearing, speed );
+	public Vessel(String name, double latitude, double longitude, double bearing, double speed) {
+		this( new LatLng(name, latitude, longitude ), bearing, speed);
 	}
 
 	public Vessel( String name, LatLng location, double bearing, double speed) {
@@ -18,19 +21,14 @@ public class Vessel implements IVessel {
 	}
 	
 	public Vessel( LatLng location, double bearing, double speed) {
-		this.location = location;
+		super( IPhysical.ModelTypes.VESSEL, location );
 		this.speed = speed;
 		this.bearing = bearing;
 	}
 
 	@Override
 	public String getName() {
-		return location.getId();
-	}
-
-	@Override
-	public LatLng getLocation() {
-		return location;
+		return super.getLocation().getId();
 	}
 
 	@Override
@@ -55,16 +53,33 @@ public class Vessel implements IVessel {
 		return bearing;
 	}
 
-	
 	@Override
-	public LatLng plotNext(long interval) {
-		double distance = ( this.speed * interval )/3600;// (msec * km/h) = m/3600
-		return LatLngUtils.extrapolate( this.location, this.bearing, distance);
+	public ISituationalAwareness<?, IPhysical> getSituationalAwareness(){
+		return ca.getSituationalAwareness();
+	}
+	
+	public ICollisionAvoidance getCollisionAvoidance() {
+		return ca;
 	}
 
 	@Override
-	public LatLng sail(long timeinMillis) {
-		this.location = plotNext( timeinMillis );
+	public void setCollisionAvoidance(ICollisionAvoidance ca) {
+		this.ca = ca;
+	}
+
+	@Override
+	public LatLng plotNext(long interval) {
+		double distance = ( this.speed * interval )/3600;// (msec * km/h) = m/3600
+		return LatLngUtils.extrapolate( super.getLocation(), this.bearing, distance);
+	}
+
+	@Override
+	public LatLng sail(long interval ) {
+		LatLng location = super.getLocation();
+		if( this.ca == null )
+			return location;
+		location = ca.sail(interval );
+		super.setLnglat(location);
 		return location;
 	}
 }

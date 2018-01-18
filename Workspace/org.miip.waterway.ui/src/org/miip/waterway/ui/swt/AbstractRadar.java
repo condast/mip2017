@@ -24,7 +24,9 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.sa.ISituationListener;
 import org.miip.waterway.sa.ISituationalAwareness;
+import org.miip.waterway.sa.SituationEvent;
 
 public abstract class AbstractRadar<V extends Object> extends Canvas implements IRadar<V>{
 	private static final long serialVersionUID = 1L;
@@ -119,6 +121,20 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 	};
 
 	private ISituationalAwareness<?, V> sa;
+	private ISituationListener<V> slistener = new ISituationListener<V>() {
+		
+		@Override
+		public void notifyShipMoved(SituationEvent<V> event) {
+			getDisplay().asyncExec( new Runnable() {
+
+				@Override
+				public void run() {
+					redraw();
+				}
+			});
+		}
+	};
+	
 	private Map<Double, Double> vectors;
 	
 	private long range;
@@ -226,9 +242,15 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 
 	@Override
 	public void setInput( ISituationalAwareness<?,V> sa ){
+		if( this.sa != null ) {
+			if( this.sa.equals(sa))
+				return;
+			this.sa.removelistener(slistener);
+		}
 		this.sa = sa;
+		this.sa.addlistener(slistener);
 		if( sa != null ) {
-			this.range = (long) sa.getField().getLongest();
+			this.range = (long) sa.getField().getLength();
 		}
 		refresh();
 	}
@@ -269,6 +291,12 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
 		}
 		return data;
+	}
+	
+	public void dispose() {
+		if( this.sa != null )
+			this.sa.removelistener(slistener);
+		super.dispose();
 	}
 
 	protected class VectorComparator implements Comparator<Vector<Double>> {

@@ -35,12 +35,12 @@ public class CentreShip extends Ship {
 	}
 
 	@Override
-	public LatLng getLatLng() {
+	public LatLng getLocation() {
 		if(( offset == null ) || ( Math.abs( offset.getValue() ) < Double.MIN_VALUE ))
-			return super.getLatLng();
+			return super.getLocation();
 		if( offset.getKey() == 0 )
 			offset = null;
-		LatLng correction = super.getLatLng();//LatLngUtils.extrapolate( super.getLatLng(), 0, 200);
+		LatLng correction = super.getLocation();//LatLngUtils.extrapolate( super.getLatLng(), 0, 200);
 		//logger.fine( "New position: " + correction + " from [" + offset.getKey() + ", " + offset.getValue() + "]");
 		return correction;
 	}

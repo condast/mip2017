@@ -1,21 +1,17 @@
 package org.miip.waterway.model;
 
 import org.condast.commons.data.latlng.LatLng;
+import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.sa.ISituationalAwareness;
 
-public interface IVessel {
+public interface IVessel extends IPhysical{
 
 	/**
 	 * Get the name of the vessel
 	 * @return
 	 */
 	public String getName();
-	
-	/**
-	 * Get the location of the vessel
-	 * @return
-	 */
-	public LatLng getLocation();
-	
+		
 	double getTurn(long timemsec);
 
 	double getMinTurnDistance();
@@ -45,5 +41,9 @@ public interface IVessel {
 	 * @return
 	 */
 	LatLng sail(long timeinMillis);
+
+	ISituationalAwareness<?, IPhysical> getSituationalAwareness();
+
+	void setCollisionAvoidance(ICollisionAvoidance ca);
 
 }

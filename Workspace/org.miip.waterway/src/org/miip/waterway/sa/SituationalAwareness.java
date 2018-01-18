@@ -1,23 +1,21 @@
 package org.miip.waterway.sa;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
-import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.symbiotic.core.environment.EnvironmentEvent;
+import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.miip.waterway.model.CentreShip;
-import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.Point;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
+import org.miip.waterway.model.def.IPhysical;
 
-public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvironment, IVessel> {
-
-	private CentreShip ship;
+public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvironment, IPhysical> {
 
 	/*
 	private AbstractOperator<Vector<Integer>, Vector<Integer>> operator = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
@@ -36,44 +34,48 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 	};
 */
 	
-	private IMIIPEnvironment environment;
-	private int step;
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
+
+	private IEnvironmentListener listener = new IEnvironmentListener() {
+
+		@Override
+		public void notifyEnvironmentChanged(EnvironmentEvent event) {
+			notifylisteners( new SituationEvent<IPhysical>( getOwner()));
+		}
+	};
 	
 	public SituationalAwareness( CentreShip ship ) {
-		this( ship, MAX_DEGREES);
-	}
-	
-	public SituationalAwareness( CentreShip ship, int steps ) {
-		this.ship = ship;
-		this.step = 512;
+		super( ship );
 	}
 
 	@Override
 	public Field getField() {
-		return environment.getWaterway().getField();
+		return super.getInput().getWaterway().getField();
 	}
 
 	@Override
 	public Ship getReference() {
-		return environment.getShip();
+		return super.getInput().getShip();
 	}
 
 	@Override
-	public Collection<IVessel> getRadar() {
-		return Arrays.asList( environment.getWaterway().getShips());
+	public Collection<IPhysical> getRadar() {
+		Collection<IPhysical> results = new ArrayList<IPhysical>();
+		Waterway waterway = super.getInput().getWaterway();
+		for( IPhysical phobj: waterway.getShips() )
+			results.add(phobj);
+		results.addAll(getBanks(waterway));
+		return results;
 	}
 
 	@Override
 	protected void onSetInput(IMIIPEnvironment environment) {
-		this.environment = environment;
-		//Map<Integer, Double> vectors = getVectors( waterway );
-		//double bank =  getBankDistance(waterway, step); 
-		//double shipdist = vectors.containsKey(step)? vectors.get(step):(double)Integer.MAX_VALUE;
-		//Double distance = ( shipdist < bank)? shipdist: bank;
-		//if( distance < this.getRange() ){
-		//	addVector( step, distance );
-		//}
+		if( super.getInput() != null ) {
+			if( super.getInput().equals(environment ))
+				return;
+			super.getInput().removeListener(listener);
+		}
+		environment.addListener(listener);
 	}
 
 	public void controlShip( float min_distance, boolean max ){
@@ -108,41 +110,19 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 		*/
 	}
 	
-	/**
-	 * Get the radians for the given step size
-	 * @param step
-	 * @return
-	 */
-	protected double toRadians( int step ){
-		double part = (double)step/this.step;
-		return 2*Math.PI*part;
-	}
-
-	private double getBankDistance( Waterway waterway, int i ){
-		double halfwidth = waterway.getField().getWidth()/2;
-		int quarter = this.step / 4;
-		double radian = (i < quarter )|| (i>3*quarter)?toRadians(i): toRadians(2*quarter - i);
-		return halfwidth/ Math.cos(radian);
-	}
-	
-	protected Map<Integer, Double> getVectors( Waterway waterway ){
-		LatLng latlng = ship.getLatLng();
-		Map<Integer, Double> vectors = new TreeMap<Integer, Double>();
-		for( IVessel other: waterway.getShips() ){
-			double hordistance = LatLngUtils.lngDistance(latlng, other.getLocation(), 0, 0 );
-			//if( Math.abs( hordistance) > 2*this.getRange() )
-			//	continue;
-			double distance = LatLngUtils.distance(latlng, other.getLocation() );
-			Map.Entry<Integer, Double> vector = LatLngUtils.getVectorInSteps(latlng, other.getLocation(), this.step );
-			logger.fine( "Mutual distance:\t" + latlng + "\n\t\t\t" + other.getLocation() );
-			//logger.info( "Diff " + (latlng.getLongitude() - other.getLatLng().getLongitude() ));
-			if( distance < 300 )
-				logger.info( "Diff " + distance + "[" + vector.getKey() + ", "+ vector.getValue() + "]");
-			vectors.put( vector.getKey(), vector.getValue());
-			//if( vector.getValue() < 100 )
-				//logger.info("Vector found for" + ship.getLnglat() + " and\n\t " + 
-			//other.getLnglat() );
+	private Collection<Point> getBanks( Waterway waterway ){
+		Field field = waterway.getField();
+		LatLng location = null;
+		Collection<Point> results = new ArrayList<Point>();
+		double xstep = (double)field.getLength() /(field.getLength() + field.getWidth());
+		long position = 0;
+		while( position < field.getLength() ) {
+			location = field.transform( position, 0);
+			results.add( new Point( location ));
+			location = field.transform( position, field.getWidth());
+			results.add( new Point( location ));
+			position += 3* xstep;
 		}
-		return vectors;
+		return results;	
 	}
 }

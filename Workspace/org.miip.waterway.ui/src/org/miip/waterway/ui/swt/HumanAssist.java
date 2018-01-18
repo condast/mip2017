@@ -5,8 +5,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
 
-public class HumanAssist<I> extends AbstractRadar<IVessel> {
+public class HumanAssist<I> extends AbstractRadar<IPhysical> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int BAR_WIDTH = 20;
@@ -19,22 +20,24 @@ public class HumanAssist<I> extends AbstractRadar<IVessel> {
 	}
 	
 	@Override
-	protected void drawObject( GC gc, IVessel ship ){
-		double centrex = super.getCentre().x;
-		double centrey = super.getCentre().y;
+	protected void drawObject( GC gc, IPhysical ship ){
+		int centrex = super.getCentre().x;
+		int centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 
-		IVessel reference = getInput().getReference(); 
+		IVessel reference = (IVessel) getInput().getReference(); 
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
 
-		double xpos1 = centrex + length * Math.sin( toRadians( (int) angle ));
-		double ypos1 = centrey - length * Math.cos( toRadians( (int) angle ));
-		double xpos2 = centrex + length * Math.sin( toRadians( (int) (angle+1) ));
-		double ypos2 = centrey - length * Math.cos( toRadians( (int) (angle+1) ));
+		int xpos1 = (int) (centrex + length * Math.sin( angle ));
+		int ypos1 = (int) (centrey - length * Math.cos( angle ));
+		
+		double diff = Math.toRadians(1);
+		int xpos2 = (int) (centrex + length * Math.sin( angle+diff));
+		int ypos2 = (int) (centrey - length * Math.cos( angle+diff));
 		Color background = gc.getBackground();
 		gc.setBackground( getColour( distance ));
-		gc.fillPolygon(new int[]{(int) centrex, (int)centrey, (int)xpos1, (int)ypos1, (int)xpos2, (int)ypos2});
+		gc.fillPolygon(new int[]{centrex, centrey, xpos1, ypos1, (int)xpos2, (int)ypos2});
 		gc.setBackground(background);
 	}
 

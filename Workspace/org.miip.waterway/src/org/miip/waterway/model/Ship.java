@@ -7,7 +7,8 @@ import java.util.logging.Logger;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.miip.waterway.internal.model.AbstractModel;
-import org.miip.waterway.model.def.IModel;
+import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.sa.ISituationalAwareness;
 
 public class Ship extends AbstractModel implements IVessel{
 	
@@ -37,6 +38,7 @@ public class Ship extends AbstractModel implements IVessel{
 	private int length;
 	private float speed;//-20 - 60 km/hour
 	private int bearing; //0-360
+	private ICollisionAvoidance ca;
 	
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
@@ -51,7 +53,7 @@ public class Ship extends AbstractModel implements IVessel{
 	}
 	
 	public Ship( String id, Date currentTime, float speed, int length, LatLng position, Bearing bearing) {
-		super( id, IModel.ModelTypes.SHIP, position );
+		super( id, IPhysical.ModelTypes.VESSEL, position );
 		this.currentTime = currentTime;
 		this.speed = speed;
 		this.bearing = bearing.getAngle();
@@ -98,8 +100,8 @@ public class Ship extends AbstractModel implements IVessel{
 	public LatLng sail( Date newTime ){
 		float interval = newTime.getTime() - currentTime.getTime();
 		float distance = interval * speed/ TO_HOURS;
-		LatLng position = LatLngUtils.extrapolate( super.getLatLng(), bearing, distance);
-		logger.fine( "New Position for speed:" + getSpeed() + "\n\t" + super.getLatLng() + ", to\n\t" + position );
+		LatLng position = LatLngUtils.extrapolate( super.getLocation(), bearing, distance);
+		logger.fine( "New Position for speed:" + getSpeed() + "\n\t" + super.getLocation() + ", to\n\t" + position );
 		super.setLnglat(position);
 		this.currentTime = newTime;
 		return position;
@@ -125,7 +127,7 @@ public class Ship extends AbstractModel implements IVessel{
 
 	@Override
 	public LatLng getLocation() {
-		return super.getLatLng();
+		return super.getLocation();
 	}
 
 	@Override
@@ -145,8 +147,20 @@ public class Ship extends AbstractModel implements IVessel{
 	}
 
 	@Override
-	public LatLng sail(long timeinMillis) {
-		// TODO Auto-generated method stub
-		return null;
+	public LatLng sail(long interval ) {
+		if( ca == null )
+			return super.getLocation();
+		LatLng location = ca.sail(interval);
+		return location;
+	}
+
+	@Override
+	public ISituationalAwareness<?, IPhysical> getSituationalAwareness() {
+		return ca.getSituationalAwareness();
+	}
+
+	@Override
+	public void setCollisionAvoidance(ICollisionAvoidance ca) {
+		this.ca = ca;
 	}
 }

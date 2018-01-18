@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AveragingRadar;
@@ -23,7 +24,7 @@ import org.miip.waterway.ui.swt.pond.PondRadar;
 public class RadarGroup extends Group {
 	private static final long serialVersionUID = 1L;
 
-	private IRadar<IVessel> radar;
+	private IRadar<IPhysical> radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -31,8 +32,8 @@ public class RadarGroup extends Group {
 	private Label lbl_range;
 	private Composite composite;
 
-	private ISituationalAwareness<?,IVessel> sa;
-
+	private ISituationalAwareness<?,IPhysical> sa;
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -137,7 +138,7 @@ public class RadarGroup extends Group {
 								radar = avr;
 								break;
 							case POND:
-								PondRadar<IVessel> pondr = new PondRadar<IVessel>(parent, SWT.BORDER);
+								PondRadar<IPhysical> pondr = new PondRadar<IPhysical>(parent, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = pondr;
 								break;
@@ -166,7 +167,7 @@ public class RadarGroup extends Group {
 		radar = new PondRadar<IVessel>( comp_radar, SWT.BORDER );
 	}
 
-	public void setInput( ISituationalAwareness<?, IVessel> sa ) {
+	public void setInput( ISituationalAwareness<?, IPhysical> sa ) {
 		this.sa = sa;
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));

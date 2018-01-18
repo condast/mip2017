@@ -1,9 +1,9 @@
 package org.miip.waterway.internal.model;
 
 import org.condast.commons.data.latlng.LatLng;
-import org.miip.waterway.model.def.IModel;
+import org.miip.waterway.model.def.IPhysical;
 
-public abstract class AbstractModel implements IModel{
+public abstract class AbstractModel implements IPhysical{
 
 	private String id;
 	private LatLng latlng;
@@ -30,7 +30,7 @@ public abstract class AbstractModel implements IModel{
 	}
 
 	@Override
-	public LatLng getLatLng() {
+	public LatLng getLocation() {
 		return latlng;
 	}
 

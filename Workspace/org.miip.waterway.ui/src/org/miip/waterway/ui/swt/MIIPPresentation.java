@@ -108,7 +108,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		//The ship in the centre
 		CentreShip cship = this.environment.getShip();
 		Point point = ( cship == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
-			scaleToCanvas(cship.getLatLng());
+			scaleToCanvas(cship.getLocation());
 		drawImage( gc, point, MIIPImages.Images.SHIP);
 
 		if(!environment.isInitialsed() )
@@ -118,7 +118,8 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		Color color = gc.getForeground();
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
 		Waterway waterway = environment.getWaterway();
-		org.miip.waterway.model.eco.Rectangle rectangle = new org.miip.waterway.model.eco.Rectangle( 0, environment.getBankWidth(), environment.getField().getLength(), environment.getField().getWidth());
+		org.miip.waterway.model.eco.Rectangle rectangle = 
+				new org.miip.waterway.model.eco.Rectangle( 0, environment.getBankWidth(), waterway.getField().getLength(), waterway.getField().getWidth());
 
 		int i = (int) (-waterway.getTravelled()%GRIDX);
 		while( i < rectangle.getLength() ){

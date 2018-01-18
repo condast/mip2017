@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
+import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.data.operations.AbstractOperator;
@@ -15,8 +16,10 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.sa.ISituationalAwareness;
 
-public class AveragingRadar<I extends Object>  extends AbstractRadar<IVessel>{
+public class AveragingRadar<I extends Object>  extends AbstractRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private IBinaryTreeSet<Vector<Integer>> data;
@@ -46,12 +49,19 @@ public class AveragingRadar<I extends Object>  extends AbstractRadar<IVessel>{
 	
 	@Override
 	protected void onDrawStart(GC gc) {
+		ISituationalAwareness<?, IPhysical> sa = super.getInput();
+		IVessel reference = (IVessel) sa.getReference(); 
+		
 		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
-		Map<Integer, Double> radar = null;//super.getInput().getRadar();
-		Iterator<Map.Entry<Integer, Double>> iterator = radar.entrySet().iterator();
-		while( iterator.hasNext() ){
-			Map.Entry<Integer, Double> entry = iterator.next();
-			data.add( new Vector<Integer>( entry.getKey(), entry.getValue()));
+		Collection<IPhysical> radar = sa.getRadar();
+		Field field = sa.getField();
+		for( IPhysical vessel: radar ){
+			if( vessel.equals( reference ))
+				continue;
+			Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), vessel.getLocation());
+			double distance = vector.getValue();
+			double angle = vector.getKey();
+			data.add( new Vector<Integer>((int)angle, (int)distance ));
 		}
 		super.onDrawStart(gc);
 	}
@@ -65,12 +75,12 @@ public class AveragingRadar<I extends Object>  extends AbstractRadar<IVessel>{
 	 * @param adist
 	 */
 	@Override
-	protected void drawObject( GC gc, IVessel ship ){
+	protected void drawObject( GC gc, IPhysical ship ){
 		
 		List<Vector<Integer>> results = this.data.getValues(0);
 		Vector<Integer> vect = null;
-		IVessel reference = getInput().getReference(); 
-		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
+		IVessel reference = (IVessel) getInput().getReference(); 
+		//double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
 		for( Vector<Integer> vector: results ){
 			if( vector.getKey() != angle )

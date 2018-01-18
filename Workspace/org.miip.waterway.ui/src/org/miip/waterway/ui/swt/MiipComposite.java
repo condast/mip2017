@@ -34,13 +34,13 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.CentreShip;
-import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.def.IMIIPEnvironment;
+import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.model.eco.MIIPEnvironment;
-import org.miip.waterway.sa.IShipMovedListener;
-import org.miip.waterway.sa.ShipEvent;
+import org.miip.waterway.sa.ISituationListener;
+import org.miip.waterway.sa.SituationEvent;
 import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.dialog.SettingsDialog;
 import org.miip.waterway.ui.factory.ICompositeFactory;
@@ -100,7 +100,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Label lblActiveShips;
 	private Button btn_manual;
 
-	private IRadar<IVessel> radar;
+	private IRadar<IPhysical> radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -125,12 +125,12 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private IShipMovedListener shlistener = new IShipMovedListener() {
+	private ISituationListener<IPhysical> shlistener = new ISituationListener<IPhysical>() {
 
 		private StringBuffer buffer = new StringBuffer();
 
 		@Override
-		public void notifyShipMoved(ShipEvent event) {
+		public void notifyShipMoved(SituationEvent<IPhysical> event) {
 			if( event.getAngle() == 0 ){
 				buffer = new StringBuffer();
 				buffer.append( "vectors: " );
@@ -139,22 +139,26 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			}else{
 				buffer.append( "[" + event.getAngle() + ", " + event.getDistance() + "] " );
 			}
+			try {
+				if( getDisplay().isDisposed())
+					return;
+				getDisplay().asyncExec( new Runnable(){
 
-			if( getDisplay().isDisposed())
-				return;
-			getDisplay().asyncExec( new Runnable(){
-
-				@Override
-				public void run() {
-					try{
-					hits++;
-					lblHits.setText( String.valueOf(hits));
-					}
-					catch( Exception ex ){
-						ex.printStackTrace();
-					}
-				}	
-			});
+					@Override
+					public void run() {
+						try{
+							hits++;
+							lblHits.setText( String.valueOf(hits));
+						}
+						catch( Exception ex ){
+							ex.printStackTrace();
+						}
+					}	
+				});
+			}
+			catch( Exception ex ) {
+				ex.printStackTrace();
+			}
 		}
 	};
 
@@ -341,12 +345,12 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 								radar = new Radar(parent, SWT.BORDER);
 								break;
 							case AVERAGE:
-								AveragingRadar avr = new AveragingRadar(parent, SWT.BORDER);
+								AveragingRadar<IPhysical> avr = new AveragingRadar<IPhysical>(parent, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = avr;
 								break;
 							default:
-								radar = new HumanAssist( parent, SWT.BORDER );	
+								radar = new HumanAssist<IPhysical>( parent, SWT.BORDER );	
 								break;
 							}
 							radar.setInput(environment.getSituationalAwareness());
@@ -531,8 +535,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.text_name.setText( ship.getId() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
-		this.text_lng.setText( String.valueOf( ship.getLatLng().getLongitude() ));
-		this.text_lat.setText( String.valueOf( ship.getLatLng().getLatitude() ));
+		this.text_lng.setText( String.valueOf( ship.getLocation().getLongitude() ));
+		this.text_lat.setText( String.valueOf( ship.getLocation().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
 
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
@@ -549,7 +553,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	public void dispose(){
 		if( this.environment != null ){
-			//this.environment.getSituationalAwareness().removelistener(shlistener);
+			this.environment.getSituationalAwareness().removelistener(shlistener);
 			this.environment.removeListener(listener);
 			this.environment.stop();
 		}
