@@ -10,6 +10,7 @@ import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
+import org.condast.symbiotic.core.environment.IEnvironmentListener.EventTypes;
 import org.miip.waterway.model.AbstractCollisionAvoidance;
 import org.miip.waterway.model.ICollisionAvoidance;
 import org.miip.waterway.model.IVessel;
@@ -25,14 +26,14 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 	private IVessel reference;
 	private List<IPhysical> others;
 	
-	private Collection<IEnvironmentListener> listeners;
+	private Collection<IEnvironmentListener<IPhysical>> listeners;
 	
 	private IExecuteThread thread = new ExecuteThread();
 	private PondEnvironment pe;
 	
 	public PondEnvironment() {
 		this.others = new ArrayList<IPhysical>();
-		this.listeners = new ArrayList<IEnvironmentListener>();
+		this.listeners = new ArrayList<IEnvironmentListener<IPhysical>>();
 		pe = this; 
 		this.clear();
 	}
@@ -46,7 +47,7 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 		reference.setCollisionAvoidance(ca);
 		
 		this.others.clear();
-		latlng = field.transform(field.getLength()/2,0);
+		latlng = field.transform(field.getLength()/2 - 10,0);
 		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
 		ca = new DefaultCollisionAvoidance( other); 
 		other.setCollisionAvoidance(ca);
@@ -119,17 +120,17 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 	}
 
 	@Override
-	public void addListener(IEnvironmentListener listener) {
+	public void addListener(IEnvironmentListener<IPhysical> listener) {
 		this.listeners.add(listener);
 	}
 
 	@Override
-	public void removeListener(IEnvironmentListener listener) {
+	public void removeListener(IEnvironmentListener<IPhysical> listener) {
 		this.listeners.remove(listener);
 	}
 	
-	protected void notifyEnvironmentChanged( EnvironmentEvent event ) {
-		for( IEnvironmentListener listener: listeners )
+	protected void notifyEnvironmentChanged( EnvironmentEvent<IPhysical> event ) {
+		for( IEnvironmentListener<IPhysical> listener: listeners )
 			listener.notifyEnvironmentChanged(event);
 	}
 
@@ -156,12 +157,17 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 		@Override
 		public void onExecute() {
 			reference.sail(time);
+			if( !pe.getField().isInField(reference.getLocation(), 1))
+				notifyEnvironmentChanged( new EnvironmentEvent<IPhysical>(pe, EventTypes.OUT_OF_BOUNDS, reference));
+				
 			for(IPhysical other: others ) {
 				IVessel vessel = (IVessel) other;
 				vessel.sail(time);
+				if( !pe.getField().isInField(vessel.getLocation(), 1))
+					notifyEnvironmentChanged( new EnvironmentEvent<IPhysical>(pe, EventTypes.OUT_OF_BOUNDS, vessel));
 			}
 			super.sleep(time);
-			notifyEnvironmentChanged( new EnvironmentEvent(pe));
+			notifyEnvironmentChanged( new EnvironmentEvent<IPhysical>(pe));
 		}	
 	}
 	

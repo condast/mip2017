@@ -30,24 +30,21 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.sa.ISituationListener;
 import org.miip.waterway.sa.SituationEvent;
-import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.dialog.SettingsDialog;
 import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.images.MIIPImages;
 import org.miip.waterway.ui.images.MIIPImages.Images;
+import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 
 public class MiipComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
 	private static final long serialVersionUID = 1L;
@@ -70,15 +67,15 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Text text_lng;
 	private Text text_lat;
 	private Label lblHits;
-
+	private RadarGroup radarGroup;
 	private IMIIPEnvironment environment;
 	private Collection<ICompositeFactory> factories;
 	private Composite frontend;
 
-	private IEnvironmentListener listener = new IEnvironmentListener() {
+	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
 
 		@Override
-		public void notifyEnvironmentChanged(final EnvironmentEvent event) {
+		public void notifyEnvironmentChanged(final EnvironmentEvent<IPhysical> event) {
 			try{
 				switch( event.getType() ){
 				case INITIALSED:
@@ -100,20 +97,13 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Label lblActiveShips;
 	private Button btn_manual;
 
-	private IRadar<IPhysical> radar;
-	private Combo combo_radar;
-	private Slider slider_sense;
-	private Label lbl_sense;
-	private Slider slider_range;
-	private Label lbl_range;
-
 	private int hits;
 
-	private RefreshSession<EnvironmentEvent> session;
-	private ISessionListener<EnvironmentEvent> slistener = new ISessionListener<EnvironmentEvent>(){
+	private RefreshSession<EnvironmentEvent<IPhysical>> session;
+	private ISessionListener<EnvironmentEvent<IPhysical>> slistener = new ISessionListener<EnvironmentEvent<IPhysical>>(){
 
 		@Override
-		public void notifySessionChanged(SessionEvent<EnvironmentEvent> event){
+		public void notifySessionChanged(SessionEvent<EnvironmentEvent<IPhysical>> event){
 			try{
 				updateView();
 			}
@@ -130,7 +120,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		private StringBuffer buffer = new StringBuffer();
 
 		@Override
-		public void notifyShipMoved(SituationEvent<IPhysical> event) {
+		public void notifySituationChanged(SituationEvent<IPhysical> event) {
 			if( event.getAngle() == 0 ){
 				buffer = new StringBuffer();
 				buffer.append( "vectors: " );
@@ -315,114 +305,11 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblHits = new Label( group_ship, SWT.BORDER );
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 
-		Group grp_radar = new Group(composite, SWT.NONE); 
-		grp_radar.setText("Radar");
-		grp_radar.setLayout(new GridLayout(2, false));
-		grp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		radarGroup = new RadarGroup(composite, SWT.NONE); 
+		radarGroup.setText("Radar");
+		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		int radar_width = 80;
-		GridData gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false, 2, 1);
-		gd_radar.widthHint = radar_width;
-		combo_radar = new Combo( grp_radar, SWT.BORDER );
-		combo_radar.setLayoutData( gd_radar);		
-		combo_radar.setItems( IRadar.RadarSelect.getItems() );
-		combo_radar.select( IRadar.RadarSelect.WARP.ordinal() );
-		combo_radar.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				final Composite parent = radar.getParent();
-				for( Control child: parent.getChildren() )
-					child.dispose();
-				getDisplay().asyncExec( new Runnable(){
-
-					@Override
-					public void run() {
-						try{
-							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
-							case WARP:
-								radar = new Radar(parent, SWT.BORDER);
-								break;
-							case AVERAGE:
-								AveragingRadar<IPhysical> avr = new AveragingRadar<IPhysical>(parent, SWT.BORDER);
-								//avr.setExpand( 1);
-								radar = avr;
-								break;
-							default:
-								radar = new HumanAssist<IPhysical>( parent, SWT.BORDER );	
-								break;
-							}
-							radar.setInput(environment.getSituationalAwareness());
-							radar.refresh();
-							parent.layout();
-						}
-						catch( Exception ex ){
-							ex.printStackTrace();
-						}
-					}
-				});
-				super.widgetSelected(e);
-			}
-		});
-
-		slider_sense = new Slider( grp_radar, SWT.BORDER );
-		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
-		slider_sense.setLayoutData( gd_radar);
-		slider_sense.setMinimum(1);
-		slider_sense.setMaximum(900);
-		slider_sense.setSelection( IRadar.DEFAULT_SENSITIVITY );
-		slider_sense.setIncrement(2);
-		slider_sense.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try{
-					if( radar != null )
-						radar.setSensitivity( slider_sense.getSelection());
-					lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
-					super.widgetSelected(e);
-				}
-				catch( Exception ex ){
-					ex.printStackTrace();
-				}
-			}
-		});
-
-		lbl_sense = new Label( grp_radar, SWT.BORDER );
-		lbl_sense.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
-
-		slider_range = new Slider( grp_radar, SWT.BORDER );
-		gd_radar = new GridData( SWT.FILL, SWT.FILL, true, false);
-		slider_range.setLayoutData( gd_radar);
-		slider_range.setMinimum(1);
-		slider_range.setMaximum(3000);
-		slider_range.setSelection( IRadar.DEFAULT_RANGE );
-		slider_range.setIncrement(20);
-		slider_range.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try{
-					if( radar != null )
-						radar.setRange( slider_range.getSelection());
-					lbl_range.setText( String.valueOf( slider_range.getSelection()));
-					super.widgetSelected(e);
-				}
-				catch( Exception ex ){
-					ex.printStackTrace();
-				}
-			}
-		});
-		lbl_range = new Label( grp_radar, SWT.BORDER );
-		lbl_range.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
-
-		Composite comp_radar = new Composite( composite, SWT.NONE); 
-		comp_radar.setLayout(new FillLayout());
-		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new Radar( comp_radar, SWT.BORDER );	
+		//radar = new DirectRadar( comp_radar, SWT.BORDER );	
 		canvas.addKeyListener(new KeyAdapter(){
 			private static final long serialVersionUID = 1L;
 
@@ -524,6 +411,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	@Override
 	public void setInput( IMIIPEnvironment environment ){
 		this.environment = environment;
+		if( this.environment != null )
+			this.radarGroup.setInput( environment.getSituationalAwareness());
 		this.canvas.setInput(environment);
 	}
 
@@ -538,22 +427,12 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.text_lng.setText( String.valueOf( ship.getLocation().getLongitude() ));
 		this.text_lat.setText( String.valueOf( ship.getLocation().getLatitude() ));
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
-
-		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
-		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
-		this.lblHits.setText(String.valueOf(hits));
-
-		SituationalAwareness sa = this.environment.getSituationalAwareness();
-		this.radar.setInput( sa );
-		this.slider_range.setMaximum( (int) (environment.getField().getLength()/2) );
-		this.slider_range.setSelection( (int) radar.getRange() );
-		this.slider_sense.setSelection( radar.getSensitivity() );
-
 	}
 
 	public void dispose(){
 		if( this.environment != null ){
-			this.environment.getSituationalAwareness().removelistener(shlistener);
+			if( this.environment.getSituationalAwareness() != null )
+				this.environment.getSituationalAwareness().removelistener(shlistener);
 			this.environment.removeListener(listener);
 			this.environment.stop();
 		}
@@ -607,6 +486,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 							environment.addListener(listener);
 							environment.start();
 							environment.getSituationalAwareness().addlistener(shlistener);
+							radarGroup.setInput( environment.getSituationalAwareness());
 							//setModels( environment.getModels());
 							//setInput(ce.getBehaviour());
 							getButton( PlayerImages.Images.STOP).setEnabled(true);

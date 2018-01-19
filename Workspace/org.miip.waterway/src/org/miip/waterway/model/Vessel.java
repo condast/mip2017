@@ -54,7 +54,7 @@ public class Vessel extends AbstractModel implements IVessel {
 	}
 
 	@Override
-	public ISituationalAwareness<?, IPhysical> getSituationalAwareness(){
+	public ISituationalAwareness<IPhysical,?> getSituationalAwareness(){
 		return ca.getSituationalAwareness();
 	}
 	

@@ -11,16 +11,16 @@ import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.sa.AbstractSituationalAwareness;
 import org.miip.waterway.sa.SituationEvent;
 
-public class PondSituationalAwareness extends AbstractSituationalAwareness<IReferenceEnvironment<IPhysical>, IPhysical> {
+public class PondSituationalAwareness extends AbstractSituationalAwareness<IPhysical, IReferenceEnvironment<IPhysical>> {
 
-	private IEnvironmentListener listener = new IEnvironmentListener() {
+	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
 
 		@Override
-		public void notifyEnvironmentChanged(EnvironmentEvent event) {
+		public void notifyEnvironmentChanged(EnvironmentEvent<IPhysical> event) {
 			notifylisteners( new SituationEvent<IPhysical>( getOwner()));
 		}
 	};
-	
+		
 	public PondSituationalAwareness( IVessel owner) {
 		super( owner );
 	}

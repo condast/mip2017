@@ -18,8 +18,8 @@ import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AveragingRadar;
 import org.miip.waterway.ui.swt.HumanAssist;
-import org.miip.waterway.ui.swt.Radar;
-import org.miip.waterway.ui.swt.pond.PondRadar;
+import org.miip.waterway.ui.swt.DirectRadar;
+import org.miip.waterway.ui.swt.pond.PredictiveRadar;
 
 public class RadarGroup extends Group {
 	private static final long serialVersionUID = 1L;
@@ -31,9 +31,12 @@ public class RadarGroup extends Group {
 	private Slider slider_range;
 	private Label lbl_range;
 	private Composite composite;
+	private Composite comp_radar;
 
-	private ISituationalAwareness<?,IPhysical> sa;
-	
+	private ISituationalAwareness<IPhysical,?> sa;
+	private Label lblNewLabel;
+	private Label lblRange;
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -46,22 +49,71 @@ public class RadarGroup extends Group {
 
 	protected void createComposite( Composite parent, int style ) {
 		setText("Radar");
-		setLayout(new GridLayout(2, false));
-
-		//int radar_width = 80;
+		setLayout(new GridLayout(2, true));
 
 		composite = new Composite(this, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		composite.setLayout(new GridLayout(3, false));
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		combo_radar = new Combo( composite, SWT.BORDER );
-		combo_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+		combo_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
 		combo_radar.setSize(361, 23);
 		combo_radar.setItems( IRadar.RadarSelect.getItems() );
 		combo_radar.select( IRadar.RadarSelect.WARP.ordinal() );
 
+		combo_radar.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				for( Control child: comp_radar.getChildren() )
+					child.dispose();
+				getDisplay().asyncExec( new Runnable(){
+
+					@Override
+					public void run() {
+						try{
+							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
+							case WARP:
+								radar = new DirectRadar(comp_radar, SWT.BORDER);
+								break;
+							case AVERAGE:
+								AveragingRadar<IVessel> avr = new AveragingRadar<IVessel>(comp_radar, SWT.BORDER);
+								//avr.setExpand( 1);
+								radar = avr;
+								break;
+							case POND:
+								PredictiveRadar<IPhysical> pondr = new PredictiveRadar<IPhysical>(comp_radar, SWT.BORDER);
+								//avr.setExpand( 1);
+								radar = pondr;
+								break;
+							default:
+								radar = new HumanAssist<IVessel>( comp_radar, SWT.BORDER );	
+								break;
+							}
+							radar.setInput(sa);
+							radar.setRange( slider_range.getSelection());
+							radar.setSensitivity( slider_sense.getSelection());
+							radar.refresh();
+							comp_radar.layout();
+						}
+						catch( Exception ex ){
+							ex.printStackTrace();
+						}
+					}
+				});
+				super.widgetSelected(e);
+			}
+		});
+		combo_radar.select(IRadar.RadarSelect.POND.ordinal());
+
+		lblNewLabel = new Label(composite, SWT.NONE);
+		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblNewLabel.setText("Sensitivity:");
 
 		slider_sense = new Slider( composite, SWT.BORDER );
-		slider_sense.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		GridData gd_slider_sense = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_slider_sense.widthHint = 132;
+		slider_sense.setLayoutData(gd_slider_sense);
 		slider_sense.setSize(254, 17);
 		slider_sense.setMinimum(1);
 		slider_sense.setMaximum(900);
@@ -84,12 +136,19 @@ public class RadarGroup extends Group {
 			}
 		});
 
-
 		lbl_sense = new Label( composite, SWT.BORDER );
-		lbl_sense.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
+		GridData gd_lbl_sense = new GridData( SWT.FILL, SWT.FILL, true, false );
+		gd_lbl_sense.widthHint = 43;
+		lbl_sense.setLayoutData( gd_lbl_sense);
+
+		lblRange = new Label(composite, SWT.NONE);
+		lblRange.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblRange.setText("Range:");
 
 		slider_range = new Slider(composite, SWT.BORDER );
-		slider_range.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		GridData gd_slider_range = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		gd_slider_range.widthHint = 139;
+		slider_range.setLayoutData(gd_slider_range);
 		slider_range.setSize(254, 17);
 		slider_range.setMinimum(1);
 		slider_range.setMaximum(3000);
@@ -112,71 +171,25 @@ public class RadarGroup extends Group {
 			}
 		});
 		lbl_range = new Label( composite, SWT.BORDER );
-		lbl_range.setText("Range");
+		lbl_range.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		lbl_range.setSize(153, 17);
-
-		combo_radar.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				final Composite parent = radar.getParent();
-				for( Control child: parent.getChildren() )
-					child.dispose();
-				getDisplay().asyncExec( new Runnable(){
-
-					@Override
-					public void run() {
-						try{
-							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
-							case WARP:
-								radar = new Radar(parent, SWT.BORDER);
-								break;
-							case AVERAGE:
-								AveragingRadar<IVessel> avr = new AveragingRadar<IVessel>(parent, SWT.BORDER);
-								//avr.setExpand( 1);
-								radar = avr;
-								break;
-							case POND:
-								PondRadar<IPhysical> pondr = new PondRadar<IPhysical>(parent, SWT.BORDER);
-								//avr.setExpand( 1);
-								radar = pondr;
-								break;
-							default:
-								radar = new HumanAssist<IVessel>( parent, SWT.BORDER );	
-								break;
-							}
-							radar.setInput(sa);
-							radar.setRange( slider_range.getSelection());
-							radar.setSensitivity( slider_sense.getSelection());
-							radar.refresh();
-							parent.layout();
-						}
-						catch( Exception ex ){
-							ex.printStackTrace();
-						}
-					}
-				});
-				super.widgetSelected(e);
-			}
-		});
-		combo_radar.select(IRadar.RadarSelect.POND.ordinal());
-		Composite comp_radar = new Composite( this, SWT.NONE); 
+		comp_radar = new Composite( this, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new PondRadar<IVessel>( comp_radar, SWT.BORDER );
+		radar = new PredictiveRadar<IVessel>( comp_radar, SWT.BORDER );
 	}
 
-	public void setInput( ISituationalAwareness<?, IPhysical> sa ) {
+	public void setInput( ISituationalAwareness<IPhysical,?> sa ) {
 		this.sa = sa;
-		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
-		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
 		this.radar.setInput( sa );
 		if( sa != null ) {
-			this.slider_range.setMaximum( (int) (sa.getField().getLength()) );
+			this.slider_range.setMaximum( (int) (sa.getField().getLength()));
+			radar.setRange((int) sa.getField().getWidth());
 		}
 		this.slider_sense.setSelection( radar.getSensitivity() );
 		this.slider_range.setSelection( (int)radar.getRange() );
+		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
+		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
 	}
 
 	@Override

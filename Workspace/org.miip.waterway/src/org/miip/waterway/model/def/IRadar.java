@@ -1,7 +1,6 @@
 package org.miip.waterway.model.def;
 
 import org.condast.commons.strings.StringStyler;
-import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.sa.ISituationalAwareness;
 
 public interface IRadar<V extends Object> {
@@ -33,13 +32,11 @@ public interface IRadar<V extends Object> {
 		}
 	}
 	
-	public Composite getParent();
-
 	/**
 	 * set the input for this radar by adding the SA and the range (m)
 	 * @param sa
 	 */
-	void setInput( ISituationalAwareness<?,V> sa);
+	void setInput( ISituationalAwareness<V,?> sa);
 
 	/**
 	 * Get the sensitivity of the radar

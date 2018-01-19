@@ -7,9 +7,9 @@ import org.miip.waterway.sa.ISituationalAwareness;
 public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 
 	private IVessel vessel;
-	private ISituationalAwareness<?,IPhysical> sa;
+	private ISituationalAwareness<IPhysical,?> sa;
 	
-	public AbstractCollisionAvoidance( IVessel vessel, ISituationalAwareness<?,IPhysical> sa ) {
+	public AbstractCollisionAvoidance( IVessel vessel, ISituationalAwareness<IPhysical,?> sa ) {
 		this.sa = sa;
 		this.vessel = vessel;
 	}
@@ -19,7 +19,7 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 	}
 
 	@Override
-	public ISituationalAwareness<?, IPhysical> getSituationalAwareness() {
+	public ISituationalAwareness<IPhysical,?> getSituationalAwareness() {
 		return sa;
 	}
 

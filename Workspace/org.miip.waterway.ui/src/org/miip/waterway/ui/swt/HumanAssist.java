@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IPhysical;
 
-public class HumanAssist<I> extends AbstractRadar<IPhysical> {
+public class HumanAssist<I> extends AbstractSWTRadar<IPhysical> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int BAR_WIDTH = 20;

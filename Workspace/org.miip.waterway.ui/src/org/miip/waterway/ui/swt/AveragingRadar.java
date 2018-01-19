@@ -19,7 +19,7 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.sa.ISituationalAwareness;
 
-public class AveragingRadar<I extends Object>  extends AbstractRadar<IPhysical>{
+public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private IBinaryTreeSet<Vector<Integer>> data;
@@ -49,7 +49,7 @@ public class AveragingRadar<I extends Object>  extends AbstractRadar<IPhysical>{
 	
 	@Override
 	protected void onDrawStart(GC gc) {
-		ISituationalAwareness<?, IPhysical> sa = super.getInput();
+		ISituationalAwareness<IPhysical,?> sa = super.getInput();
 		IVessel reference = (IVessel) sa.getReference(); 
 		
 		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);

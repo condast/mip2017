@@ -1,6 +1,8 @@
 package org.miip.waterway.model.def;
 
-public interface IInhabitedEnvironment<I extends Object> extends IEnvironment {
+import org.miip.waterway.environment.IEnvironment;
+
+public interface IInhabitedEnvironment<I extends Object> extends IEnvironment<I> {
 
 	/**
 	 * The inhabitant of the environment

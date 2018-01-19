@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
-import org.miip.waterway.model.def.IEnvironment;
+import org.miip.waterway.environment.IEnvironment;
 
 public class BasicEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;

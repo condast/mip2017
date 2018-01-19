@@ -1,17 +1,9 @@
 package org.miip.waterway.ui.swt;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
-import org.condast.commons.data.operations.AbstractOperator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -24,11 +16,12 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.radar.Radar;
 import org.miip.waterway.sa.ISituationListener;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.sa.SituationEvent;
 
-public abstract class AbstractRadar<V extends Object> extends Canvas implements IRadar<V>{
+public abstract class AbstractSWTRadar<V extends Object> extends Canvas implements IRadar<V>{
 	private static final long serialVersionUID = 1L;
 	
 	public enum RadarColours{
@@ -105,26 +98,11 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 		}
 	};
 
-	private AbstractOperator<Vector<Double>, Vector<Double>> operator = new AbstractOperator<Vector<Double>, Vector<Double>>(){
-
-		@Override
-		public Vector<Double> calculate(Collection<Vector<Double>> input) {
-			float angle = 0;
-			double distance = Integer.MAX_VALUE;
-			for( Vector<Double> vector: input ){
-				angle += vector.getKey();
-				if( vector.getValue() < distance )
-					distance = vector.getValue();
-			}
-			return new Vector<Double>( (double) (angle/input.size()), distance);
-		}
-	};
-
-	private ISituationalAwareness<?, V> sa;
+	private ISituationalAwareness<V,?> sa;
 	private ISituationListener<V> slistener = new ISituationListener<V>() {
 		
 		@Override
-		public void notifyShipMoved(SituationEvent<V> event) {
+		public void notifySituationChanged(SituationEvent<V> event) {
 			getDisplay().asyncExec( new Runnable() {
 
 				@Override
@@ -135,41 +113,36 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 		}
 	};
 	
-	private Map<Double, Double> vectors;
-	
-	private long range;
-	private int sensitivity; //part of the range
 	private int steps;
+	private Radar<V> radar;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
-	protected AbstractRadar(Composite parent, int style) {
+	protected AbstractSWTRadar(Composite parent, int style) {
 		super(parent, style);
-		this.sensitivity = DEFAULT_SENSITIVITY;
-		this.range = DEFAULT_RANGE;
+		radar = new Radar<V>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_DARK_GRAY));
 		super.addPaintListener( listener );
-		vectors = new TreeMap<Double, Double>();
 	}
 
 	@Override
 	public int getSensitivity() {
-		return sensitivity;
+		return radar.getSensitivity();
 	}
 
 	@Override
 	public void setSensitivity( int sensitivity) {
-		this.sensitivity = sensitivity;
+		radar.setSensitivity(sensitivity);
 	}
 
 	@Override
 	public long getRange() {
-		return range;
+		return radar.getRange();
 	}
 
 	@Override
 	public void setRange(int range) {
-		this.range = range;
+		radar.setRange(range);
 	}
 
 	protected int getSteps() {
@@ -202,7 +175,7 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 	}
 
 	protected void onDrawStart( GC gc ){
-		logger.fine( "Radar settings: rage = " + this.range + ", sensitivity = " + this.sensitivity );
+		logger.fine( "Radar settings: rage = " + radar.getRange() + ", sensitivity = " + radar.getSensitivity() );
 	}
 	
 	protected void onDrawEnd( GC gc ){/* NOTHING */ }
@@ -222,12 +195,12 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 		if( sa == null)
 			return getDisplay().getSystemColor( colour );
 		
-		if( distance <= this.sensitivity )
+		if( distance <= radar.getSensitivity() )
 			return getDisplay().getSystemColor( SWT.COLOR_RED );
-		if( distance > this.range )
+		if( distance > radar.getRange() )
 			return getDisplay().getSystemColor( SWT.COLOR_TRANSPARENT );
-		//int index = (int)(( this.range - this.sensitivity )/distance );
-		return RadarColours.getLinearColour(getDisplay(), (int) distance, this.range, (int) this.sensitivity );
+		//int index = (int)(( radar.getRange() - radar.getSensitivity() )/distance );
+		return RadarColours.getLinearColour(getDisplay(), (int) distance, radar.getRange(), (int) radar.getSensitivity() );
 		//double relax = ( Math.abs( distance)> sa.getRange() )? 1: Math.abs( distance/sa.getRange() );
 		//int red = (int)( 255 * (1-relax*relax ));
 		//int green = (int)( 255 * relax*relax );
@@ -236,21 +209,21 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 	
 	protected abstract void drawObject( GC gc, V object );
 
-	protected ISituationalAwareness<?,V> getInput() {
+	protected ISituationalAwareness<V,?> getInput() {
 		return sa;
 	}
 
 	@Override
-	public void setInput( ISituationalAwareness<?,V> sa ){
+	public void setInput( ISituationalAwareness<V,?> sa ){
 		if( this.sa != null ) {
 			if( this.sa.equals(sa))
 				return;
 			this.sa.removelistener(slistener);
 		}
 		this.sa = sa;
-		this.sa.addlistener(slistener);
 		if( sa != null ) {
-			this.range = (long) sa.getField().getLength();
+			this.sa.addlistener(slistener);
+			radar.setRange( (int) sa.getField().getLength());
 		}
 		refresh();
 	}
@@ -269,30 +242,7 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 			
 		});
 	}
-	
-	/**
-	 * Create a binary view of the situational awareness. This view creates
-	 * subsequent averages of the radar images 
-	 * @return
-	 */
-	protected SequentialBinaryTreeSet<Vector<Double>> getBinaryView(){
-		Iterator<Map.Entry<Double, Double>> iterator = this.vectors.entrySet().iterator();
-		SequentialBinaryTreeSet<Vector<Double>> data = new SequentialBinaryTreeSet<Vector<Double>>( operator );
-		while( iterator.hasNext() ){
-			Map.Entry<Double, Double> entry = iterator.next();
-			data.add( new Vector<Double>( entry.getKey(), entry.getValue()));
-			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
-		}
-		List<Vector<Double>> vectors = data.getValues(5);
-		if( vectors.isEmpty() )
-			return null;
-		Collections.sort( vectors, new VectorComparator());
-		for( Vector<Double> entry: vectors ){
-			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
-		}
-		return data;
-	}
-	
+		
 	public void dispose() {
 		if( this.sa != null )
 			this.sa.removelistener(slistener);
@@ -304,7 +254,6 @@ public abstract class AbstractRadar<V extends Object> extends Canvas implements 
 		@Override
 		public int compare(Vector<Double> arg0, Vector<Double> arg1) {
 			return (int)( arg0.getValue() - arg1.getValue());
-		}
-		
+		}	
 	}
 }

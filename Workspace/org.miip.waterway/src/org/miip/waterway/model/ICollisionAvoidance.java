@@ -13,5 +13,5 @@ public interface ICollisionAvoidance {
 	 */
 	public LatLng sail( long interval);
 
-	public ISituationalAwareness<?, IPhysical> getSituationalAwareness();
+	public ISituationalAwareness<IPhysical,?> getSituationalAwareness();
 }

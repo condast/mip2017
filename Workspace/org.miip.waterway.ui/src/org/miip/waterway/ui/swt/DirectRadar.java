@@ -11,18 +11,18 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.sa.ISituationalAwareness;
 
-public class Radar extends AbstractRadar<IPhysical>{
+public class DirectRadar extends AbstractSWTRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 	
-	public Radar(Composite parent, int style) {
+	public DirectRadar(Composite parent, int style) {
 		super(parent, style);
 	}
 	
 	@Override
 	protected void drawObject( GC gc, IPhysical ship ){
-		ISituationalAwareness<?, IPhysical> sa = super.getInput();
+		ISituationalAwareness<IPhysical,?> sa = super.getInput();
 		IVessel reference = (IVessel) sa.getReference(); 
 		if( ship.equals( reference ))
 			return;

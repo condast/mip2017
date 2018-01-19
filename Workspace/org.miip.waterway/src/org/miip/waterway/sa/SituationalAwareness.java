@@ -8,14 +8,14 @@ import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
-import org.miip.waterway.model.CentreShip;
+import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Point;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.def.IPhysical;
 
-public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvironment, IPhysical> {
+public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical, IMIIPEnvironment> {
 
 	/*
 	private AbstractOperator<Vector<Integer>, Vector<Integer>> operator = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
@@ -36,16 +36,16 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
-	private IEnvironmentListener listener = new IEnvironmentListener() {
+	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
 
 		@Override
-		public void notifyEnvironmentChanged(EnvironmentEvent event) {
+		public void notifyEnvironmentChanged(EnvironmentEvent<IPhysical> event) {
 			notifylisteners( new SituationEvent<IPhysical>( getOwner()));
 		}
 	};
 	
-	public SituationalAwareness( CentreShip ship ) {
-		super( ship );
+	public SituationalAwareness( IVessel vessel ) {
+		super( vessel );
 	}
 
 	@Override

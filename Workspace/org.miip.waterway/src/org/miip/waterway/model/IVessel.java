@@ -42,7 +42,7 @@ public interface IVessel extends IPhysical{
 	 */
 	LatLng sail(long timeinMillis);
 
-	ISituationalAwareness<?, IPhysical> getSituationalAwareness();
+	ISituationalAwareness<IPhysical,?> getSituationalAwareness();
 
 	void setCollisionAvoidance(ICollisionAvoidance ca);
 

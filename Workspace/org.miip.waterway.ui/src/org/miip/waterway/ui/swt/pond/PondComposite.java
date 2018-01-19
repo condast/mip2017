@@ -52,13 +52,22 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	public static final String S_RDM_COE_URL = "http://www.rdmcoe.nl//";
 	public static final String S_CONDAST_URL = "http://www.condast.com/";
 
-	private IEnvironmentListener listener = new IEnvironmentListener() {
+	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
 
 		@Override
-		public void notifyEnvironmentChanged(final EnvironmentEvent event) {
+		public void notifyEnvironmentChanged(final EnvironmentEvent<IPhysical> event) {
 			try{
 				switch( event.getType() ){
 				case INITIALSED:
+					break;
+				case OUT_OF_BOUNDS:
+					getDisplay().asyncExec( new Runnable() {
+
+						@Override
+						public void run() {
+							playerbar.stop();
+						}
+					});
 					break;
 				default:
 					session.addData(event);
@@ -71,11 +80,11 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		}
 	};
 
-	private RefreshSession<EnvironmentEvent> session;
-	private ISessionListener<EnvironmentEvent> slistener = new ISessionListener<EnvironmentEvent>(){
+	private RefreshSession<EnvironmentEvent<IPhysical>> session;
+	private ISessionListener<EnvironmentEvent<IPhysical>> slistener = new ISessionListener<EnvironmentEvent<IPhysical>>(){
 
 		@Override
-		public void notifySessionChanged(SessionEvent<EnvironmentEvent> event){
+		public void notifySessionChanged(SessionEvent<EnvironmentEvent<IPhysical>> event){
 			try{
 				updateView();
 			}
@@ -116,7 +125,6 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.frontend = this;
-		//this.sa = new PondSituationalAwareness(); 
 
 		this.factories = new ArrayList<ICompositeFactory>();
 		this.session = new RefreshSession<>(1000);
@@ -358,6 +366,14 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		public Control getButton(Enum<org.condast.commons.ui.player.PlayerImages.Images> type) {
 				return super.getButton(type);
 		}
+		
+		public void stop() {
+			environment.stop();
+			environment.removeListener(listener);
+			getButton( PlayerImages.Images.START).setEnabled(true);
+			Button clear = (Button) getButton( PlayerImages.Images.RESET);
+			clear.setEnabled( true );
+		}
 
 		@Override
 		protected Control createButton(PlayerImages.Images type) {
@@ -385,15 +401,10 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 						case START:
 							environment.addListener(listener);
 							environment.start();
-							//environment.getSituationalAwareness().addlistener(shlistener);
-							//setModels( environment.getModels());
-							//setInput(ce.getBehaviour());
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
 							Button clear = (Button) getButton( PlayerImages.Images.RESET);
 							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
-							//Button btn = (Button) e.widget;
-							//btn.setText( !environment.isPaused()? "Stop": "Start");
 							getDisplay().asyncExec( new Runnable(){
 
 								@Override
@@ -403,12 +414,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 							});
 							break;
 						case STOP:
-							environment.stop();
-							environment.removeListener(listener);
-							getButton( PlayerImages.Images.START).setEnabled(true);
-							button.setEnabled(false);
-							clear = (Button) getButton( PlayerImages.Images.RESET);
-							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
+							stop();
 							break;
 						case NEXT:
 							environment.step();

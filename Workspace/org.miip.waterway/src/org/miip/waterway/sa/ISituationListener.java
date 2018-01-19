@@ -2,5 +2,5 @@ package org.miip.waterway.sa;
 
 public interface ISituationListener<I extends Object> {
 
-	public void notifyShipMoved( SituationEvent<I> event );
+	public void notifySituationChanged( SituationEvent<I> event );
 }

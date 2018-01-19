@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.Utils;
+import org.miip.waterway.environment.IEnvironment;
 import org.miip.waterway.model.def.IDesignFactory;
-import org.miip.waterway.model.def.IEnvironment;
 
 public class Dispatcher {
 

@@ -10,9 +10,9 @@ Import-Package: org.condast.commons.data.binary,
  org.condast.commons.data.operations,
  org.condast.commons.strings,
  org.condast.commons.thread,
- org.condast.symbiotic.core.environment,
- org.eclipse.swt.widgets
-Export-Package: org.miip.waterway.internal.model,
+ org.condast.symbiotic.core.environment
+Export-Package: org.miip.waterway.environment,
+ org.miip.waterway.internal.model,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
  org.miip.waterway.model.eco,

@@ -15,7 +15,10 @@ import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.condast.symbiotic.core.environment.IEnvironmentListener.EventTypes;
+import org.miip.waterway.model.AbstractCollisionAvoidance;
 import org.miip.waterway.model.CentreShip;
+import org.miip.waterway.model.ICollisionAvoidance;
+import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.Ship.Bearing;
@@ -40,18 +43,18 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private int timer;
 	
 	private Field field;//A field is represented by LatLng coordinates for the top-left corner
-	private CentreShip ship;
+	private CentreShip reference;
 	private Bank topBank;
 	private Bank bottomBank;
 	private Waterway waterway;
 	private SituationalAwareness sa;
 	
-	private Collection<IEnvironmentListener> listeners;
+	private Collection<IEnvironmentListener<IPhysical>> listeners;
 	private int counter;
 	private int bankWidth;
 	private boolean initialsed;
 	private boolean manual;
-	
+	private MIIPEnvironment environment; 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public MIIPEnvironment() {
@@ -64,7 +67,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
 		lock = new ReentrantLock();
-		this.listeners = new ArrayList<IEnvironmentListener>();
+		this.listeners = new ArrayList<IEnvironmentListener<IPhysical>>();
+		this.environment = this;
 	}
 
 	@Override
@@ -88,9 +92,10 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		
 		//Position of the ship
 		latlng = this.field.getCentre();
-		ship = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
-
-		sa = new SituationalAwareness(ship);
+		reference = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
+		ICollisionAvoidance ca = new DefaultCollisionAvoidance( reference); 
+		reference.setCollisionAvoidance(ca);
+		sa = new SituationalAwareness(reference);
 		
 		//The bank at the bottom
 		latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
@@ -98,7 +103,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
 		
 		this.initialsed = true;
-		notifyChangeEvent( new EnvironmentEvent( this, EventTypes.INITIALSED ));
+		notifyChangeEvent( new EnvironmentEvent<IPhysical>( this, EventTypes.INITIALSED, null ));
 		counter = 0;
 		return true;
 	}
@@ -156,7 +161,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 */
 	@Override
 	public CentreShip getShip() {
-		return ship;
+		return reference;
 	}
 	
 	public Bank[] getBanks(){
@@ -186,7 +191,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#addListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
 	 */
 	@Override
-	public void addListener( IEnvironmentListener listener ){
+	public void addListener( IEnvironmentListener<IPhysical> listener ){
 		this.listeners.add( listener );
 	}
 
@@ -194,12 +199,12 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#removeListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
 	 */
 	@Override
-	public void removeListener( IEnvironmentListener listener ){
+	public void removeListener( IEnvironmentListener<IPhysical> listener ){
 		this.listeners.remove( listener );
 	}
 	
-	protected void notifyChangeEvent( EnvironmentEvent event ){
-		for( IEnvironmentListener listener: listeners)
+	protected void notifyChangeEvent( EnvironmentEvent<IPhysical> event ){
+		for( IEnvironmentListener<IPhysical> listener: listeners)
 			listener.notifyEnvironmentChanged(event);
 	}
 	
@@ -213,14 +218,14 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			logger.fine("\n\nEXECUTE:");
 			currentTime = Calendar.getInstance().getTime();
 			
-			Location traverse = ship.plotNext(currentTime);
+			Location traverse = reference.plotNext(currentTime);
 			topBank.update( traverse.getX());
 			bottomBank.update( traverse.getX());
 			
 			LatLng course = LatLngUtils.extrapolateEast( field.getCoordinates(), traverse.getX() );
 			field = new Field( course, field.getLength(), field.getWidth() );
 			
-			ship.sail( currentTime );	
+			reference.sail( currentTime );	
 			//logger.info( "New Position " + this.position + ",\n\t\t   " + ship.getLnglat() );
 			//logger.info( "Diff " + (this.position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
@@ -231,7 +236,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			sa.controlShip( min_distance, this.manual );
 			
 			counter = ( counter + 1)%10;
-			notifyChangeEvent( new EnvironmentEvent( this, EventTypes.CHANGED ));
+			notifyChangeEvent( new EnvironmentEvent<IPhysical>( this ));
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -254,4 +259,15 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		logger.fine("Creating location for " + model.getLocation() + " = \n\t [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}
+	
+	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
+
+		public DefaultCollisionAvoidance( IVessel vessel ) {
+			super( vessel, new SituationalAwareness( vessel ));
+			SituationalAwareness psa = (SituationalAwareness) super.getSituationalAwareness();
+			psa.setInput( environment);
+		}
+		
+	}
+
 }
