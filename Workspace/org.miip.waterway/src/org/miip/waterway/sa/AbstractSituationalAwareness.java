@@ -11,43 +11,64 @@ import java.util.logging.Logger;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.miip.waterway.environment.IEnvironment;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.model.def.IReferenceEnvironment;
 
-public abstract class AbstractSituationalAwareness<V extends Object, I extends IEnvironment<V>> implements ISituationalAwareness<V,I> {
+public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironment<IPhysical>> implements ISituationalAwareness<IPhysical,I> {
 
-	private Lock lock;
+	public static int DEFAULT_FUTURE_RANGE = 35000;//35 sec
+
+	private int forecast;
 	
 	private I input;
 	
-	private V owner;
-			
-	private Collection<ISituationListener<V>> listeners;
-
+	private IVessel owner;
+	
+	private Collection<IPhysical>others;
+	private Collection<RadarData> shortestList;
+	
+	private Collection<ISituationListener<IPhysical>> listeners;
+	private Lock lock;
+	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	protected AbstractSituationalAwareness( V owner) {
+	protected AbstractSituationalAwareness( IVessel owner) {
 		this( owner, MAX_DEGREES);
 	}
 	
-	protected AbstractSituationalAwareness( V owner, int steps ) {
+	protected AbstractSituationalAwareness( IVessel owner, int steps ) {
 		lock = new ReentrantLock();
+		this.forecast = DEFAULT_FUTURE_RANGE;
 		this.owner = owner;
-		this.listeners = new ArrayList<ISituationListener<V>>();
+		this.others = new ArrayList<IPhysical>();
+		shortestList = new TreeSet<RadarData>( new DataComparator());
+		this.listeners = new ArrayList<ISituationListener<IPhysical>>();
 	}
 
-	protected void clear() {
+	@Override
+	public void clear() {
+		this.others.clear();
+		this.shortestList.clear();
 	}
-	
-	protected V getOwner() {
-		return owner;
+
+	@Override
+	public Field getField() {
+		if( getInput() == null )
+			return null;
+		return getInput().getField();
+	}
+
+	@Override
+	public IPhysical getReference() {
+		return this.owner;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.sa.ISituationalAwareness#addlistener(org.miip.waterway.sa.IShipMovedListener)
 	 */
 	@Override
-	public void addlistener( ISituationListener<V> listener ){
+	public void addlistener( ISituationListener<IPhysical> listener ){
 		this.listeners.add( listener);
 	}
 
@@ -55,12 +76,12 @@ public abstract class AbstractSituationalAwareness<V extends Object, I extends I
 	 * @see org.miip.waterway.sa.ISituationalAwareness#removelistener(org.miip.waterway.sa.IShipMovedListener)
 	 */
 	@Override
-	public void removelistener( ISituationListener<V> listener ){
+	public void removelistener( ISituationListener<IPhysical> listener ){
 		this.listeners.remove(listener);
 	}
 
-	protected void notifylisteners( SituationEvent<V> event ){
-		for( ISituationListener<V> listener: listeners )
+	protected void notifylisteners( SituationEvent<IPhysical> event ){
+		for( ISituationListener<IPhysical> listener: listeners )
 			listener.notifySituationChanged(event);	
 	}
 	
@@ -80,7 +101,7 @@ public abstract class AbstractSituationalAwareness<V extends Object, I extends I
 			clear();
 			this.onSetInput(input);
 			this.input = input;
-			notifylisteners( new SituationEvent<V>( this.owner ));
+			notifylisteners( new SituationEvent<IPhysical>( this.owner ));
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -90,6 +111,22 @@ public abstract class AbstractSituationalAwareness<V extends Object, I extends I
 	}
 	
 	/**
+	 * Get the critical distance for passage 
+	 */
+	public double getCriticalDistance() {
+		IVessel vessel = (IVessel) getReference(); 
+		return vessel.getMinTurnDistance();
+	}
+	
+	@Override
+	public void update() {
+		this.clear();
+		for( IPhysical other: getInput().getOthers()) {
+			this.others.add(other);
+			predictFuture(this.forecast, (IVessel)getInput().getInhabitant(), (IVessel)other);
+		}
+	}
+	/**
 	 * Predict the future in the given time (in seconds)
 	 * @param interval
 	 * @param router
@@ -97,7 +134,7 @@ public abstract class AbstractSituationalAwareness<V extends Object, I extends I
 	 * @param speed
 	 */
 	@Override
-	public Collection<RadarData> predictFuture( int time, IVessel reference, IVessel other ){
+	public synchronized Collection<RadarData> predictFuture( int time, IVessel reference, IVessel other ){
 		//logger.info("START POSITION: " + position.toString());
 		StringBuffer buffer = new StringBuffer();
 		LatLng newpos = reference.getLocation();
@@ -112,10 +149,9 @@ public abstract class AbstractSituationalAwareness<V extends Object, I extends I
 				//buffer.append("Interval: " + ( interval/1000) + ":\t" + field.printCoordinates(newpos, false ));
 				//buffer.append( "\t" + field.printCoordinates(newotherpos, false ));
 				newpos = reference.plotNext( interval );
-				if(!field.isInField( newpos, 10 )) {
-					buffer.append(" outside field \n");
+				if(!field.isInField( newpos, 10 ))
 					continue;
-				}
+				
 				//logger.fine(newpos.toString());
 				newotherpos = other.plotNext(interval);
 				if(!field.isInField( newotherpos, 10 ))
@@ -139,21 +175,38 @@ public abstract class AbstractSituationalAwareness<V extends Object, I extends I
 		}
 		if( !timemap.isEmpty() ) {
 			shortest.setShortest(true);
+			this.shortestList.add(shortest);
 			for( RadarData data: timemap ) {
 				buffer.append( data.toString() +"\n");
+			}
+			if( shortest.distance > getCriticalDistance()) {
+				Collection<RadarData> temp = new ArrayList<RadarData>();
+				for( RadarData data: temp ) {
+					if( shortest.isEarlier(data) && ( data.distance > getCriticalDistance())) {
+						temp.add(data );
+					}
+				}
+				timemap.removeAll(temp);
 			}
 		}
 		logger.fine( buffer.toString());
 		return timemap;
 	}
 
+	@Override
+	public Collection<AbstractSituationalAwareness<?>.RadarData> getShortest() {
+		return this.shortestList;
+	}
+
 	private class DataComparator implements Comparator<RadarData>{
 
 		@Override
 		public int compare(RadarData o1, RadarData o2) {
-			int cmp =  (int) (o1.distance - o2.distance);
-			if( cmp != 0 )
-				return cmp;
+			double cmp =  (o1.distance - o2.distance);
+			if( cmp > Double.MIN_VALUE )
+				return 1;
+			else if( cmp < Double.MIN_VALUE )
+				return -1;
 			return (int) (o1.time - o2.time );
 		}
 	}

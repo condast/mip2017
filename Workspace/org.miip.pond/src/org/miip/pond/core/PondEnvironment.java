@@ -174,10 +174,13 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
 
 		public DefaultCollisionAvoidance( IVessel vessel ) {
-			super( vessel, new PondSituationalAwareness( vessel ));
+			super( vessel, new PondSituationalAwareness( vessel ), true);
 			PondSituationalAwareness psa = (PondSituationalAwareness) super.getSituationalAwareness();
 			psa.setInput( pe);
+			setActive(!( vessel.getName().toLowerCase().equals("other")));
 		}
+		
+		
 		
 	}
 

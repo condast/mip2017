@@ -7,11 +7,22 @@ import org.miip.waterway.sa.ISituationalAwareness;
 public interface ICollisionAvoidance {
 
 	/**
-	 * Sail the vessel
+	 * Returns true if the algorithm is activated
+	 * @return
+	 */
+	boolean isActive();
+
+	/**
+	 * Needed for radars
+	 * @return
+	 */
+	public ISituationalAwareness<IPhysical,?> getSituationalAwareness();
+
+	/**
+	 * Tell the vessel to which way point its bearing should be
+	 * @param vessel
 	 * @param interval
 	 * @return
 	 */
-	public LatLng sail( long interval);
-
-	public ISituationalAwareness<IPhysical,?> getSituationalAwareness();
+	public LatLng sail( IVessel vessel, long interval );
 }

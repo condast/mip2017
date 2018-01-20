@@ -397,13 +397,14 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 					try{
 						Button button = (Button) e.getSource();
 						PlayerImages.Images image = (PlayerImages.Images) button.getData();
+						Button clear;
 						switch( image ){
 						case START:
 							environment.addListener(listener);
 							environment.start();
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
-							Button clear = (Button) getButton( PlayerImages.Images.RESET);
+							clear = (Button) getButton( PlayerImages.Images.RESET);
 							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
 							getDisplay().asyncExec( new Runnable(){
 
@@ -418,6 +419,8 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 							break;
 						case NEXT:
 							environment.step();
+							clear = (Button) getButton( PlayerImages.Images.RESET);
+							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
 							break;
 						case RESET:
 							hits = 0;

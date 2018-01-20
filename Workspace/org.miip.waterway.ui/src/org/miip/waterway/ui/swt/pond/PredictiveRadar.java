@@ -1,6 +1,7 @@
 package org.miip.waterway.ui.swt.pond;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -20,6 +21,12 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 	}
 
 	@Override
+	protected void onDrawStart(GC gc) {
+		getInput().clear();//the radar controls the situational awareness cache.
+		super.onDrawStart(gc);
+	}
+
+	@Override
 	protected void drawObject( GC gc, IPhysical physicalobj ){
 		IVessel reference = (IVessel) getInput().getReference(); 
 		int centrex = getCentre().x;
@@ -29,11 +36,13 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 			return;
 		
 		ISituationalAwareness<IPhysical,?> psa = getInput();
-		Collection<AbstractSituationalAwareness<IPhysical, ?>.RadarData> timemap = psa.predictFuture(this.totalTime, reference, (IVessel) physicalobj);
+		psa.clear();
+		Collection<AbstractSituationalAwareness<?>.RadarData> timemap = psa.predictFuture(this.totalTime, reference, (IVessel) physicalobj);
 		if( timemap.isEmpty() )
 			return;
 		double offset = ((double)getClientArea().width)/getInput().getField().getLength();
-		AbstractSituationalAwareness<IPhysical,?>.RadarData ref = timemap.iterator().next();
+		Iterator<AbstractSituationalAwareness<?>.RadarData> iterator = timemap.iterator();
+		AbstractSituationalAwareness<?>.RadarData ref = iterator.next();
 		double angle = ref.getAngle();//0-360, north=0
 		double distance = ref.getDistance();
 		int startx = centrex + (int)(offset * distance * Math.sin( Math.toRadians(angle)));
@@ -41,7 +50,8 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		
 		int xposf=startx, yposf = starty;
 		int xposb=startx, yposb = starty;
-		for( AbstractSituationalAwareness<IPhysical, ?>.RadarData data: timemap ) {
+		while( iterator.hasNext() ) {
+			AbstractSituationalAwareness<?>.RadarData data = iterator.next();
 			angle = data.getAngle();//0-360, north=0
 			distance = data.getDistance();
 				
@@ -56,8 +66,8 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 				xposf = xtemp;
 				yposf = ytemp;
 			}else if( ref.isEarlier(data)) {
-				xtemp = xposb + xpos1;
-				ytemp = yposb - ypos1;
+				xtemp = xposb - xpos1;
+				ytemp = yposb + ypos1;
 				gc.drawLine( xposb, yposb, xtemp, ytemp);
 				xposb = xtemp;
 				yposb = ytemp;

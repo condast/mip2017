@@ -6,6 +6,8 @@ import org.miip.waterway.sa.ISituationalAwareness;
 
 public interface IVessel extends IPhysical{
 
+	float DEFAULT_LENGTH = 4.00f;//4 mtr
+
 	/**
 	 * Get the name of the vessel
 	 * @return

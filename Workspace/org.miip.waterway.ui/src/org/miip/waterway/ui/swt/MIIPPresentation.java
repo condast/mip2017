@@ -106,7 +106,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		gc.drawLine( 0, clientArea.height-bankSize, clientArea.width, clientArea.height-bankSize);
 
 		//The ship in the centre
-		CentreShip cship = this.environment.getShip();
+		CentreShip cship = (CentreShip) this.environment.getInhabitant();
 		Point point = ( cship == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
 			scaleToCanvas(cship.getLocation());
 		drawImage( gc, point, MIIPImages.Images.SHIP);

@@ -160,7 +160,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getShip()
 	 */
 	@Override
-	public CentreShip getShip() {
+	public IVessel getInhabitant() {
 		return reference;
 	}
 	
@@ -263,11 +263,23 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
 
 		public DefaultCollisionAvoidance( IVessel vessel ) {
-			super( vessel, new SituationalAwareness( vessel ));
+			super( vessel, new SituationalAwareness( vessel ),false);
 			SituationalAwareness psa = (SituationalAwareness) super.getSituationalAwareness();
 			psa.setInput( environment);
 		}
 		
+	}
+
+	@Override
+	public Collection<IPhysical> getOthers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<IPhysical> getAll() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

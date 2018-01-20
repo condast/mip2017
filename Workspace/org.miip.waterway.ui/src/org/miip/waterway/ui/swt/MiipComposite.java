@@ -318,7 +318,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				if( !btn_manual.getSelection())
 					return;
 				try{
-					CentreShip ship = environment.getShip();
+					CentreShip ship = (CentreShip) environment.getInhabitant();
 					CentreShip.Controls control = null; 
 					switch( e.keyCode ){
 					case SWT.ARROW_UP:
@@ -417,7 +417,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	}
 
 	protected void updateView(){
-		Ship ship = environment.getShip();
+		Ship ship = (Ship) environment.getInhabitant();
 		this.slider_speed.setSelection( environment.getTimer());
 		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					
 		canvas.redraw();
@@ -513,6 +513,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 							break;
 						case NEXT:
 							environment.step();
+							clear = (Button) getButton( PlayerImages.Images.RESET);
+							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
 							break;
 						case RESET:
 							hits = 0;

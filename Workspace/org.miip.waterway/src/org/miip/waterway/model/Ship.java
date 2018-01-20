@@ -35,7 +35,7 @@ public class Ship extends AbstractModel implements IVessel{
 	
 	private Date currentTime;
 	
-	private int length;
+	private float length;
 	private float speed;//-20 - 60 km/hour
 	private int bearing; //0-360
 	private ICollisionAvoidance ca;
@@ -148,9 +148,13 @@ public class Ship extends AbstractModel implements IVessel{
 
 	@Override
 	public LatLng sail(long interval ) {
-		if( ca == null )
-			return super.getLocation();
-		LatLng location = ca.sail(interval);
+		LatLng location = super.getLocation();
+		if(( this.ca == null ) ||( !this.ca.isActive())) {
+			location= plotNext(interval);
+		}else {
+			location = ca.sail( this, interval );
+		}
+		super.setLnglat(location);
 		return location;
 	}
 

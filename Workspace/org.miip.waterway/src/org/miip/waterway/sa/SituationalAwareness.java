@@ -10,12 +10,11 @@ import org.condast.symbiotic.core.environment.EnvironmentEvent;
 import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Point;
-import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.def.IPhysical;
 
-public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical, IMIIPEnvironment> {
+public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvironment> {
 
 	/*
 	private AbstractOperator<Vector<Integer>, Vector<Integer>> operator = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
@@ -40,22 +39,12 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 
 		@Override
 		public void notifyEnvironmentChanged(EnvironmentEvent<IPhysical> event) {
-			notifylisteners( new SituationEvent<IPhysical>( getOwner()));
+			notifylisteners( new SituationEvent<IPhysical>( getReference()));
 		}
 	};
 	
 	public SituationalAwareness( IVessel vessel ) {
 		super( vessel );
-	}
-
-	@Override
-	public Field getField() {
-		return super.getInput().getWaterway().getField();
-	}
-
-	@Override
-	public Ship getReference() {
-		return super.getInput().getShip();
 	}
 
 	@Override

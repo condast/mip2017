@@ -10,6 +10,8 @@ public class Vessel extends AbstractModel implements IVessel {
 
 	private double speed;
 	private double bearing;
+	private float length;//mtr
+	
 	private ICollisionAvoidance ca;
 
 	public Vessel(String name, double latitude, double longitude, double bearing, double speed) {
@@ -24,6 +26,7 @@ public class Vessel extends AbstractModel implements IVessel {
 		super( IPhysical.ModelTypes.VESSEL, location );
 		this.speed = speed;
 		this.bearing = bearing;
+		this.length = IVessel.DEFAULT_LENGTH;
 	}
 
 	@Override
@@ -39,8 +42,7 @@ public class Vessel extends AbstractModel implements IVessel {
 
 	@Override
 	public double getMinTurnDistance() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 3*this.length;
 	}
 
 	@Override
@@ -76,9 +78,11 @@ public class Vessel extends AbstractModel implements IVessel {
 	@Override
 	public LatLng sail(long interval ) {
 		LatLng location = super.getLocation();
-		if( this.ca == null )
-			return location;
-		location = ca.sail(interval );
+		if(( this.ca == null ) ||(!ca.isActive())){
+			location= plotNext(interval);
+		}else {
+			location = ca.sail( this, interval );
+		}
 		super.setLnglat(location);
 		return location;
 	}

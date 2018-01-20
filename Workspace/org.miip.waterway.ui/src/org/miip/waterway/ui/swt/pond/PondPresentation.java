@@ -131,7 +131,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 				if(( !( phobj instanceof IVessel )) || ( !field.isInField( phobj.getLocation(), 0)))
 					continue;
 				IVessel other = (IVessel) phobj;
-				logger.info("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
+				logger.fine("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
 				MIIPImages.Images img = ( other.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
 				drawImage(gc, su.scaleToCanvas( phobj.getLocation() ), img );
 			}

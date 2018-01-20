@@ -11,6 +11,11 @@ public interface ISituationalAwareness<V extends Object, I extends IEnvironment<
 	int MAX_DEGREES = 360;
 	int STEPS_512 = 512;//a more refined alternative to degrees for quick mathematics
 
+	/**
+	 * Clear the situational awareness cache
+	 */
+	void clear();
+	
 	public Field getField();
 	
 	public V getReference();
@@ -25,5 +30,24 @@ public interface ISituationalAwareness<V extends Object, I extends IEnvironment<
 
 	public Collection<V> getRadar();
 
-	Collection<AbstractSituationalAwareness<V, I>.RadarData> predictFuture(int time, IVessel reference, IVessel other);
+	/**
+	 * Predicts future interactions with nearby vessels and returns the distance and bearing
+	 * @param time
+	 * @param reference
+	 * @param other
+	 * @return
+	 */
+	public Collection<AbstractSituationalAwareness<?>.RadarData> predictFuture(int time, IVessel reference, IVessel other);
+	
+	/**
+	 * Get a collection of all the shortest distances predicted in the near future
+	 * @return
+	 */
+	public Collection<AbstractSituationalAwareness<?>.RadarData> getShortest();
+
+	/**
+	 * Update the situation
+	 */
+	void update();
+
 }
