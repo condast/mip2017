@@ -1,6 +1,5 @@
 package org.miip.waterway.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.logging.Logger;
@@ -62,34 +61,33 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 		Collection<AbstractSituationalAwareness<?>.RadarData> data = sa.getShortest();
 		if( Utils.assertNull(data))
 			return next;
-		Collection<LatLng> results = new ArrayList<LatLng>();
 		StringBuffer buffer = new StringBuffer();
+		LatLng last = this.waypoints.isEmpty()?next: this.waypoints.getLast();
+		this.waypoints.clear();
+		//this.waypoints.add(last);
 		for( AbstractSituationalAwareness<?>.RadarData datum: data ) {
-			double distance = vessel.getMinTurnDistance() - datum.getDistance();
+			if( datum.getDistance() > sa.getCriticalDistance())
+				continue;
+			double distance = sa.getCriticalDistance() - datum.getDistance();
 			if( distance < 0 )
 				continue;
-			double angle = datum.getAngle() + Math.PI;//turn away from the pending conflict
+			double angle = datum.getAngle() + 180;//turn away from the pending conflict
 			buffer.append("Angle is " + angle + "\t");
 			//First move away from the obstruction
 			LatLng waypoint = LatLngUtils.extrapolate(datum.getLatlng(), angle, distance);
-			results.add(waypoint);
-			
+			waypoints.addLast(waypoint);
+
 			//Then move back
 			waypoint = LatLngUtils.extrapolate(datum.getLatlng(), datum.getAngle(), distance);
-			results.add(waypoint);
+			waypoints.addLast(waypoint);
 		}
-		logger.info( buffer.toString());
+		waypoints.addLast(last);
 		
-		this.waypoints.clear();
-		if( results.isEmpty() ) {
-			this.waypoints.add(vessel.plotNext(interval));
-		}else {
-			this.waypoints.addAll(results);
-			
-		}
 		LatLng first = this.waypoints.getFirst();
 		double bearing = LatLngUtils.getBearingInDegrees(vessel.getLocation(), first);
 		next = plotNext( vessel.getLocation(), interval, bearing, vessel.getSpeed());
+		buffer.append(" bearing: " + bearing);
+		logger.info( buffer.toString());
 		return next;
 	}
 	

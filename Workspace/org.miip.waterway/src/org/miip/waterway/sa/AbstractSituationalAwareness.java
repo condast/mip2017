@@ -113,6 +113,7 @@ public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironme
 	/**
 	 * Get the critical distance for passage 
 	 */
+	@Override
 	public double getCriticalDistance() {
 		IVessel vessel = (IVessel) getReference(); 
 		return vessel.getMinTurnDistance();

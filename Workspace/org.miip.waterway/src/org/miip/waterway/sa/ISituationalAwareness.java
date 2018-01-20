@@ -50,4 +50,6 @@ public interface ISituationalAwareness<V extends Object, I extends IEnvironment<
 	 */
 	void update();
 
+	double getCriticalDistance();
+
 }
