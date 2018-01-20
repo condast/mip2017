@@ -23,6 +23,12 @@ public class MapComposite extends Composite {
 		controller = new OpenLayerController(browser);
 	}
 
+	
+	protected OpenLayerController getController() {
+		return controller;
+	}
+
+
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components

@@ -26,10 +26,15 @@ public class MIIPFrontend extends Composite {
 		Browser browser = new Browser(sashForm, SWT.NONE);
 		controller = new OpenLayerController( browser );
 		
-		Composite composite = new Composite(sashForm, SWT.NONE);
+		new Composite(sashForm, SWT.NONE);
 		sashForm.setWeights(new int[] {175, 122});
-
 	}
+
+	
+	public OpenLayerController getController() {
+		return controller;
+	}
+
 
 	@Override
 	protected void checkSubclass() {

@@ -2,7 +2,7 @@ package org.miip.waterway.model.def;
 
 import org.miip.waterway.environment.IEnvironment;
 
-public interface IDesignFactory {
+public interface IDesignFactory<D extends Object> {
 
 	public String getId();
 	
@@ -10,5 +10,5 @@ public interface IDesignFactory {
 	 * Create a new environment
 	 * @return
 	 */
-	public IEnvironment createEnvironment();
+	public IEnvironment<D> createEnvironment();
 }

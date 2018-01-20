@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
 import org.miip.waterway.environment.IEnvironment;
+import org.miip.waterway.model.def.IPhysical;
 
 public class BasicEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;
@@ -28,7 +29,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 			case INPUT:
 				String use_str = event.getAttribute(AbstractXMLBuilder.AttributeNames.USE);
 				if(!StringUtils.isEmpty(use_str)) {
-					IInputWidget<IEnvironment> widget = (IInputWidget<IEnvironment>) event.getData();
+					IInputWidget<IEnvironment<IPhysical>> widget = (IInputWidget<IEnvironment<IPhysical>>) event.getData();
 					widget.setInput( Dispatcher.getInstance().getEnvironment( use_str ));
 				}
 				break;

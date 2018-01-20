@@ -1,6 +1,7 @@
 package org.miip.rwt.service;
 
 import org.miip.waterway.model.def.IDesignFactory;
+import org.miip.waterway.model.def.IPhysical;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -13,11 +14,11 @@ public class EnvironmentService {
 
 	@Reference( cardinality = ReferenceCardinality.AT_LEAST_ONE,
 			policy=ReferencePolicy.DYNAMIC)
-	public void addEnvironment( IDesignFactory factory){
+	public void addEnvironment( IDesignFactory<IPhysical> factory){
 		this.dispatcher.addEnvironment( factory );
 	}
 
-	public void removeEnvironment( IDesignFactory ce ){
+	public void removeEnvironment( IDesignFactory<IPhysical> ce ){
 		//this.dispatcher.removeEnvironment( ce. );
 	}
 }

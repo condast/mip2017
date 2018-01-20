@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.waterway.ui.NavigationComposite;
 import org.miip.waterway.ui.images.MIIPImages;
-import org.miip.waterway.ui.lang.MIIPLanguage;
 import org.xml.sax.Attributes;
 
 public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBuilder.Selection> {
@@ -52,6 +51,10 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		if( !StringUtils.isEmpty( defaultLocation ))
 			return defaultLocation;
 		return defaultLocation;
+	}
+
+	protected Class<?> getClss() {
+		return clss;
 	}
 
 	public Composite getRoot(){
@@ -96,8 +99,8 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			String name = getAttribute( attributes, AttributeNames.NAME );
 			String url = getAttribute( attributes, AttributeNames.URL );
 			String data = getAttribute( attributes, AttributeNames.DATA );
-			String height_str = getAttribute( attributes, AttributeNames.HEIGHT );
-			int height = StringUtils.isEmpty( height_str )? 50: Integer.parseInt( height_str );
+			//String height_str = getAttribute( attributes, AttributeNames.HEIGHT );
+			//int height = StringUtils.isEmpty( height_str )? 50: Integer.parseInt( height_str );
 			String size_str = getAttribute( attributes, AttributeNames.SIZE );
 			int size = StringUtils.isEmpty( size_str )? 50: Integer.parseInt( size_str );
 			int style = StringUtils.isEmpty(style_str)? SWT.NONE: IStyle.SWT.convert( style_str );
@@ -294,10 +297,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 
 	private static class LayoutDataBuilder{
 
-		private enum Types{
-			GRID_DATA;
-		}
-		
 		private enum LayoutAttributes{
 			ALIGN,
 			GRAB_EXCESS,
