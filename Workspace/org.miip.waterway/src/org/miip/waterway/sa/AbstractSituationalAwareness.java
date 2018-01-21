@@ -141,7 +141,7 @@ public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironme
 		LatLng newpos = reference.getLocation();
 		LatLng newotherpos = other.getLocation();
 		//logger.fine("Start Time: " + current.getTime());
-		Collection<RadarData> timemap = new TreeSet<RadarData>( new DataComparator());
+		TreeSet<RadarData> timemap = new TreeSet<RadarData>( new DataComparator());
 		RadarData shortest = null; 
 		for( int i=0; i < time; i++ ){
 			try {
@@ -176,6 +176,7 @@ public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironme
 		}
 		if( !timemap.isEmpty() ) {
 			shortest.setShortest(true);
+			shortest.past = timemap.first().equals(shortest);
 			this.shortestList.add(shortest);
 			for( RadarData data: timemap ) {
 				buffer.append( data.toString() +"\n");
@@ -218,6 +219,7 @@ public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironme
 		private double angle;
 		private double distance;
 		private boolean shortest;
+		private boolean past;
 		protected RadarData(LatLng latlng, long time, double angle, double distance) {
 			super();
 			this.latlng = latlng;
@@ -241,6 +243,10 @@ public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironme
 
 		public double getDistance() {
 			return distance;
+		}
+		
+		public boolean isPast() {
+			return past;
 		}
 
 		public boolean isShortest() {

@@ -62,11 +62,11 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 		if( Utils.assertNull(data))
 			return next;
 		StringBuffer buffer = new StringBuffer();
-		LatLng last = this.waypoints.isEmpty()?next: this.waypoints.getLast();
+		LatLng last = this.waypoints.isEmpty()?null: this.waypoints.getLast();
 		this.waypoints.clear();
 		//this.waypoints.add(last);
 		for( AbstractSituationalAwareness<?>.RadarData datum: data ) {
-			if( datum.getDistance() > sa.getCriticalDistance())
+			if( datum.isPast() || ( datum.getDistance() > sa.getCriticalDistance()))
 				continue;
 			double distance = sa.getCriticalDistance() - datum.getDistance();
 			if( distance < 0 )
@@ -79,8 +79,10 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 
 			//Then move back
 			waypoint = LatLngUtils.extrapolate(datum.getLatlng(), datum.getAngle(), distance);
-			waypoints.addLast(waypoint);
+			if( last == null )
+				last = waypoint;
 		}
+		last = ( last == null)?next:waypoints.getLast();
 		waypoints.addLast(last);
 		
 		LatLng first = this.waypoints.getFirst();
