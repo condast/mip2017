@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.condast.commons.Utils;
+import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
-import org.miip.waterway.sa.SituationalAwareness;
+import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.radar.Radar;
+import org.miip.waterway.sa.ISituationalAwareness;
 
-public class Radar{
+public class RestRadar extends Radar<IPhysical>{
 
 	public enum Colour{
 		RED,
@@ -17,39 +20,45 @@ public class Radar{
 		BLUE;
 	}
 	
-	private SituationalAwareness sa;
-	private List<Vector<Integer>> vectors;
+	private List<Vector<Double>> vectors;
 	
 	private Collection<RadarData> colours;
 	
-	public Radar() {
+	public RestRadar() {
 		colours = new ArrayList<RadarData>();
 	}
 
 	protected void drawField(){
+		ISituationalAwareness<IPhysical, ?> sa = super.getInput();
 		if( sa == null )
 			return;
 		colours.clear();
 		for( int i=0; i< vectors.size(); i++ ){
-			Vector<Integer> vector = vectors.get(i);
-			int angle = ( vector != null )? vector.getKey(): 0;
+			Vector<Double> vector = vectors.get(i);
+			double angle = ( vector != null )? vector.getKey(): 0;
 			double value = ( vector != null )? vector.getValue(): 0;
 			drawDegree(angle, value);
 		}
 	}
 
-	protected void drawDegree( int angle, double distance ){
-		if(( Utils.assertNull( vectors )) || ( distance > sa.getRange() )) 
+	protected void drawDegree( double angle, double distance ){
+		if(( Utils.assertNull( vectors )) || ( distance > getRange() )) 
 			return;
-		colours.add( new RadarData( angle, getColour( angle )));
+		colours.add( new RadarData( (int) angle, getColour( angle )));
 	}
 	
 	public Collection<RadarData> getColours() {
 		return colours;
 	}
 
-	public void setInput( SituationalAwareness sa ){
-		this.sa = sa;
+	@Override
+	public SequentialBinaryTreeSet<Vector<Double>> getBinaryView() {
+		return super.getBinaryView();
+	}
+
+	@Override
+	public void setInput( ISituationalAwareness<IPhysical, ?> sa ){
+		super.setInput(sa);
 		vectors = getBinaryView().getValues(5);
 		this.drawField();
 	}
@@ -59,17 +68,17 @@ public class Radar{
 		colour[0] = 0;
 		colour[1] = 0;
 		colour[2] = 0;
-		if( sa == null){
+		if( getInput() == null){
 			return colour;
 		}
 		
-		if( distance <= sa.getSensitivity() ){
+		if( distance <= getSensitivity() ){
 			colour[0] = (byte) 255;
 			return colour;
 		}
-		if( distance > sa.getRange() )
+		if( distance > getRange() )
 			return colour;
-		return getLinearColour( colour, (int) distance, sa.getRange(), sa.getSensitivity() );
+		return getLinearColour( colour, (int) distance, getRange(), getSensitivity() );
 	}
 	
 	protected byte[] getIntColour( Map<Colour, Byte> colour ){
@@ -80,7 +89,7 @@ public class Radar{
 		return values;
 	}
 
-	public static byte[]  getLinearColour( byte[] colour, int distance, int range, int sensitivity ){
+	public static byte[]  getLinearColour( byte[] colour, int distance, long range, int sensitivity ){
 		boolean far = ( distance > ( range - sensitivity ));
 		byte red = (far? (byte) 50: (byte)( 255 * ( 1 - distance/range )));
 		colour[0] = red;

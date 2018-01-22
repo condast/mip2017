@@ -64,7 +64,6 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 		StringBuffer buffer = new StringBuffer();
 		LatLng last = this.waypoints.isEmpty()?null: this.waypoints.getLast();
 		this.waypoints.clear();
-		//this.waypoints.add(last);
 		for( AbstractSituationalAwareness<?>.RadarData datum: data ) {
 			if( datum.isPast() || ( datum.getDistance() > sa.getCriticalDistance()))
 				continue;

@@ -15,8 +15,12 @@ import javax.ws.rs.core.MediaType;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.strings.StringUtils;
+import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.rest.model.RadarData;
+import org.miip.waterway.rest.model.RestRadar;
 import org.miip.waterway.rest.service.CompositeSettings;
 import org.miip.waterway.rest.service.Dispatcher;
 import org.miip.waterway.sa.ISituationalAwareness;
@@ -26,6 +30,7 @@ import com.google.gson.Gson;
 @Path("/sa")
 public class RadarResource{
 		
+	private String S_ENVIRONMENT = "org.miip.pond.model.PondEnvironment";
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
 	private CompositeSettings settings = CompositeSettings.getInstance();
@@ -52,33 +57,39 @@ public class RadarResource{
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("leds") String leds ) {
 		logger.info("Query for Radar " + id );
-		ISituationalAwareness sa = Dispatcher.getInstance().getEnvironment().getSituationalAwareness();
+		IReferenceEnvironment<IPhysical> env = (IReferenceEnvironment<IPhysical>) Dispatcher.getInstance().getEnvironment( S_ENVIRONMENT ); 
+		IVessel reference = (IVessel) env.getInhabitant();
+		ISituationalAwareness<IPhysical, ?> sa = reference.getSituationalAwareness();
 		if( sa == null )
 			return "[]";
-		SequentialBinaryTreeSet<Vector<Integer>>  data = sa.getBinaryView();
+		RestRadar radar = new RestRadar();
+		radar.setInput(sa);
+		SequentialBinaryTreeSet<Vector<Double>>  data = radar.getBinaryView();
 		if(( data == null ) ||  data.isEmpty())
 			return "[]";
 		
 		int scale = StringUtils.isEmpty( leds )? 0: Integer.parseInt( leds );
-		Iterator<Vector<Integer>> iterator  = data.getValues( data.scale( scale ) -1).iterator();
+		Iterator<Vector<Double>> iterator  = data.getValues( data.scale( scale ) -1).iterator();
 		Collection<RGB> rgbs = new ArrayList<RGB>();
 		while( iterator.hasNext() ){
-			Map.Entry<Integer, Double> entry = iterator.next();
-			rgbs.add( getColour(sa, entry.getKey(), entry.getValue()));
+			Map.Entry<Double, Double> entry = iterator.next();
+			rgbs.add( getColour(sa, (int)entry.getKey().doubleValue(), entry.getValue()));
 		}
 		Gson gson = new Gson();
 		return gson.toJson( rgbs.toArray( new RGB[ rgbs.size()]));
 	}
 
-	protected RGB getColour( ISituationalAwareness sa, int angle, double distance ){
+	protected RGB getColour( ISituationalAwareness<IPhysical,?> sa, int angle, double distance ){
 		if( sa == null)
 			return new RGB( angle, 0, 0, 0, 0 );
 	
-		if( distance <= sa.getSensitivity() )
+		RestRadar radar = new RestRadar();
+		radar.setInput(sa);
+		if( distance <= radar.getSensitivity() )
 			return new RGB( angle, 255, 0, 0, 0 );
-		if( distance > sa.getRange())
+		if( distance > radar.getRange())
 			return new RGB( angle, 255, 0, 0, 255 );
-		return getLinearColour( angle, (int) distance, sa.getRange(), (int)sa.getSensitivity() );
+		return getLinearColour( angle, (int) distance, (int) radar.getRange(), (int)radar.getSensitivity() );
 	}
 	
 	private RGB getLinearColour( int angle, int distance, int range, int sensitivity ){
