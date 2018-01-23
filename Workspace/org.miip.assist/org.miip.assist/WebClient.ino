@@ -59,6 +59,7 @@ EthernetClient client;
 
 enum request {
   SETUP,
+  LOG,
   RADAR
 };
 
@@ -76,6 +77,10 @@ void setup_Web() {
   delay(1000);
   Serial.println("connecting...");
   connecting();
+}
+
+void logMessage( String msg ){
+  sendHttp( LOG, "log", 1234, msg );
 }
 
 boolean isconnected;
@@ -123,9 +128,9 @@ String requeststr( int request ) {
   return retval;
 }
 
-String sendHttp( int request, String id, int token, String url ) {
+String sendHttp( int request, String id, int token, String msg ) {
   if (!isconnected )
-    return;
+    return "";
   // Make a HTTP request:
   String str = "GET ";
   str += CONTEXT;
@@ -134,9 +139,9 @@ String sendHttp( int request, String id, int token, String url ) {
   str += id;
   str += "&token=";
   str += token;
-  if ( url.length() > 0 ) {
+  if ( msg.length() > 0 ) {
     str += "&";
-    str += url;
+    str += msg;
   }
   str += HTTP_11 ;
   //Serial.println( str );

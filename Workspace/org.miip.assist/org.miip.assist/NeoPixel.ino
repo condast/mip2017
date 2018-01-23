@@ -200,6 +200,7 @@ uint32_t Wheel(byte WheelPos) {
    Get the waypoints for this vessel
 */
 boolean pixelSetup( ) {
+  Serial.println( "SETUP PIXEL ");
   String str = requestSetup( NAME, TOKEN );
   Serial.println( str);
   StackArray <PixelData> options;
@@ -211,7 +212,7 @@ boolean pixelSetup( ) {
     return false;
   }
   if ( root.size() < 1 )
-    return;
+    return false;
   Serial.print( "SETUP DATA: " );
   Serial.println( str );
   for ( int i = 0; i < root.size(); i++ ) {
@@ -221,8 +222,9 @@ boolean pixelSetup( ) {
     data.end = root[index]["e"];
     data.remarks = root[index]["r"];
     data.choice = root[index]["ch"];
-    choice = data.choice;
+    choice = static_cast<Choices>(data.choice );
     options.push( data);
   }
+
   Serial.print( "Pixel Setup: " ); Serial.println( options.count() );
 }
