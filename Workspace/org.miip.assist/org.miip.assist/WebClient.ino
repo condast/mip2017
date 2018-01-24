@@ -79,10 +79,6 @@ void setup_Web() {
   connecting();
 }
 
-void logMessage( String msg ){
-  sendHttp( LOG, "log", 1234, msg );
-}
-
 boolean isconnected;
 
 boolean connecting() {
@@ -104,13 +100,28 @@ void disconnecting() {
 }
 
 /**
-   Send an update message
+   Send a request setup message
 */
 String requestSetup( String name, int token ) {
   connecting();
   String str = sendHttp( SETUP, name, token, "" );
+  Serial.println( "SETUP: " );
+  Serial.println( str );
   disconnecting();
   return str;
+}
+
+/**
+ * send a log message
+ */
+String logMessage( String message ){
+  connecting();
+  String str = sendHttp( LOG, NAME, TOKEN, message );
+  disconnecting();
+  boolean logger = str.equals( "true");
+  Serial.println( "logging: " + str );
+  setLogger( logger );
+  return str;  
 }
 
 String requeststr( int request ) {
@@ -192,7 +203,6 @@ String processRequest() {
   //Serial.println( "DONE" );
   return retval;
 }
-
 
 void loop_Web() {
   // if there are incoming bytes available

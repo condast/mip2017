@@ -10,7 +10,11 @@ package org.miip.rwt.xml;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.condast.commons.preferences.AbstractPreferenceStore;
+import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.swt.IStyle;
@@ -31,13 +35,15 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.waterway.ui.NavigationComposite;
 import org.miip.waterway.ui.images.MIIPImages;
+import org.osgi.service.prefs.Preferences;
 import org.xml.sax.Attributes;
 
 public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBuilder.Selection> {
 	
-
 	private Class<?> clss;
-	
+
+	private Map<String, IPreferenceStore<String,String>> preferences;
+
 	public XMLFactoryBuilder( Composite parent, Class<?> clss ) {
 		super( new XMLHandler( clss, parent ), clss.getResource( S_DEFAULT_FOLDER + File.separator + S_DEFAULT_DESIGN_FILE) );
 		this.clss = clss;
@@ -53,6 +59,10 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		return defaultLocation;
 	}
 
+	public Map<String,IPreferenceStore<String,String>> getPreferences(){
+		return this.preferences;
+	}
+
 	protected Class<?> getClss() {
 		return clss;
 	}
@@ -60,6 +70,13 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 	public Composite getRoot(){
 		XMLHandler handler = (XMLHandler) super.getHandler();
 		return handler.getRoot();
+	}
+	
+	@Override
+	public void build() {
+		super.build();
+		XMLHandler handler = (XMLHandler) getHandler();
+		this.preferences = handler.getPreferences();
 	}
 
 	@Override
@@ -73,17 +90,23 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		private Composite root;
 		private Class<?> clss;
 		private LayoutDataBuilder databuilder;
+		private Map<String, IPreferenceStore<String,String>> preferences;
 		
 		public XMLHandler( Class<?> clss, Composite parent ) {
 			super( EnumSet.allOf( XMLFactoryBuilder.Selection.class));
 			this.root = parent;
 			this.clss = clss;
+			this.preferences = new HashMap<String, IPreferenceStore<String,String>>();
 		}
 
 		public Composite getRoot(){
 			return root;
 		}
 		
+		protected Map<String, IPreferenceStore<String, String>> getPreferences() {
+			return preferences;
+		}
+
 		@Override
 		public Composite[] getUnits() {
 			Composite[] comps = new Composite[1];
@@ -114,6 +137,10 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			Widget widget = null;
 			Composite comp = null;
 			switch( node ){
+			case STORE:
+				String id = getAttribute( attributes, AttributeNames.ID );
+				preferences.put( id, new Store( id, name ));
+				break;
 			case FRONTEND:
 				widget = new Composite((Composite) parent, IStyle.SWT.convert( style_str ) | SWT.BORDER );
 				composite = (Composite) widget;
@@ -252,7 +279,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		Composite composite = null;
 		try{
 			Class<Composite> cls = (Class<Composite>) Class.forName( className );
-			Constructor<Composite> cons = cls.getConstructor( Composite.class, Integer.class);          
+			Constructor<Composite> cons = cls.getConstructor( Composite.class, Integer.TYPE);          
 			composite = cons.newInstance( parent, style );
 		}
 		catch( Exception ex ){
@@ -339,7 +366,27 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				break;
 			}
 		}
-
 	}
 
+	public static class Store extends AbstractPreferenceStore{
+
+		protected Store( String bundleName, String category) {
+			super(bundleName);
+			super.addChild( category );
+		}
+	
+		public Store(Preferences preferences) {
+			super(preferences);
+		}
+
+		@Override
+		protected IPreferenceStore<String, String> onAddChild(Preferences preferences) {
+			return new Store( preferences );
+		}
+
+		@Override
+		public void setBoolean(String name, int position, boolean choice) {
+			super.setBoolean(name, position, choice);
+		}		
+	}
 }

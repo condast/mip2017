@@ -40,7 +40,7 @@ public class Frontend extends Composite {
 	}
 	
 	public void setInput(Collection<ICompositeFactory> factories) {
-		miipComposite.setInput(factories);
+		miipComposite.setFactories(factories);
 	}
 
 	@Override

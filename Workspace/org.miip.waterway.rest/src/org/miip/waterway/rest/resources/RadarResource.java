@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
@@ -14,15 +15,15 @@ import javax.ws.rs.core.MediaType;
 
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
+import org.condast.commons.log.LogFactory;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.radar.IRadarData;
-import org.miip.waterway.rest.model.RadarData;
 import org.miip.waterway.rest.model.RestRadar;
-import org.miip.waterway.rest.service.CompositeSettings;
 import org.miip.waterway.rest.service.Dispatcher;
+import org.miip.waterway.rest.store.RadarOptions;
 import org.miip.waterway.sa.ISituationalAwareness;
 
 import com.google.gson.Gson;
@@ -33,10 +34,12 @@ public class RadarResource{
 	private String S_ENVIRONMENT = "org.miip.pond.model.PondEnvironment";
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
-	private CompositeSettings settings = CompositeSettings.getInstance();
+	private Dispatcher dispatcher = Dispatcher.getInstance();
+	private RadarOptions settings;
 
 	public RadarResource() {
 		super();
+		settings = dispatcher.getOptions();
 	}
 
 	// This method is called if TEXT_PLAIN is request
@@ -45,12 +48,24 @@ public class RadarResource{
 	@Produces(MediaType.APPLICATION_JSON)
 	public String setupRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
 		logger.info("Query for Radar " + id );
-		IRadarData[] data = new IRadarData[ 1];
-		data[0] = new RadarData( settings.getChoice(), settings.getRange(), settings.getSensitivity());
+		IRadarData[] data = settings.toRadarData();
 		Gson gson = new Gson();
-		return gson.toJson(data);
+		String result = gson.toJson(data);
+		return result;
 	}
-	
+
+	// This method is called if TEXT_PLAIN is request
+	@GET
+	@Path("/log")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String log( @QueryParam("id") String id, @QueryParam("token") String token, String message ) {
+		if( !settings.isLogging() )
+			return Boolean.FALSE.toString();
+		Level restLevel = LogFactory.createLogLevel(id, Level.SEVERE.intValue() - 1); 
+		logger.log( restLevel, message );
+		return Boolean.TRUE.toString();
+	}
+
 	// This method is called if TEXT_PLAIN is request
 	@GET
 	@Path("/radar")

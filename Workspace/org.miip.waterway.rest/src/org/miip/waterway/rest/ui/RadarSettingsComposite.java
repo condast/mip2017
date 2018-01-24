@@ -6,7 +6,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.radar.IRadarData.Choices;
-import org.miip.waterway.rest.service.CompositeSettings;
+import org.miip.waterway.rest.service.Dispatcher;
+import org.miip.waterway.rest.store.RadarOptions;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Combo;
@@ -19,9 +20,10 @@ public class RadarSettingsComposite extends Composite {
 	private Combo radarCombo;
 	private Spinner rangeSpinner;
 	private Spinner senseSpinner;
-	
-	private CompositeSettings settings = CompositeSettings.getInstance();
-	
+
+	private Dispatcher dispatcher = Dispatcher.getInstance();
+	private RadarOptions settings;
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -29,6 +31,7 @@ public class RadarSettingsComposite extends Composite {
 	 */
 	public RadarSettingsComposite(Composite parent, int style) {
 		super(parent, style);
+		settings = dispatcher.getOptions();
 		setLayout(new GridLayout(2, false));
 		
 		Label lblView = new Label(this, SWT.NONE);
@@ -84,7 +87,7 @@ public class RadarSettingsComposite extends Composite {
 		});
 	}
 
-	private void setInput( CompositeSettings settings ){
+	private void setInput( RadarOptions settings ){
 		this.radarCombo.select( settings.getChoice().ordinal());
 		this.rangeSpinner.setSelection( settings.getRange());
 		this.senseSpinner.setSelection( settings.getSensitivity());

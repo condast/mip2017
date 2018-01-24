@@ -157,7 +157,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	 * @param parent
 	 * @param style
 	 */
-	public MiipComposite(Composite parent, Integer style) {
+	public MiipComposite(Composite parent, int style) {
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.frontend = this;
@@ -399,7 +399,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		return button;
 	}
 
-	public void setInput( Collection<ICompositeFactory> factories ){
+	public void setFactories( Collection<ICompositeFactory> factories ){
 		this.factories = factories;
 	}
 

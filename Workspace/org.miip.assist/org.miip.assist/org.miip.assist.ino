@@ -18,12 +18,12 @@ void setup() {
 }
 
 void loop() {
-  if( getFlank()){
+  if ( getFlank()) {
     clearFlank();
-    load = ( load + 1 )%120;
-    if( load%10 == 0 ){
-     Serial.print( "SETUP PIXEL");
-     pixelSetup();
+    load = ( load + 1 ) % 120;
+    if ( load % 10 == 0 ) {
+      LogPrintln( "SETUP PIXEL");
+      pixelSetup();
     }
   }
   loop_Pixel();

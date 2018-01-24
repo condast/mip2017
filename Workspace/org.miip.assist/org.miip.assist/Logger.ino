@@ -4,14 +4,14 @@ void setLogger( boolean choice ){
   logger = choice;
 }
 
-void print( String msg ){
+void LogPrint( String msg ){
   if( !logger )
     return;
   Serial.print( msg );
   logMessage( msg );
 }
 
-void println( String msg ){
+void LogPrintln( String msg ){
   if( !logger )
     return;
   Serial.println( msg );

@@ -7,20 +7,29 @@ import org.condast.commons.Utils;
 import org.miip.waterway.environment.IEnvironment;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.rest.store.RadarOptions;
 
 public class Dispatcher {
 
+	public static final String S_VESSEL_NAME = "Rest";
+	
 	private static Dispatcher dispatcher = new Dispatcher();
 
-	private Map<String, IEnvironment<IPhysical>> environments;
+	private RadarOptions options;
 	
+	private Map<String, IEnvironment<IPhysical>> environments;
 	
 	private Dispatcher() {
 		environments = new HashMap<String, IEnvironment<IPhysical>>();
+		this.options = new RadarOptions( S_VESSEL_NAME );
 	}
 
 	public static Dispatcher getInstance(){
 		return dispatcher;
+	}
+
+	public RadarOptions getOptions() {
+		return options;
 	}
 
 	public IEnvironment<IPhysical> getEnvironment( String id ) {

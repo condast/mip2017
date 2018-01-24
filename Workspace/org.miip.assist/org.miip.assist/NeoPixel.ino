@@ -25,13 +25,14 @@ enum Choices {
 enum Choices choice = ALL;
 
 /**
- * Pixel Data object
- */
+   Pixel Data object
+*/
 struct PixelData {
   char* remarks;
   int index;
   boolean end;
   int choice;
+  int options;
 };
 
 String name = "MIIP";
@@ -66,34 +67,34 @@ void setup_Pixel() {
 void loop_Pixel() {
 
   switch ( choice ) {
-  case COLOUR_WIPE_RED:
-     colorWipe(strip.Color(255, 0, 0), 50); // Red
+    case COLOUR_WIPE_RED:
+      colorWipe(strip.Color(255, 0, 0), 50); // Red
       break;
-  case COLOUR_WIPE_GREEN:
-     colorWipe(strip.Color(0, 255, 0), 50); // Green
+    case COLOUR_WIPE_GREEN:
+      colorWipe(strip.Color(0, 255, 0), 50); // Green
       break;
-  case COLOUR_WIPE_BLUE:
+    case COLOUR_WIPE_BLUE:
       colorWipe(strip.Color(0, 0, 255), 50); // Blue
       break;
-  case THEATER_CHASE_RED:
+    case THEATER_CHASE_RED:
       theaterChase(strip.Color(127, 0, 0), 50); // White
       break;
-  case THEATER_CHASE_WHITE:
+    case THEATER_CHASE_WHITE:
       theaterChase(strip.Color(127, 127, 127), 50); // White
       break;
-  case THEATER_CHASE_BLUE:
+    case THEATER_CHASE_BLUE:
       theaterChase(strip.Color(0, 0, 127), 50); // Blue
       break;
-  case RAINBOW:
-     rainbow(20);
+    case RAINBOW:
+      rainbow(20);
       break;
-  case RAINBOW_CYCLE:
-       rainbowCycle(20);
+    case RAINBOW_CYCLE:
+      rainbowCycle(20);
       break;
-  case RAINBOW_THEATRE_CHASE:
+    case RAINBOW_THEATRE_CHASE:
       theaterChaseRainbow(50);
       break;
-  default:
+    default:
       // Some example procedures showing how to display to the pixels:
       colorWipe(strip.Color(255, 0, 0), 50); // Red
       colorWipe(strip.Color(0, 255, 0), 50); // Green
@@ -203,7 +204,7 @@ boolean pixelSetup( ) {
   Serial.println( "SETUP PIXEL ");
   String str = requestSetup( NAME, TOKEN );
   Serial.println( str);
-  StackArray <PixelData> options;
+  StackArray <PixelData> stack;
 
   JsonArray& root = parseArray(str);
 
@@ -223,8 +224,10 @@ boolean pixelSetup( ) {
     data.remarks = root[index]["r"];
     data.choice = root[index]["ch"];
     choice = static_cast<Choices>(data.choice );
-    options.push( data);
+    data.options = root[index]["o"];
+    Serial.print( "OPTIONS " ); data.options;
+    stack.push( data);
   }
 
-  Serial.print( "Pixel Setup: " ); Serial.println( options.count() );
+  Serial.print( "Pixel Setup: " ); Serial.println( stack.count() );
 }
