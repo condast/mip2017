@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
+import org.condast.commons.messaging.rest.ResponseCode;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IPhysical;
@@ -61,12 +62,12 @@ public class RadarResource{
 		IVessel reference = (IVessel) env.getInhabitant();
 		ISituationalAwareness<IPhysical, ?> sa = reference.getSituationalAwareness();
 		if( sa == null )
-			return "[]";
+			return ResponseCode.RESPONSE_EMPTY;
 		RestRadar radar = new RestRadar();
 		radar.setInput(sa);
 		SequentialBinaryTreeSet<Vector<Double>>  data = radar.getBinaryView();
 		if(( data == null ) ||  data.isEmpty())
-			return "[]";
+			return ResponseCode.RESPONSE_EMPTY;
 		
 		int scale = StringUtils.isEmpty( leds )? 0: Integer.parseInt( leds );
 		Iterator<Vector<Double>> iterator  = data.getValues( data.scale( scale ) -1).iterator();
