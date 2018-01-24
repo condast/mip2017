@@ -7,16 +7,19 @@ import org.condast.commons.Utils;
 import org.miip.waterway.environment.IEnvironment;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.model.def.IPhysical;
+import org.miip.waterway.ui.factory.ICompositeFactory;
 
 public class Dispatcher {
 
 	private static Dispatcher dispatcher = new Dispatcher();
 
 	private Map<String, IEnvironment<IPhysical>> environments;
+	private Map<String, ICompositeFactory> factories;
 	
 	
 	private Dispatcher() {
 		environments = new HashMap<String, IEnvironment<IPhysical>>();
+		factories = new HashMap<String, ICompositeFactory>();
 	}
 
 	public static Dispatcher getInstance(){
@@ -36,8 +39,20 @@ public class Dispatcher {
 	public void addEnvironment( String id, IEnvironment<IPhysical> cenv ){
 		this.environments.put( id, cenv );
 	}
-
+	
 	public void removeEnvironment( String id ){
 		this.environments.remove( id );
+	}
+
+	public void addCompositeFactory( ICompositeFactory factory ){
+		this.factories.put( factory.getName(), factory );
+	}
+	
+	public void removeFactory( ICompositeFactory factory ){
+		this.factories.remove( factory.getName() );
+	}
+
+	public Map<String, ICompositeFactory> getFactories() {
+		return factories;
 	}
 }

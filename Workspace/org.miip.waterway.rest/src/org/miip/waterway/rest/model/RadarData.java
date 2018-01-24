@@ -8,11 +8,14 @@ public class RadarData extends BaseData implements IRadarData {
 	private int ch;//choice
 	private int r;//range
 	private int s;//sensitivity
+	
+	private int o;//(boolean)options: bit 0: log 
 
-	public RadarData( Choices choice, int range, int sensitivity) {
+	public RadarData( Choices choice, int range, int sensitivity, int options) {
 		ch = choice.ordinal();
 		this.r = range;
 		this.s = sensitivity;
+		this.o = options;
 	}
 
 	public RadarData( Choices choice, String remarks) {
@@ -35,4 +38,9 @@ public class RadarData extends BaseData implements IRadarData {
 	public int getS() {
 		return s;
 	}
+
+	public int getOptions() {
+		return o;
+	}
+	
 }
