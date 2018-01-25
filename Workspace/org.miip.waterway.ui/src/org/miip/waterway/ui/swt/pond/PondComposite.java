@@ -121,7 +121,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	 * @param parent
 	 * @param style
 	 */
-	public PondComposite(Composite parent, Integer style) {
+	public PondComposite(Composite parent, int style) {
 		super(parent, style);
 		this.createComposite(parent, style);
 		this.frontend = this;

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <design>
+	<preferences>
+		<store id="org.miip.rwt.rest" name="Rest"/>
+	</preferences>
 	<frontend title="ACTIVE" id="org.miip.frontend" style="SWT.NONE">
 		<layout name="grid-layout" columns="1" />
 		<tabfolder>
@@ -7,9 +10,8 @@
 				<horizontal align="fill" grab-excess="true" />
 				<vertical align="fill" grab-excess="true" />
 			</layout-data>
-			>
 			<item name="Main">
-				<composite class="org.miip.waterway.ui.swt.MiipComposite">
+				<composite class="org.miip.waterway.ui.swt.MiipComposite" name="miip-composite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill" />
@@ -26,8 +28,16 @@
 					<input use="org.miip.pond.model.PondEnvironment"/>
 				</composite>
 			</item>
-			<item name="Debug" />
-			<item name="Log" />
+			<item name="Debug" >
+			</item>
+			<item name="Log">
+				<composite class="org.condast.commons.ui.logger.LogComposite" name="log-composite">
+					<layout-data type="grid-data">
+						<horizontal spacing="fill" grab-excess="true" columns="1" />
+						<vertical spacing="fill" />
+					</layout-data>
+				</composite>
+			 </item>
 		</tabfolder>
 		<!-- <navigation style="SWT.VERTICAL" size="100"> <image name="miip" url="/resources/miip.png"/> 
 			<menu> <item name="ENTRY" link="org.miip.waterway.ui.swt.MIIPComposite" select="true" 

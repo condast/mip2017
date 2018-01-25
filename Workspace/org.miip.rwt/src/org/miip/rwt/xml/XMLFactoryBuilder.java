@@ -113,7 +113,14 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			Widget parent = ( super.getCurrentData() == null )? this.root: ( Widget)super.getCurrentData();
 			Widget widget = null;
 			Composite comp = null;
+			TabFolder folder = null;
 			switch( node ){
+			case PREFERENCES:
+				break;
+			case STORE:
+				String id = getAttribute( attributes, AttributeNames.ID );
+				super.addPreferenceStore(id, name);
+				break;
 			case FRONTEND:
 				widget = new Composite((Composite) parent, IStyle.SWT.convert( style_str ) | SWT.BORDER );
 				composite = (Composite) widget;
@@ -136,14 +143,11 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				retval = (Composite) widget;
 				break;
 			case TABFOLDER:
-				widget = new TabFolder( (Composite) parent, style);
+				folder = new TabFolder( (Composite) parent, style);
+				widget = folder;
 				comp = (Composite) widget;
 				comp.setLayout( new GridLayout());
-				//GridData gd_tab = new GridData(SWT.FILL, SWT.FILL, horizontal, !horizontal);
-				//if( !StringUtils.isEmpty( size_str ))
-				//	gd_tab.widthHint = size;
 				control = (Control) widget;
-				//control.setLayoutData( gd_tab);
 				retval = (Composite) widget;
 				break;
 			case COMPOSITE:
@@ -151,7 +155,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 					widget = createComposite( class_str, (Composite) parent, style );
 				}else if( parent instanceof TabItem ){
 					TabItem item = (TabItem) parent;
-					TabFolder folder = (TabFolder)item.getParent();
+					folder = (TabFolder)item.getParent();
 					widget = createComposite( class_str, folder, style );
 					item.setControl((Control) widget);
 				}
@@ -252,7 +256,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		Composite composite = null;
 		try{
 			Class<Composite> cls = (Class<Composite>) Class.forName( className );
-			Constructor<Composite> cons = cls.getConstructor( Composite.class, Integer.class);          
+			Constructor<Composite> cons = cls.getConstructor( Composite.class, Integer.TYPE);          
 			composite = cons.newInstance( parent, style );
 		}
 		catch( Exception ex ){
