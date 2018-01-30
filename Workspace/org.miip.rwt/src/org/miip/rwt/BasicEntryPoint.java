@@ -4,6 +4,7 @@ import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.preferences.IPreferenceStore;
@@ -16,7 +17,6 @@ import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.xml.AbstractXMLBuilder.Selection;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
@@ -29,7 +29,7 @@ import org.miip.waterway.ui.swt.MiipComposite;
 public class BasicEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;
 
-	private static final String S_PREFERENCE_RADAR = "org.miip.waterway.rest";
+	private static final String S_PREFERENCE_RADAR = "Rest";
 	
 	private enum CompositeNames{
 		MIIP_COMPOSITE,
@@ -93,8 +93,8 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 
 		@Override
 		public void notifyActivationChange(ActivationEvent event) {
-			Button button = (Button) event.getSource();
-			boolean choice  = button.getSelection();
+			LogComposite button = (LogComposite) event.getSource();
+			boolean choice  = button.isActivated();
 			XMLFactoryBuilder.Store store = (Store) preferences.get( S_PREFERENCE_RADAR );
 			store.setBoolean( Options.OPTIONS.name(), 0, choice);
 		}
@@ -102,7 +102,8 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	
 	@Override
     protected void createContents(Composite parent) {
-        parent.setLayout(new FillLayout());       
+        preferences = new HashMap<String, IPreferenceStore<String, String>>();
+		parent.setLayout(new FillLayout());       
         XMLFactoryBuilder builder = new XMLFactoryBuilder( parent, this.getClass());
         builder.addListener(listener);
         builder.build();
