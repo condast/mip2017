@@ -105,8 +105,7 @@ void disconnecting() {
 String requestSetup( String name, int token ) {
   connecting();
   String str = sendHttp( SETUP, name, token, "" );
-  Serial.println( "SETUP: " );
-  Serial.println( str );
+  Serial.print( "SETUP: " ); Serial.println( str );
   disconnecting();
   return str;
 }
@@ -116,7 +115,9 @@ String requestSetup( String name, int token ) {
  */
 String logMessage( String message ){
   connecting();
+  Serial.println( "log request: ");
   String str = sendHttp( LOG, NAME, TOKEN, message );
+  Serial.println( str );
   disconnecting();
   boolean logger = str.equals( "true");
   Serial.println( "logging: " + str );
@@ -200,7 +201,7 @@ String processRequest() {
     return retval;
   }
   retval = retval.substring( json, retval.length());
-  //Serial.println( "DONE" );
+  Serial.print( retval); Serial.println( "DONE" );
   return retval;
 }
 

@@ -21,6 +21,7 @@ void loop() {
   if ( getFlank()) {
     clearFlank();
     load = ( load + 1 ) % 120;
+    Serial.println( load );
     if ( load % 10 == 0 ) {
       LogPrintln( "SETUP PIXEL");
       pixelSetup();

@@ -201,10 +201,8 @@ uint32_t Wheel(byte WheelPos) {
    Get the waypoints for this vessel
 */
 boolean pixelSetup( ) {
-  Serial.println( "SETUP PIXEL ");
   String str = requestSetup( NAME, TOKEN );
-  Serial.println( str);
-  StackArray <PixelData> stack;
+  Serial.print( "SETUP PIXEL: "); Serial.println( str);
 
   JsonArray& root = parseArray(str);
 
@@ -214,8 +212,9 @@ boolean pixelSetup( ) {
   }
   if ( root.size() < 1 )
     return false;
-  Serial.print( "SETUP DATA: " );
-  Serial.println( str );
+  Serial.print( "SETUP DATA: " ); Serial.println( str );
+  StackArray <PixelData> stack;
+
   for ( int i = 0; i < root.size(); i++ ) {
     int index =  root.size() - i - 1;
     PixelData data;
