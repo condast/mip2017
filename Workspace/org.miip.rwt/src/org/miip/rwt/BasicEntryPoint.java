@@ -9,13 +9,12 @@ import java.util.Map;
 import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
+import org.condast.commons.ui.activate.ActivationEvent;
+import org.condast.commons.ui.activate.IActivateListener;
 import org.condast.commons.ui.logger.LogComposite;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.xml.AbstractXMLBuilder.Selection;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -77,7 +76,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 					break;
 				case LOG_COMPOSITE:
 					logComposite = (LogComposite) event.getData();
-					logComposite.addSelectionListener(slistener);
+					logComposite.addActivateListener(slistener);
 					break;
 				default:
 					break;
@@ -90,12 +89,11 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 		}
 	};
 	
-	private SelectionListener slistener = new SelectionAdapter() {
-		private static final long serialVersionUID = 1L;
+	private IActivateListener slistener = new IActivateListener() {
 
 		@Override
-		public void widgetSelected( SelectionEvent e ) {
-			Button button = (Button) e.widget;
+		public void notifyActivationChange(ActivationEvent event) {
+			Button button = (Button) event.getSource();
 			boolean choice  = button.getSelection();
 			XMLFactoryBuilder.Store store = (Store) preferences.get( S_PREFERENCE_RADAR );
 			store.setBoolean( Options.OPTIONS.name(), 0, choice);
@@ -109,6 +107,6 @@ public class BasicEntryPoint extends AbstractEntryPoint {
         builder.addListener(listener);
         builder.build();
         builder.removeListener(listener);
-        preferences = builder.getPreferences();
+        preferences.put(S_PREFERENCE_RADAR, builder.getPreferences( S_PREFERENCE_RADAR ));
    }
 }

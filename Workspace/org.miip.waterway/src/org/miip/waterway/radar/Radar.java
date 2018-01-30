@@ -1,10 +1,8 @@
 package org.miip.waterway.radar;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -111,7 +109,15 @@ public class Radar<V extends Object> implements IRadar<V>{
 
 	/**
 	 * Create a binary view of the situational awareness. This view creates
-	 * subsequent averages of the radar images 
+	 * subsequent averages of the radar images. The example below gets the data at depth 5:
+	 * 
+	 * 		List<Vector<Double>> vectors = data.getValues(5);
+	 * 		if( vectors.isEmpty() )
+	 * 			return null;
+	 * 		Collections.sort( vectors, new VectorComparator());
+	 * 		for( Vector<Double> entry: vectors ){
+	 * 			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
+	 * 		}
 	 * @return
 	 */
 	protected SequentialBinaryTreeSet<Vector<Double>> getBinaryView(){
@@ -120,13 +126,6 @@ public class Radar<V extends Object> implements IRadar<V>{
 		while( iterator.hasNext() ){
 			Map.Entry<Double, Double> entry = iterator.next();
 			data.add( new Vector<Double>( entry.getKey(), entry.getValue()));
-			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
-		}
-		List<Vector<Double>> vectors = data.getValues(5);
-		if( vectors.isEmpty() )
-			return null;
-		Collections.sort( vectors, new VectorComparator());
-		for( Vector<Double> entry: vectors ){
 			logger.fine("Angle: " + entry.getKey() + ", distance: " + entry.getValue() );
 		}
 		return data;

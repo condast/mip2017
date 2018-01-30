@@ -28,15 +28,16 @@
 					<input use="org.miip.pond.model.PondEnvironment"/>
 				</composite>
 			</item>
-			<item name="Debug" />
+			<item name="Debug" >
+			</item>
 			<item name="Log">
-				<composite name="log-composite" class="org.condast.commons.ui.logger.LogComposite">
+				<composite class="org.condast.commons.ui.logger.LogComposite" name="log-composite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill" />
 					</layout-data>
 				</composite>
-			</item>
+			 </item>
 		</tabfolder>
 		<!-- <navigation style="SWT.VERTICAL" size="100"> <image name="miip" url="/resources/miip.png"/> 
 			<menu> <item name="ENTRY" link="org.miip.waterway.ui.swt.MIIPComposite" select="true" 

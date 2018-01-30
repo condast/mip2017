@@ -10,8 +10,6 @@ package org.miip.rwt.xml;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.condast.commons.preferences.AbstractPreferenceStore;
 import org.condast.commons.preferences.IPreferenceStore;
@@ -42,8 +40,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 	
 	private Class<?> clss;
 
-	private Map<String, IPreferenceStore<String,String>> preferences;
-
 	public XMLFactoryBuilder( Composite parent, Class<?> clss ) {
 		super( new XMLHandler( clss, parent ), clss.getResource( S_DEFAULT_FOLDER + File.separator + S_DEFAULT_DESIGN_FILE) );
 		this.clss = clss;
@@ -59,9 +55,9 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		return defaultLocation;
 	}
 
-	public Map<String,IPreferenceStore<String,String>> getPreferences(){
-		return this.preferences;
-	}
+	//public Map<String,IPreferenceStore<String,String>> getPreferences(){
+	//	return super.gethis.preferences;
+	//}
 
 	protected Class<?> getClss() {
 		return clss;
@@ -75,8 +71,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 	@Override
 	public void build() {
 		super.build();
-		XMLHandler handler = (XMLHandler) getHandler();
-		this.preferences = handler.getPreferences();
 	}
 
 	@Override
@@ -90,23 +84,17 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		private Composite root;
 		private Class<?> clss;
 		private LayoutDataBuilder databuilder;
-		private Map<String, IPreferenceStore<String,String>> preferences;
 		
 		public XMLHandler( Class<?> clss, Composite parent ) {
 			super( EnumSet.allOf( XMLFactoryBuilder.Selection.class));
 			this.root = parent;
 			this.clss = clss;
-			this.preferences = new HashMap<String, IPreferenceStore<String,String>>();
 		}
 
 		public Composite getRoot(){
 			return root;
 		}
 		
-		protected Map<String, IPreferenceStore<String, String>> getPreferences() {
-			return preferences;
-		}
-
 		@Override
 		public Composite[] getUnits() {
 			Composite[] comps = new Composite[1];
@@ -136,10 +124,13 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			Widget parent = ( super.getCurrentData() == null )? this.root: ( Widget)super.getCurrentData();
 			Widget widget = null;
 			Composite comp = null;
+			TabFolder folder = null;
 			switch( node ){
+			case PREFERENCES:
+				break;
 			case STORE:
 				String id = getAttribute( attributes, AttributeNames.ID );
-				preferences.put( id, new Store( id, name ));
+				super.addPreferenceStore(id, name);
 				break;
 			case FRONTEND:
 				widget = new Composite((Composite) parent, IStyle.SWT.convert( style_str ) | SWT.BORDER );
@@ -163,14 +154,11 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				retval = (Composite) widget;
 				break;
 			case TABFOLDER:
-				widget = new TabFolder( (Composite) parent, style);
+				folder = new TabFolder( (Composite) parent, style);
+				widget = folder;
 				comp = (Composite) widget;
 				comp.setLayout( new GridLayout());
-				//GridData gd_tab = new GridData(SWT.FILL, SWT.FILL, horizontal, !horizontal);
-				//if( !StringUtils.isEmpty( size_str ))
-				//	gd_tab.widthHint = size;
 				control = (Control) widget;
-				//control.setLayoutData( gd_tab);
 				retval = (Composite) widget;
 				break;
 			case COMPOSITE:
@@ -178,7 +166,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 					widget = createComposite( class_str, (Composite) parent, style );
 				}else if( parent instanceof TabItem ){
 					TabItem item = (TabItem) parent;
-					TabFolder folder = (TabFolder)item.getParent();
+					folder = (TabFolder)item.getParent();
 					widget = createComposite( class_str, folder, style );
 					item.setControl((Control) widget);
 				}
@@ -270,6 +258,8 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			// TODO Auto-generated method stub
 			return null;
 		}
+		
+		
 	}
 	
 	@SuppressWarnings("unchecked")
