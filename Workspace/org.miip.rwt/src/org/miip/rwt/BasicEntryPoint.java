@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
-import org.miip.rwt.xml.XMLFactoryBuilder.Store;
 import org.miip.waterway.environment.IEnvironment;
 import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.ui.swt.MiipComposite;
@@ -95,7 +94,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 		public void notifyActivationChange(ActivationEvent event) {
 			LogComposite button = (LogComposite) event.getSource();
 			boolean choice  = button.isActivated();
-			XMLFactoryBuilder.Store store = (Store) preferences.get( S_PREFERENCE_RADAR );
+			IPreferenceStore<String, String> store = preferences.get( S_PREFERENCE_RADAR );
 			store.setBoolean( Options.OPTIONS.name(), 0, choice);
 		}
 	};

@@ -55,10 +55,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		return defaultLocation;
 	}
 
-	//public Map<String,IPreferenceStore<String,String>> getPreferences(){
-	//	return super.gethis.preferences;
-	//}
-
 	protected Class<?> getClss() {
 		return clss;
 	}
@@ -257,9 +253,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		public Composite getUnit(String id) {
 			// TODO Auto-generated method stub
 			return null;
-		}
-		
-		
+		}	
 	}
 	
 	@SuppressWarnings("unchecked")

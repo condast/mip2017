@@ -1,6 +1,7 @@
 #define BUFFER_SIZE 150
 
 JsonArray& parseArray( String str ) {
+
   Serial.print( "READING JSON ARRAY: " ); Serial.println( str );
   if ((str.length() < 2 ) || !str.startsWith("[")) {
     str = "[]";

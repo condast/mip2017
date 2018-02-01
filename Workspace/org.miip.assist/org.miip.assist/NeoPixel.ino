@@ -4,25 +4,7 @@
 #endif
 
 #define PIN 6
-
-#define NAME "Miip"
-#define TOKEN 1025
-#define MIIP_CONTEXT "miip2017/sa/"
-
-enum Choices {
-  COLOUR_WIPE_RED,
-  COLOUR_WIPE_GREEN,
-  COLOUR_WIPE_BLUE,
-  THEATER_CHASE_RED,
-  THEATER_CHASE_WHITE,
-  THEATER_CHASE_BLUE,
-  RAINBOW,
-  RAINBOW_CYCLE,
-  RAINBOW_THEATRE_CHASE,
-  ALL
-};
-
-enum Choices choice = ALL;
+#define LEDS 24
 
 /**
    Pixel Data object
@@ -52,21 +34,47 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, PIN, NEO_GRB + NEO_KHZ800);
 // and minimize distance between Arduino and first pixel.  Avoid connecting
 // on a live circuit...if you must, connect GND first.
 
-void setup_Pixel() {
+int counter;
+
+NeoPixel::NeoPixel() {};
+
+void NeoPixel::setup_Pixel() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
 #if defined (__AVR_ATtiny85__)
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
 #endif
   // End of trinket special code
 
-
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
+  counter = 0;
 }
 
-void loop_Pixel() {
+void NeoPixel::show_Radar() {
+  Serial.println( "SHOW RADAR: ");
+  JsonArray& root = webClient.requestRadar( strip.numPixels() );
+  Serial.print( "SHOW RADAR IMAGE: "); Serial.println( root.size());
 
+  if (!root.success()) {
+    Serial.println("parseObject() failed");
+    return false;
+  }
+  for ( int i = 0; i > root.size(); i++ ) {
+    colorPixel( root[i]["i"],
+                root[i]["r"],
+                root[i]["g"],
+                root[i]["b"],
+                root[i]["t"]);
+  }
+  Serial.println( "RADAR DATA RECEIVED " );
+}
+
+void NeoPixel::loop_Pixel() {
+  //Serial.print("Selecting " ); Serial.println( choice );
   switch ( choice ) {
+    case RADAR:
+       show_Radar();
+       break;
     case COLOUR_WIPE_RED:
       colorWipe(strip.Color(255, 0, 0), 50); // Red
       break;
@@ -95,25 +103,58 @@ void loop_Pixel() {
       theaterChaseRainbow(50);
       break;
     default:
-      // Some example procedures showing how to display to the pixels:
-      colorWipe(strip.Color(255, 0, 0), 50); // Red
-      colorWipe(strip.Color(0, 255, 0), 50); // Green
-      colorWipe(strip.Color(0, 0, 255), 50); // Blue
-      //colorWipe(strip.Color(0, 0, 0, 255), 50); // White RGBW
-      // Send a theater pixel chase in...
-      theaterChase(strip.Color(127, 127, 127), 50); // White
-      theaterChase(strip.Color(127, 0, 0), 50); // Red
-      theaterChase(strip.Color(0, 0, 127), 50); // Blue
+      switch ( counter ) {
+        // Some example procedures showing how to display to the pixels:
+        case 0:
+          colorWipe(strip.Color(255, 0, 0), 50); // Red
+          break;
+        case 1:
+          colorWipe(strip.Color(0, 255, 0), 50); // Green
+          break;
+        case 2:
+          colorWipe(strip.Color(0, 0, 255), 50); // Blue
+          break;
+        case 3:
+          colorWipe(strip.Color(0, 0, 0 ), 50); // White RGBW
+          break;
+        case 4:
+          // Send a theater pixel chase in...
+          theaterChase(strip.Color(127, 127, 127), 50); // White
+          break;
+        case 5:
+          theaterChase(strip.Color(127, 0, 0), 50); // Red
+          break;
+        case 6:
+          theaterChase(strip.Color(0, 0, 127), 50); // Blue
 
-      rainbow(20);
-      rainbowCycle(20);
-      theaterChaseRainbow(50);
+          break;
+        case 7:
+          rainbow(20);
+          break;
+        case 8:
+          rainbowCycle(20);
+          break;
+        case 9:
+          theaterChaseRainbow(50);
+      }
       break;
   }
+  counter++;
+  counter %= 9;
+  //Serial.print("Selected " ); Serial.println( choice );
+}
+
+// Fill the dots at the index with the given RGB values
+void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte transparancy ) {
+  byte rd = (transparancy> red)?0: red - transparancy;
+  byte gr = (transparancy> green)?0: green - transparancy;
+  byte bl = (transparancy> blue)?0: blue - transparancy;
+  strip.setPixelColor(index, strip.Color(rd, gr, bl));
+  strip.show();
 }
 
 // Fill the dots one after the other with a color
-void colorWipe(uint32_t c, uint8_t wait) {
+void NeoPixel::colorWipe(uint32_t c, uint8_t wait) {
   for (uint16_t i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, c);
     strip.show();
@@ -121,7 +162,7 @@ void colorWipe(uint32_t c, uint8_t wait) {
   }
 }
 
-void rainbow(uint8_t wait) {
+void NeoPixel::rainbow(uint8_t wait) {
   uint16_t i, j;
 
   for (j = 0; j < 256; j++) {
@@ -134,7 +175,7 @@ void rainbow(uint8_t wait) {
 }
 
 // Slightly different, this makes the rainbow equally distributed throughout
-void rainbowCycle(uint8_t wait) {
+void NeoPixel::rainbowCycle(uint8_t wait) {
   uint16_t i, j;
 
   for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
@@ -147,7 +188,7 @@ void rainbowCycle(uint8_t wait) {
 }
 
 //Theatre-style crawling lights.
-void theaterChase(uint32_t c, uint8_t wait) {
+void NeoPixel::theaterChase(uint32_t c, uint8_t wait) {
   for (int j = 0; j < 10; j++) { //do 10 cycles of chasing
     for (int q = 0; q < 3; q++) {
       for (uint16_t i = 0; i < strip.numPixels(); i = i + 3) {
@@ -165,7 +206,7 @@ void theaterChase(uint32_t c, uint8_t wait) {
 }
 
 //Theatre-style crawling lights with rainbow effect
-void theaterChaseRainbow(uint8_t wait) {
+void NeoPixel::theaterChaseRainbow(uint8_t wait) {
   for (int j = 0; j < 256; j++) {   // cycle all 256 colors in the wheel
     for (int q = 0; q < 3; q++) {
       for (uint16_t i = 0; i < strip.numPixels(); i = i + 3) {
@@ -184,7 +225,7 @@ void theaterChaseRainbow(uint8_t wait) {
 
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
-uint32_t Wheel(byte WheelPos) {
+uint32_t NeoPixel::Wheel(byte WheelPos) {
   WheelPos = 255 - WheelPos;
   if (WheelPos < 85) {
     return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
@@ -200,33 +241,22 @@ uint32_t Wheel(byte WheelPos) {
 /**
    Get the waypoints for this vessel
 */
-boolean pixelSetup( ) {
-  String str = requestSetup( NAME, TOKEN );
-  Serial.print( "SETUP PIXEL: "); Serial.println( str);
-
-  JsonArray& root = parseArray(str);
+boolean NeoPixel::pixelSetup( ) {
+  JsonObject& root = webClient.requestSetup();
+  Serial.println( "SETUP PIXEL: ");
 
   if (!root.success()) {
     Serial.println("parseObject() failed");
     return false;
   }
-  if ( root.size() < 1 )
-    return false;
-  Serial.print( "SETUP DATA: " ); Serial.println( str );
-  StackArray <PixelData> stack;
-
-  for ( int i = 0; i < root.size(); i++ ) {
-    int index =  root.size() - i - 1;
-    PixelData data;
-    data.index = root[index]["i"];
-    data.end = root[index]["e"];
-    data.remarks = root[index]["r"];
-    data.choice = root[index]["ch"];
-    choice = static_cast<Choices>(data.choice );
-    data.options = root[index]["o"];
-    Serial.print( "OPTIONS " ); data.options;
-    stack.push( data);
-  }
-
-  Serial.print( "Pixel Setup: " ); Serial.println( stack.count() );
+  PixelData data;
+ Serial.println( "LOADING PIXEL DATA: 1");
+  data.index = root["i"];
+  data.end = root["e"];
+  data.remarks = root["r"];
+  data.choice = root["ch"];
+ Serial.println( "LOADING PIXEL DATA: 2");
+  choice = static_cast<Choices>(data.choice );
+  data.options = root["o"];
+  Serial.print( "PIXEL SETUP " ); Serial.println(data.options);
 }

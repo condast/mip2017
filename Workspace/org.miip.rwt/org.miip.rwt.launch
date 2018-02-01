@@ -24,7 +24,7 @@
 <booleanAttribute key="org.eclipse.rap.launch.developmentMode" value="false"/>
 <booleanAttribute key="org.eclipse.rap.launch.openBrowser" value="true"/>
 <intAttribute key="org.eclipse.rap.launch.port" value="10080"/>
-<stringAttribute key="org.eclipse.rap.launch.servletPath" value="/miip2017/home"/>
+<stringAttribute key="org.eclipse.rap.launch.servletPath" value="/miip2017"/>
 <intAttribute key="org.eclipse.rap.launch.sessionTimeout" value="0"/>
 <booleanAttribute key="org.eclipse.rap.launch.terminatePrevious" value="true"/>
 <booleanAttribute key="org.eclipse.rap.launch.useDefaultDataLocation" value="true"/>
@@ -37,5 +37,5 @@
 <booleanAttribute key="tracing" value="false"/>
 <booleanAttribute key="useCustomFeatures" value="false"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
-<stringAttribute key="workspace_bundles" value="org.condast.commons.authentication@default:default,org.condast.commons.data@default:default,org.condast.commons.messaging@default:default,org.condast.commons.persistence@default:default,org.condast.commons.ui@default:default,org.condast.commons@default:default,org.condast.js.commons@default:default,org.condast.symbiotic@default:default,org.condast.wph.core@default:default,org.google.geo.mapping.ui@default:default,org.miip.pond@default:default,org.miip.rwt@default:default,org.miip.waterway.designer@default:default,org.miip.waterway.rest@default:default,org.miip.waterway.ui@default:default,org.miip.waterway@default:default,org.openlayer.map@default:default"/>
+<stringAttribute key="workspace_bundles" value="org.condast.commons.authentication@default:default,org.condast.commons.data@default:default,org.condast.commons.messaging@default:default,org.condast.commons.persistence@default:default,org.condast.commons.ui@default:default,org.condast.commons@default:default,org.condast.js.commons@default:default,org.condast.symbiotic@default:default,org.miip.pond@default:default,org.miip.rwt@default:default,org.miip.waterway.designer@default:default,org.miip.waterway.rest@default:default,org.miip.waterway.ui@default:default,org.miip.waterway@default:default,org.openlayer.map@default:default"/>
 </launchConfiguration>

@@ -1,6 +1,3 @@
-#include <SPI.h>
-#include <Ethernet2.h>
-
 /*
   Web client
 
@@ -31,12 +28,17 @@
 //IPAddress ip(79, 170, 90, 5);
 
 // Netgear / thuis
-//IPAddress server(10, 0, 0, 5); 
+//IPAddress server(10, 0, 0, 5);
 //IPAddress ip(10, 0, 0, 5);
 
 //RH Marine Werkplaats
 //IPAddress server(192, 168, 10, 100);
 //IPAddress ip(192, 168, 10, 100);
+
+// Enter a MAC address for your controller below.
+// Newer Ethernet shields have a MAC address printed on a sticker on the shield
+byte mac[] = MAC;//e.g { 0x90, 0xA2, 0xDA, 0x11, 0x12, 0x3A };
+
 
 IPAddress server(10, 30, 8, 74); // de Stadstuin / kantoor
 IPAddress ip(10, 30, 8, 74); // de Stadstuin / kantoor
@@ -47,26 +49,19 @@ IPAddress ip(10, 30, 8, 74); // de Stadstuin / kantoor
 #define HOST "Host: "
 #define CONNECTION_CLOSE "Connection: close"
 #define HTTP_11 " HTTP/1.1";
+#define ACCEPT "Accept: */*"
+#define CONTEXT_LENGTH "Content-Length: "
+#define CONTENT_TYPE "Content-Type: application/x-www-form-urlencoded"
 
-// Enter a MAC address for your controller below.
-// Newer Ethernet shields have a MAC address printed on a sticker on the shield
-byte mac[] = MAC;//e.g { 0x90, 0xA2, 0xDA, 0x11, 0x12, 0x3A };
+WebClient::WebClient( String name, int tkn ) {
+  id = name;
+  token = tkn;
+}
 
-// Initialize the Ethernet client library
-// with the IP address and port of the server
-// that you want to connect to (port 80 is default for HTTP):
-EthernetClient client;
-
-enum request {
-  SETUP,
-  LOG,
-  RADAR
-};
-
-void setup_Web() {
+void WebClient::setup_Web() {
 
   // start the Ethernet connection:
-  Serial.println( "SETUP WEB CLIENT "); 
+  Serial.println( "SETUP WEB CLIENT ");
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP");
     // try to congifure using IP address instead of DHCP:
@@ -81,12 +76,11 @@ void setup_Web() {
 
 boolean isconnected;
 
-boolean connecting() {
+boolean WebClient::connecting() {
   // if you get a connection, report back via serial:
 
   int result = (client.connect(server, CONDAST_PORT));
-  //Serial.print( "Connected: ");
-  //Serial.println( result );
+  Serial.print( "Connected: "); Serial.println( result );
   if ( isconnected && ( result < 0)) {
     Serial.println("Connection failed: " + result);
   }
@@ -94,45 +88,83 @@ boolean connecting() {
   return isconnected;
 }
 
-void disconnecting() {
+void WebClient::disconnecting() {
   isconnected = false;
+  client.println( CONNECTION_CLOSE );
   client.stop();
 }
 
 /**
    Send a request setup message
 */
-String requestSetup( String name, int token ) {
+JsonObject& WebClient::requestSetup() {
   connecting();
-  String str = sendHttp( SETUP, name, token, "" );
-  Serial.print( "SETUP: " ); Serial.println( str );
+  boolean result = sendHttp( REQ_SETUP, false, "" );
+  if ( !result )
+    return;
+  Serial.println( "SETUP RECEIVED: TRUE" );
+  JsonObject& root = processJsonRequest( 5, 40);
   disconnecting();
-  return str;
+  return root;
 }
 
 /**
- * send a log message
- */
-String logMessage( String message ){
+    Send a request for radar data
+*/
+JsonArray& WebClient::requestRadar( int leds ) {
   connecting();
-  Serial.println( "log request: ");
-  String str = sendHttp( LOG, NAME, TOKEN, message );
-  Serial.println( str );
+  boolean result = sendHttp( REQ_RADAR, true, String( leds ));
+  Serial.print( "RADAR SENT: " ); Serial.println( result );
+  if ( !result )
+    return;
+  JsonArray& root = processJsonArray(leds, 5, 130);
   disconnecting();
-  boolean logger = str.equals( "true");
-  Serial.println( "logging: " + str );
-  setLogger( logger );
-  return str;  
+  return root;
 }
 
-String requeststr( int request ) {
+/**
+   Send a request log message
+*/
+JsonObject& WebClient::requestLog() {
+  connecting();
+  boolean result = sendHttp( REQ_LOG, true, "" );
+  //Serial.print( "LOG SETUP RECEIVED: " ); Serial.println( result );
+  if ( !result )
+    return;
+  JsonObject& root = processJsonRequest(1, 10);
+  disconnecting();
+  return root;
+}
+
+/**
+   send a log message
+*/
+JsonObject& WebClient::logMessage( String message ) {
+  connecting();
+  Serial.println( "log request: ");
+  boolean result = sendHttp( REQ_LOG, true, message );
+  if ( !result )
+    return;
+  JsonObject& root = processJsonRequest(1, 40);
+  Serial.print( "LOG MESSAGE: " ); Serial.println( message );
+  disconnecting();
+  return root;
+}
+
+/**
+   Translate to the correct REST path
+*/
+String WebClient::requeststr( int request ) {
   String retval = "update";
   switch ( request ) {
-    case SETUP:
+    case REQ_SETUP:
       retval = "setup";
       break;
-    case RADAR:
+    case REQ_RADAR:
       retval = "radar";
+      break;
+    case REQ_LOG:
+      retval = "log";
       break;
     default:
       break;
@@ -140,11 +172,12 @@ String requeststr( int request ) {
   return retval;
 }
 
-String sendHttp( int request, String id, int token, String msg ) {
+boolean WebClient::sendHttp( int request, boolean post, String msg ) {
   if (!isconnected )
-    return "";
+    return false;
+
   // Make a HTTP request:
-  String str = "GET ";
+  String str = post ? "POST " : "GET ";
   str += CONTEXT;
   str +=  requeststr( request );
   str += "?id=";
@@ -156,56 +189,76 @@ String sendHttp( int request, String id, int token, String msg ) {
     str += msg;
   }
   str += HTTP_11 ;
-  //Serial.println( str );
+  Serial.println( str );
   client.println( str);
 
   str = HOST;
   str += CONDAST_URL;
   client.println( str);
-  client.println( CONNECTION_CLOSE );
-  client.println();
-  //Serial.println( str );
-  return processRequest();
+  if ( post ) {
+    client.println( ACCEPT );
+    client.print( CONTEXT_LENGTH ); client.println( msg.length() );
+    client.println( CONTENT_TYPE );
+  }
+  if (client.println() == 0) {
+    Serial.println(F("Failed to send request"));
+    return false;
+  }
+
+  // Check HTTP status
+  char status[32] = {0};
+  client.readBytesUntil('\r', status, sizeof(status));
+  if (strcmp(status, "HTTP/1.1 200 OK") != 0) {
+    Serial.print(F("Unexpected response: "));
+    Serial.println(status);
+    return false;
+  }
+
+  // Skip HTTP headers
+  char endOfHeaders[] = "\r\n\r\n";
+  if (!client.find(endOfHeaders)) {
+    Serial.println(F("Invalid response"));
+    return false;
+  }
+  return true;
 }
 
-String processRequest() {
-  // Serial.print(" PROCESSING: ");
-  //Serial.print( client.available() );
-  String retval = "";
+/**
+   Process the clients request. for the data and buffer size see:
+   http://arduinojson.org/assistant/
+*/
+JsonObject& WebClient::processJsonRequest( int data, int buffer) {
+  // Allocate JsonBuffer
+  // Use arduinojson.org/assistant to compute the capacity.
+  const size_t capacity = JSON_OBJECT_SIZE(data) + buffer;
+  DynamicJsonBuffer jsonBuffer(capacity);
 
-  //Extra check for wireless. Sometimes the connection is pending
-  int counter = 0;
-  while ( !client.available() && ( counter < 2500)) {
-    counter++;
-  }
-  //  Serial.println();
-  while (client.available()) {
-    char c = client.read();
-    retval += c;
-
-    // if the server's disconnected, stop the client:
-    if (!client.connected()) {
-      //Serial.println();
-      if (!isconnected ) {
-        Serial.println("disconnecting.");
-        isconnected = false;
-      }
-      client.stop();
-      break;
-    }
-  }
-  //Serial.println( retval );
-  int json = retval.indexOf("[");
-  if ( json <= 0) {
-    //Serial.println( "DONE" );
-    return retval;
-  }
-  retval = retval.substring( json, retval.length());
-  Serial.print( retval); Serial.println( "DONE" );
-  return retval;
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject(client);
+  if (!root.success())
+    Serial.println(F("Parsing failed!"));
+  return root;
 }
 
-void loop_Web() {
+/**
+   Process the clients request. for the data and buffer size see:
+   http://arduinojson.org/assistant/
+*/
+JsonArray& WebClient::processJsonArray( int size, int data, int buffer) {
+  // Allocate JsonBuffer
+  // Use arduinojson.org/assistant to compute the capacity.
+  const size_t capacity = JSON_ARRAY_SIZE(size) + size * JSON_OBJECT_SIZE(data) + buffer;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  JsonArray& root = jsonBuffer.parseArray(client);
+  if (!root.success())
+    Serial.println(F("Parsing failed!"));
+
+  return root;
+}
+
+void WebClient::loop_Web() {
   // if there are incoming bytes available
   // from the server, read them and print them:
   if (!client.connected()) {

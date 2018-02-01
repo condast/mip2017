@@ -101,9 +101,8 @@ public class RadarOptions extends AbstractPreferenceStore{
 		return StringUtils.isEmpty( str)?false: Boolean.parseBoolean(str );
 	}
 
-	public IRadarData[] toRadarData() {
-		IRadarData[] data = new IRadarData[1];
-		data[0] = new RadarData( getChoice(), getRange(), getSensitivity(), getOptions() ); 
+	public IRadarData toRadarData() {
+		IRadarData data = new RadarData( getChoice(), getRange(), getSensitivity(), getOptions() ); 
 		return data;
 	}
 	

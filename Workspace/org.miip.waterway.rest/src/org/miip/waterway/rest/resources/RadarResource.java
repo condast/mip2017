@@ -7,11 +7,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
@@ -47,42 +51,45 @@ public class RadarResource{
 	@GET
 	@Path("/setup")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String setupRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
+	public Response setupRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
 		logger.info("Query for Radar " + id );
-		IRadarData[] data = settings.toRadarData();
+		IRadarData data = settings.toRadarData();
 		Gson gson = new Gson();
 		String result = gson.toJson(data);
-		return result;
+		return Response.ok( result ).build();
 	}
 
 	// This method is called if TEXT_PLAIN is request
-	@GET
+	@POST
 	@Path("/log")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String log( @QueryParam("id") String id, @QueryParam("token") String token, String message ) {
-		if( !settings.isLogging() )
-			return Boolean.FALSE.toString();
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes("application/x-www-form-urlencoded") 
+	public Response log( @QueryParam("id") String id, @QueryParam("token") String token, @FormParam("message") String message ) {
 		Level restLevel = LogFactory.createLogLevel(id, Level.SEVERE.intValue() - 1); 
 		logger.log( restLevel, message );
-		return Boolean.TRUE.toString();
+ 		OptionsData data = new OptionsData( settings.isLogging());
+		Gson gson = new Gson();
+		String result = gson.toJson(data);
+		return Response.ok( result ).build();
 	}
 
 	// This method is called if TEXT_PLAIN is request
-	@GET
+	@POST
 	@Path("/radar")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("leds") String leds ) {
+	@Consumes("application/x-www-form-urlencoded") 
+	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @FormParam("leds") String leds ) {
 		logger.info("Query for Radar " + id );
 		IReferenceEnvironment<IPhysical> env = (IReferenceEnvironment<IPhysical>) Dispatcher.getInstance().getEnvironment( S_ENVIRONMENT ); 
 		IVessel reference = (IVessel) env.getInhabitant();
 		ISituationalAwareness<IPhysical, ?> sa = reference.getSituationalAwareness();
 		if( sa == null )
-			return ResponseCode.RESPONSE_EMPTY;
+			return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 		RestRadar radar = new RestRadar();
 		radar.setInput(sa);
 		SequentialBinaryTreeSet<Vector<Double>>  data = radar.getBinaryView();
 		if(( data == null ) ||  data.isEmpty())
-			return ResponseCode.RESPONSE_EMPTY;
+			return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 		
 		int scale = StringUtils.isEmpty( leds )? 0: Integer.parseInt( leds );
 		Iterator<Vector<Double>> iterator  = data.getValues( data.scale( scale ) -1).iterator();
@@ -92,7 +99,7 @@ public class RadarResource{
 			rgbs.add( getColour(sa, (int)entry.getKey().doubleValue(), entry.getValue()));
 		}
 		Gson gson = new Gson();
-		return gson.toJson( rgbs.toArray( new RGB[ rgbs.size()]));
+		return Response.ok( gson.toJson( rgbs.toArray( new RGB[ rgbs.size()]))).build();
 	}
 
 	protected RGB getColour( ISituationalAwareness<IPhysical,?> sa, int angle, double distance ){
@@ -129,6 +136,20 @@ public class RadarResource{
 			this.g = g;
 			this.b = b;
 			this.t= transparency;
+		}
+	}
+	
+	private class OptionsData{
+		private boolean o;
+
+		public OptionsData( boolean o) {
+			super();
+			this.o = o;
+		}
+
+		@SuppressWarnings("unused")
+		public boolean getOptions() {
+			return o;
 		}
 	}
 }
