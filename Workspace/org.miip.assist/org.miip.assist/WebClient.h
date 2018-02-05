@@ -7,13 +7,44 @@
 
 class WebClient {
     enum request {
-      REQ_SETUP,
-      REQ_LOG,
-      REQ_RADAR
+      REQ_SETUP = 0,
+      REQ_LOG = 1,
+      REQ_RADAR = 2
     };
 
-  private: String id;
-    int token;
+  public: WebClient( String id, int token );
+    /**
+       Pixel Data object
+    */
+    struct PixelData {
+      int index;
+      boolean end;
+      int choice;
+      int options;
+    };
+
+    /**
+       Radar Data object
+    */
+    struct RadarData {
+      byte red;
+      byte green;
+      byte blue;
+      byte index;
+      byte transparency;
+    };
+
+    PixelData requestSetup();
+    boolean requestLog();
+    RadarData requestRadar( int leds );
+    boolean logMessage( String message );
+    void setup_Web();
+    void loop_Web();
+  private: char id[30];
+    char token[6] = {'\0'};
+    char req_str[10] = {'\0'};
+    char send_str[100] = {'\0'};
+
     boolean update( JsonObject& root );
 
     // Initialize the Ethernet client library
@@ -22,18 +53,13 @@ class WebClient {
     EthernetClient client;
     boolean connecting();
     void disconnecting();
-    JsonObject& processJsonRequest( int data, int buffer);
-    JsonArray& processJsonArray( int size, int data, int buffer);
     boolean sendHttp( int request, boolean post, String msg );
-    String requeststr( int request );
-
-  public: WebClient( String id, int token );
-    JsonObject& requestSetup();
-    JsonObject& requestLog();
-    JsonArray&  requestRadar( int leds );
-    JsonObject& logMessage( String message );
-    void setup_Web();
-    void loop_Web();
+    char* requeststr( int request );
+    void printResponse();
+    PixelData getPixelData();
+    String urldecode(String str);
+    String urlencode(String str);
+    unsigned char h2int(char c);
 };
 
 #endif

@@ -6,8 +6,7 @@
 class Logger {
 
   private: boolean logger = false;
-    boolean update( JsonObject& root );
-    
+      
   public: Logger(void);
     void setLogger( boolean choice );
     void logPrint( String msg );

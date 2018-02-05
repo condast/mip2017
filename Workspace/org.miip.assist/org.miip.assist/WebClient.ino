@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+
 /*
   Web client
 
@@ -48,14 +51,14 @@ IPAddress ip(10, 30, 8, 74); // de Stadstuin / kantoor
 
 #define HOST "Host: "
 #define CONNECTION_CLOSE "Connection: close"
-#define HTTP_11 " HTTP/1.1";
+#define HTTP_11 " HTTP/1.1"
 #define ACCEPT "Accept: */*"
 #define CONTEXT_LENGTH "Content-Length: "
-#define CONTENT_TYPE "Content-Type: application/x-www-form-urlencoded"
+#define CONTENT_TYPE "Content-Type: application/x-www-form-urlencoded ; charset=UTF-8"
 
 WebClient::WebClient( String name, int tkn ) {
-  id = name;
-  token = tkn;
+  strcpy( id, name.c_str() );
+  sprintf( token, "%d", tkn );
 }
 
 void WebClient::setup_Web() {
@@ -80,7 +83,7 @@ boolean WebClient::connecting() {
   // if you get a connection, report back via serial:
 
   int result = (client.connect(server, CONDAST_PORT));
-  Serial.print( "Connected: "); Serial.println( result );
+  //Serial.print( "Connected: "); Serial.println( result );
   if ( isconnected && ( result < 0)) {
     Serial.println("Connection failed: " + result);
   }
@@ -97,79 +100,116 @@ void WebClient::disconnecting() {
 /**
    Send a request setup message
 */
-JsonObject& WebClient::requestSetup() {
+WebClient::PixelData WebClient::requestSetup() {
   connecting();
+  //Serial.println( "REQUEST SETUP" );
   boolean result = sendHttp( REQ_SETUP, false, "" );
+  PixelData data;
   if ( !result )
-    return;
-  Serial.println( "SETUP RECEIVED: TRUE" );
-  JsonObject& root = processJsonRequest( 5, 40);
+    return data;
+  //Serial.println( "SETUP RECEIVED: TRUE" );
+  data = getPixelData();
   disconnecting();
-  return root;
+  return data;
+}
+
+/**
+   Retriieve the pixel data
+*/
+WebClient::PixelData WebClient::getPixelData() {
+  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject(client);
+  PixelData data;
+  if (!root.success()) {
+    Serial.println(F("Parsing failed!"));
+    jsonBuffer.clear();
+    return data;
+  }
+
+  data.index = root["i"];
+  data.end = root["e"];
+  data.choice = root["ch"];
+  data.options = root["o"];
+  //Serial.print( "PIXEL DATA " ); Serial.println(data.options);
+  jsonBuffer.clear();
+  return data;
 }
 
 /**
     Send a request for radar data
 */
-JsonArray& WebClient::requestRadar( int leds ) {
+WebClient::RadarData WebClient::requestRadar( int leds ) {
+  //Serial.print("TOKEN: " ); Serial.println( token );
   connecting();
-  boolean result = sendHttp( REQ_RADAR, true, String( leds ));
-  Serial.print( "RADAR SENT: " ); Serial.println( result );
+  //Serial.print( "LEDS:" ); Serial.println( leds );
+  boolean result = sendHttp( REQ_RADAR, false, String( leds ));
+  RadarData data;
   if ( !result )
-    return;
-  JsonArray& root = processJsonArray(leds, 5, 130);
+    return data;
+  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject(client);
+  if (!root.success()) {
+    Serial.println(F("Parsing failed!"));
+    jsonBuffer.clear();
+    disconnecting();
+    return data;
+  }
+  data.index = root["a"];
+  data.red = root["r"];
+  data.green = root["g"];
+  data.blue = root["b"];
+  data.transparency = root["t"];
+  //Serial.print( "RADAR DATA Available for index " ); Serial.println( data.index );
+  jsonBuffer.clear();
   disconnecting();
-  return root;
+  return data;
 }
 
 /**
    Send a request log message
 */
-JsonObject& WebClient::requestLog() {
-  connecting();
-  boolean result = sendHttp( REQ_LOG, true, "" );
-  //Serial.print( "LOG SETUP RECEIVED: " ); Serial.println( result );
-  if ( !result )
-    return;
-  JsonObject& root = processJsonRequest(1, 10);
-  disconnecting();
-  return root;
+boolean WebClient::requestLog() {
+  return logMessage("");
 }
 
 /**
    send a log message
 */
-JsonObject& WebClient::logMessage( String message ) {
+boolean WebClient::logMessage( String message ) {
   connecting();
-  Serial.println( "log request: ");
-  boolean result = sendHttp( REQ_LOG, true, message );
+  //Serial.print( "log request: "); Serial.println( message );
+  boolean result = sendHttp( REQ_LOG, false, urlencode( message ));
   if ( !result )
-    return;
-  JsonObject& root = processJsonRequest(1, 40);
-  Serial.print( "LOG MESSAGE: " ); Serial.println( message );
+    return false;
+  PixelData data = getPixelData();
   disconnecting();
-  return root;
+  return ( data.options && 1 ) > 0;
 }
 
 /**
    Translate to the correct REST path
 */
-String WebClient::requeststr( int request ) {
-  String retval = "update";
+char * WebClient::requeststr( int request ) {
   switch ( request ) {
-    case REQ_SETUP:
-      retval = "setup";
-      break;
+      strcpy(req_str, "          ");//prepare buffer
     case REQ_RADAR:
-      retval = "radar";
+      strcpy( req_str, "radar" );
       break;
     case REQ_LOG:
-      retval = "log";
+      strcpy( req_str, "log" );
       break;
     default:
+      strcpy( req_str, "setup" );
       break;
   }
-  return retval;
+  //Serial.print( "PREPARE REQUEST: " ); Serial.println( request ); Serial.println( " " ); Serial.println( req_str );
+  return req_str;
 }
 
 boolean WebClient::sendHttp( int request, boolean post, String msg ) {
@@ -177,31 +217,35 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
     return false;
 
   // Make a HTTP request:
-  String str = post ? "POST " : "GET ";
-  str += CONTEXT;
-  str +=  requeststr( request );
-  str += "?id=";
-  str += id;
-  str += "&token=";
-  str += token;
-  if ( msg.length() > 0 ) {
-    str += "&";
-    str += msg;
+  memset(send_str, 0, sizeof send_str);
+  strcpy( send_str, post ? "POST " : "GET ");
+  strcat( send_str, CONTEXT );
+  strcat( send_str, requeststr( request ) );
+  strcat( send_str, "?id=" );
+  strcat( send_str, id );
+  strcat( send_str, "&token=");
+  strcat( send_str, token );
+  if ( !post && ( msg.length() > 0 )) {
+    strcat( send_str, "&msg=" );
+    strcat( send_str, msg.c_str() );
   }
-  str += HTTP_11 ;
-  Serial.println( str );
-  client.println( str);
+  strcat( send_str, HTTP_11 );
+  //Serial.print( "SEND REQUEST: " ); Serial.println( send_str );
+  client.println( send_str);
 
-  str = HOST;
-  str += CONDAST_URL;
-  client.println( str);
-  if ( post ) {
+  memset(send_str, 0, sizeof send_str);
+  strcpy(send_str, HOST );
+  strcat(send_str, CONDAST_URL);
+  client.println( send_str );
+  client.println( CONNECTION_CLOSE );
+  if ( post && ( msg.length() > 0 )) {
     client.println( ACCEPT );
-    client.print( CONTEXT_LENGTH ); client.println( msg.length() );
     client.println( CONTENT_TYPE );
-  }
-  if (client.println() == 0) {
-    Serial.println(F("Failed to send request"));
+    client.print( CONTEXT_LENGTH ); client.println( msg.length() );
+    client.println();
+    client.println( msg );
+  } else if (client.println() == 0) {
+    Serial.print("Failed to send request to "); Serial.println( send_str );
     return false;
   }
 
@@ -210,53 +254,72 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
   client.readBytesUntil('\r', status, sizeof(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0) {
     Serial.print(F("Unexpected response: "));
-    Serial.println(status);
+    Serial.print(status);
+    Serial.print(" ");
+    Serial.println( send_str );
     return false;
   }
 
   // Skip HTTP headers
   char endOfHeaders[] = "\r\n\r\n";
   if (!client.find(endOfHeaders)) {
-    Serial.println(F("Invalid response"));
+    Serial.print(F("Invalid response")); Serial.println( send_str );
     return false;
   }
   return true;
 }
 
-/**
-   Process the clients request. for the data and buffer size see:
-   http://arduinojson.org/assistant/
-*/
-JsonObject& WebClient::processJsonRequest( int data, int buffer) {
-  // Allocate JsonBuffer
-  // Use arduinojson.org/assistant to compute the capacity.
-  const size_t capacity = JSON_OBJECT_SIZE(data) + buffer;
-  DynamicJsonBuffer jsonBuffer(capacity);
-
-  // Parse JSON object
-  JsonObject& root = jsonBuffer.parseObject(client);
-  if (!root.success())
-    Serial.println(F("Parsing failed!"));
-  return root;
+void WebClient::printResponse() {
+  while (client.available()) {
+    char c = client.read();
+    Serial.print(c);
+  }
+  Serial.println();
+  Serial.flush();
 }
 
 /**
    Process the clients request. for the data and buffer size see:
    http://arduinojson.org/assistant/
 */
-JsonArray& WebClient::processJsonArray( int size, int data, int buffer) {
+/*
+  JsonObject& WebClient::processJsonRequest( int data, int buffer) {
+  // Allocate JsonBuffer
+  // Use arduinojson.org/assistant to compute the capacity.
+  size_t capacity = JSON_OBJECT_SIZE(data) + buffer;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  Serial.println( "PARSING ARRAY");
+  JsonObject& root = jsonBuffer.parseObject(client);
+  if (!root.success()){
+    Serial.println(F("Parsing failed!"));
+    jsonBuffer.clear();
+  }
+  return root;
+  }
+*/
+
+/**
+   Process the clients request. for the data and buffer size see:
+   http://arduinojson.org/assistant/
+*/
+/*
+  JsonArray& WebClient::processJsonArray( int size, int data, int buffer) {
   // Allocate JsonBuffer
   // Use arduinojson.org/assistant to compute the capacity.
   const size_t capacity = JSON_ARRAY_SIZE(size) + size * JSON_OBJECT_SIZE(data) + buffer;
   DynamicJsonBuffer jsonBuffer(capacity);
 
   // Parse JSON object
-  JsonArray& root = jsonBuffer.parseArray(client);
+  JsonArray& root = jsonBuffer.parseArray(client, 0);
+  root.prettyPrintTo( Serial );
   if (!root.success())
-    Serial.println(F("Parsing failed!"));
+    Serial.println(F("Parsing array failed!"));
 
   return root;
-}
+  }
+*/
 
 void WebClient::loop_Web() {
   // if there are incoming bytes available
@@ -264,4 +327,90 @@ void WebClient::loop_Web() {
   if (!client.connected()) {
     connecting();
   }
+}
+
+/*
+  ESP8266 Hello World urlencode by Steve Nelson
+  URLEncoding is used all the time with internet urls. This is how urls handle funny characters
+  in a URL. For example a space is: %20
+  These functions simplify the process of encoding and decoding the urlencoded format.
+
+  It has been tested on an esp12e (NodeMCU development board)
+  This example code is in the public domain, use it however you want.
+  Prerequisite Examples:
+  https://github.com/zenmanenergy/ESP8266-Arduino-Examples/tree/master/helloworld_serial
+*/
+String WebClient::urldecode(String str) {
+  String encodedString = "";
+  char c;
+  char code0;
+  char code1;
+  for (int i = 0; i < str.length(); i++) {
+    c = str.charAt(i);
+    if (c == '+') {
+      encodedString += ' ';
+    } else if (c == '%') {
+      i++;
+      code0 = str.charAt(i);
+      i++;
+      code1 = str.charAt(i);
+      c = (h2int(code0) << 4) | h2int(code1);
+      encodedString += c;
+    } else {
+
+      encodedString += c;
+    }
+    yield();
+  }
+
+  return encodedString;
+}
+
+String WebClient::urlencode(String str)
+{
+  String encodedString = "";
+  char c;
+  char code0;
+  char code1;
+  char code2;
+  for (int i = 0; i < str.length(); i++) {
+    c = str.charAt(i);
+    if (c == ' ') {
+      encodedString += '+';
+    } else if (isalnum(c)) {
+      encodedString += c;
+    } else {
+      code1 = (c & 0xf) + '0';
+      if ((c & 0xf) > 9) {
+        code1 = (c & 0xf) - 10 + 'A';
+      }
+      c = (c >> 4) & 0xf;
+      code0 = c + '0';
+      if (c > 9) {
+        code0 = c - 10 + 'A';
+      }
+      code2 = '\0';
+      encodedString += '%';
+      encodedString += code0;
+      encodedString += code1;
+      //encodedString+=code2;
+    }
+    yield();
+  }
+  return encodedString;
+
+}
+
+unsigned char WebClient::h2int(char c)
+{
+  if (c >= '0' && c <= '9') {
+    return ((unsigned char)c - '0');
+  }
+  if (c >= 'a' && c <= 'f') {
+    return ((unsigned char)c - 'a' + 10);
+  }
+  if (c >= 'A' && c <= 'F') {
+    return ((unsigned char)c - 'A' + 10);
+  }
+  return (0);
 }

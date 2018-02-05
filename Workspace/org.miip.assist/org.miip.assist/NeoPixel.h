@@ -33,7 +33,7 @@ class NeoPixel {
     
   public: NeoPixel(void);
     void setup_Pixel();
-    boolean pixelSetup();
+    boolean update_Pixel();
     void loop_Pixel();
 };
 

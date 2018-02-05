@@ -17,7 +17,9 @@ public class RadarOptions extends AbstractPreferenceStore{
 		CHOICE,
 		SENSITIVITY,
 		RANGE,
-		OPTIONS;
+		TRANSPARENCY,
+		OPTIONS,
+		COUNTER;
 
 		@Override
 		public String toString() {
@@ -68,7 +70,25 @@ public class RadarOptions extends AbstractPreferenceStore{
 	}
 
 	public void setRange( int range ) {
-		super.putSettings(Options.RANGE, String.valueOf( range));
+		super.putSettings(Options.RANGE, String.valueOf( range ));
+	}
+
+	public int getCounter() {
+		String str = super.getSettings( Options.COUNTER);
+		return StringUtils.isEmpty(str)?0: Integer.parseInt(str);
+	}
+
+	public void setCounter( int count ) {
+		super.putSettings(Options.COUNTER, String.valueOf( count ));
+	}
+
+	public int getTransparency() {
+		String str = super.getSettings( Options.TRANSPARENCY);
+		return StringUtils.isEmpty(str)?0: Integer.parseInt(str);
+	}
+
+	public void setTransparency( int transp ) {
+		super.putSettings(Options.TRANSPARENCY, String.valueOf( transp ));
 	}
 
 	public boolean isLogging() {

@@ -20,6 +20,7 @@ public class RadarSettingsComposite extends Composite {
 	private Combo radarCombo;
 	private Spinner rangeSpinner;
 	private Spinner senseSpinner;
+	private Spinner transparencySpinner;
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 	private RadarOptions settings;
@@ -74,7 +75,6 @@ public class RadarSettingsComposite extends Composite {
 		this.senseSpinner = new Spinner(this, SWT.BORDER);
 		senseSpinner.setPageIncrement(1);
 		senseSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		setInput( settings );
 		senseSpinner.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
@@ -85,12 +85,34 @@ public class RadarSettingsComposite extends Composite {
 				super.widgetSelected(e);
 			}
 		});
+
+		Label lblTransparency = new Label(this, SWT.NONE);
+		lblTransparency.setText("Transparency:");
+		
+		this.transparencySpinner = new Spinner(this, SWT.BORDER);
+		transparencySpinner.setPageIncrement(1);
+		transparencySpinner.setMinimum(0);
+		transparencySpinner.setMaximum(100);
+		transparencySpinner.setSelection(0);
+		transparencySpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		transparencySpinner.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Spinner spinner = (Spinner) e.widget;
+				settings.setTransparency( spinner.getSelection() );
+				super.widgetSelected(e);
+			}
+		});
+		setInput( settings );
 	}
 
 	private void setInput( RadarOptions settings ){
 		this.radarCombo.select( settings.getChoice().ordinal());
 		this.rangeSpinner.setSelection( settings.getRange());
 		this.senseSpinner.setSelection( settings.getSensitivity());
+		this.transparencySpinner.setSelection( settings.getTransparency());
 	}
 	
 	@Override

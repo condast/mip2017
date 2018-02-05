@@ -9,15 +9,6 @@
 /**
    Pixel Data object
 */
-struct PixelData {
-  char* remarks;
-  int index;
-  boolean end;
-  int choice;
-  int options;
-};
-
-String name = "MIIP";
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -27,7 +18,7 @@ String name = "MIIP";
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
 // IMPORTANT: To reduce NeoPixel burnout risk, add 1000 uF capacitor across
 // pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
@@ -36,7 +27,9 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, PIN, NEO_GRB + NEO_KHZ800);
 
 int counter;
 
-NeoPixel::NeoPixel() {};
+NeoPixel::NeoPixel() {
+  choice = RADAR;
+};
 
 void NeoPixel::setup_Pixel() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
@@ -51,30 +44,25 @@ void NeoPixel::setup_Pixel() {
 }
 
 void NeoPixel::show_Radar() {
-  Serial.println( "SHOW RADAR: ");
-  JsonArray& root = webClient.requestRadar( strip.numPixels() );
-  Serial.print( "SHOW RADAR IMAGE: "); Serial.println( root.size());
+  //Serial.println( "SHOW RADAR: ");
+  int leds = ( strip.numPixels() == 0 )? LEDS: strip.numPixels();
+  WebClient::RadarData root = webClient.requestRadar( leds );
+  //Serial.print( "SHOW RADAR IMAGE: ");Serial.println( root.index );
 
-  if (!root.success()) {
-    Serial.println("parseObject() failed");
-    return false;
-  }
-  for ( int i = 0; i > root.size(); i++ ) {
-    colorPixel( root[i]["i"],
-                root[i]["r"],
-                root[i]["g"],
-                root[i]["b"],
-                root[i]["t"]);
-  }
-  Serial.println( "RADAR DATA RECEIVED " );
+  colorPixel( root.index,
+              root.red,
+              root.green,
+              root.blue,
+              root.transparency);
+  //Serial.println( "RADAR DATA RECEIVED " );
 }
 
 void NeoPixel::loop_Pixel() {
-  //Serial.print("Selecting " ); Serial.println( choice );
+  //Serial.print("NEO PIXEL: Selecting " ); Serial.println( choice );
   switch ( choice ) {
     case RADAR:
-       show_Radar();
-       break;
+      show_Radar();
+      break;
     case COLOUR_WIPE_RED:
       colorWipe(strip.Color(255, 0, 0), 50); // Red
       break;
@@ -146,10 +134,14 @@ void NeoPixel::loop_Pixel() {
 
 // Fill the dots at the index with the given RGB values
 void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte transparancy ) {
-  byte rd = (transparancy> red)?0: red - transparancy;
-  byte gr = (transparancy> green)?0: green - transparancy;
-  byte bl = (transparancy> blue)?0: blue - transparancy;
-  strip.setPixelColor(index, strip.Color(rd, gr, bl));
+  double trn = transparancy*2.55;
+  byte rd = (trn > red) ? 0 : red - trn;
+  byte gn = (trn > green) ? 0 : green - trn;
+  byte be = (trn > blue) ? 0 : blue - trn;
+  //Serial.print( index ); Serial.print(": {"); Serial.print( rd ); Serial.print(", "); 
+  //Serial.print( gn ); Serial.print(", ");Serial.print( be ); 
+  //Serial.print(", ");Serial.print(( byte)trn ); Serial.println("}");
+  strip.setPixelColor(index, strip.Color(rd, gn, be ));
   strip.show();
 }
 
@@ -241,22 +233,8 @@ uint32_t NeoPixel::Wheel(byte WheelPos) {
 /**
    Get the waypoints for this vessel
 */
-boolean NeoPixel::pixelSetup( ) {
-  JsonObject& root = webClient.requestSetup();
-  Serial.println( "SETUP PIXEL: ");
-
-  if (!root.success()) {
-    Serial.println("parseObject() failed");
-    return false;
-  }
-  PixelData data;
- Serial.println( "LOADING PIXEL DATA: 1");
-  data.index = root["i"];
-  data.end = root["e"];
-  data.remarks = root["r"];
-  data.choice = root["ch"];
- Serial.println( "LOADING PIXEL DATA: 2");
+boolean NeoPixel::update_Pixel( ) {
+  WebClient::PixelData data = webClient.requestSetup();
   choice = static_cast<Choices>(data.choice );
-  data.options = root["o"];
-  Serial.print( "PIXEL SETUP " ); Serial.println(data.options);
+  //Serial.print( "NEOPIXEL SETUP " ); Serial.println(choice);
 }
