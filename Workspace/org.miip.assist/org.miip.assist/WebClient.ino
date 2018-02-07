@@ -16,15 +16,6 @@
   by Tom Igoe, based on work by Adrian McEwen
 */
 
-#define CONDAST_URL "www.condast.com"
-//#define CONDAST_PORT 8080
-
-//#define LOCAL_HOST "localhost"
-#define CONDAST_PORT 10080
-
-#define MAC { 0x90, 0xA2, 0xDA, 0x11, 0x04, 0x17 }
-#define CONTEXT "/miip2017/sa/"
-
 //SERVER
 // Set the static IP address to use if the DHCP fails to assign
 //char server[] = CONDAST_URL;    // name address for Google (using DNS)
@@ -217,7 +208,7 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
     return false;
 
   // Make a HTTP request:
-  memset(send_str, 0, sizeof send_str);
+  memset( send_str, 0, sizeof send_str);
   strcpy( send_str, post ? "POST " : "GET ");
   strcat( send_str, CONTEXT );
   strcat( send_str, requeststr( request ) );
@@ -230,7 +221,7 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
     strcat( send_str, msg.c_str() );
   }
   strcat( send_str, HTTP_11 );
-  //Serial.print( "SEND REQUEST: " ); Serial.println( send_str );
+  Serial.print( "SEND REQUEST: " ); Serial.println( send_str );
   client.println( send_str);
 
   memset(send_str, 0, sizeof send_str);

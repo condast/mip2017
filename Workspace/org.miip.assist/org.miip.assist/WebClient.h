@@ -5,6 +5,16 @@
 #include <SPI.h>
 #include <Ethernet2.h>
 
+#define CONDAST_URL "www.condast.com"
+//#define CONDAST_PORT 8080
+
+//#define LOCAL_HOST "localhost"
+#define CONDAST_PORT 10080
+
+#define MAC { 0x90, 0xA2, 0xDA, 0x11, 0x04, 0x17 }
+#define CONTEXT "/miip2017/sa/"
+
+
 class WebClient {
     enum request {
       REQ_SETUP = 0,
