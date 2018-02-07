@@ -42,9 +42,6 @@ class WebClient {
     void loop_Web();
   private: char id[30];
     char token[6] = {'\0'};
-    char req_str[10] = {'\0'};
-    char send_str[100] = {'\0'};
-
     boolean update( JsonObject& root );
 
     // Initialize the Ethernet client library
@@ -54,7 +51,7 @@ class WebClient {
     boolean connecting();
     void disconnecting();
     boolean sendHttp( int request, boolean post, String msg );
-    char* requeststr( int request );
+    void requeststr( int request );
     void printResponse();
     PixelData getPixelData();
     String urldecode(String str);

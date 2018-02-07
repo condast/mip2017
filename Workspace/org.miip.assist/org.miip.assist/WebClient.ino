@@ -195,21 +195,18 @@ boolean WebClient::logMessage( String message ) {
 /**
    Translate to the correct REST path
 */
-char * WebClient::requeststr( int request ) {
-  strcpy(req_str, "          ");//prepare buffer
+void WebClient::requeststr( int request ) {
   switch ( request ) {
     case REQ_RADAR:
-      strcpy( req_str, "radar" );
+      client.print( "radar" );
       break;
     case REQ_LOG:
-      strcpy( req_str, "log" );
+      client.print( "log" );
       break;
     default:
-      strcpy( req_str, "setup" );
+      client.print( "setup" );
       break;
   }
-  //Serial.print( "PREPARE REQUEST: " ); Serial.println( request ); Serial.println( " " ); Serial.println( req_str );
-  return req_str;
 }
 
 boolean WebClient::sendHttp( int request, boolean post, String msg ) {
@@ -217,26 +214,23 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
     return false;
 
   // Make a HTTP request:
-  memset(send_str, 0, sizeof send_str);
-  strcpy( send_str, post ? "POST " : "GET ");
-  strcat( send_str, CONTEXT );
-  strcat( send_str, requeststr( request ) );
-  strcat( send_str, "?id=" );
-  strcat( send_str, id );
-  strcat( send_str, "&token=");
-  strcat( send_str, token );
+  client.print( post ? "POST " : "GET ");
+  client.print( CONTEXT );
+  requeststr( request );
+  client.print( "?id=" );
+  client.print( id );
+  client.print( "&token=");
+  client.print( token );
   if ( !post && ( msg.length() > 0 )) {
-    strcat( send_str, "&msg=" );
-    strcat( send_str, msg.c_str() );
+    client.print( "&msg=" );
+    client.print( msg );
   }
-  strcat( send_str, HTTP_11 );
+  client.print( HTTP_11 );
   //Serial.print( "SEND REQUEST: " ); Serial.println( send_str );
-  client.println( send_str);
+  client.println();
 
-  memset(send_str, 0, sizeof send_str);
-  strcpy(send_str, HOST );
-  strcat(send_str, CONDAST_URL);
-  client.println( send_str );
+  client.print( HOST );
+  client.print( CONDAST_URL);
   client.println( CONNECTION_CLOSE );
   if ( post && ( msg.length() > 0 )) {
     client.println( ACCEPT );
@@ -245,7 +239,7 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
     client.println();
     client.println( msg );
   } else if (client.println() == 0) {
-    Serial.print("Failed to send request to "); Serial.println( send_str );
+    Serial.print("Failed to send request ");
     return false;
   }
 
@@ -254,16 +248,14 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
   client.readBytesUntil('\r', status, sizeof(status));
   if (strcmp(status, "HTTP/1.1 200 OK") != 0) {
     Serial.print(F("Unexpected response: "));
-    Serial.print(status);
-    Serial.print(" ");
-    Serial.println( send_str );
+    Serial.println(status);
     return false;
   }
 
   // Skip HTTP headers
   char endOfHeaders[] = "\r\n\r\n";
   if (!client.find(endOfHeaders)) {
-    Serial.print(F("Invalid response")); Serial.println( send_str );
+    Serial.print(F("Invalid response"));;
     return false;
   }
   return true;
