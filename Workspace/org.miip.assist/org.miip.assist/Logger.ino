@@ -1,6 +1,5 @@
 Logger::Logger(){};
 
-
 void Logger::setLogger( boolean choice ) {
   logger = choice;
 }

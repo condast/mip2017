@@ -196,8 +196,8 @@ boolean WebClient::logMessage( String message ) {
    Translate to the correct REST path
 */
 char * WebClient::requeststr( int request ) {
+  strcpy(req_str, "          ");//prepare buffer
   switch ( request ) {
-      strcpy(req_str, "          ");//prepare buffer
     case REQ_RADAR:
       strcpy( req_str, "radar" );
       break;
