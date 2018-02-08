@@ -1,4 +1,4 @@
-#include <Adafruit_NeoPixel.h>
+6#include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include "Logger.h"
 #include "NeoPixel.h"
