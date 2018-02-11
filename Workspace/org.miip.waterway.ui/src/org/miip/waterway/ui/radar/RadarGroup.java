@@ -18,6 +18,7 @@ import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AveragingRadar;
 import org.miip.waterway.ui.swt.HumanAssist;
+import org.miip.waterway.ui.swt.LedRing;
 import org.miip.waterway.ui.swt.DirectRadar;
 import org.miip.waterway.ui.swt.pond.PredictiveRadar;
 
@@ -81,6 +82,11 @@ public class RadarGroup extends Group {
 								//avr.setExpand( 1);
 								radar = avr;
 								break;
+							case LED_RING:
+								LedRing<IPhysical> ledring = new LedRing<IPhysical>(comp_radar, SWT.BORDER);
+								//avr.setExpand( 1);
+								radar = ledring;
+								break;
 							case POND:
 								PredictiveRadar<IPhysical> pondr = new PredictiveRadar<IPhysical>(comp_radar, SWT.BORDER);
 								//avr.setExpand( 1);
@@ -104,7 +110,7 @@ public class RadarGroup extends Group {
 				super.widgetSelected(e);
 			}
 		});
-		combo_radar.select(IRadar.RadarSelect.POND.ordinal());
+		combo_radar.select(IRadar.RadarSelect.LED_RING.ordinal());
 
 		lblNewLabel = new Label(composite, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -176,7 +182,7 @@ public class RadarGroup extends Group {
 		comp_radar = new Composite( this, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		radar = new PredictiveRadar<IVessel>( comp_radar, SWT.BORDER );
+		radar = new LedRing<IVessel>( comp_radar, SWT.BORDER );
 	}
 
 	public void setInput( ISituationalAwareness<IPhysical,?> sa ) {

@@ -16,18 +16,25 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 
 	private int  totalTime = 35000;//35 sec
 	
+	int count;
+	
 	public PredictiveRadar(Composite parent, int style) {
 		super(parent, style);
+		count = 0;
 	}
 
 	@Override
 	protected void onDrawStart(GC gc) {
+		count = 0;
 		getInput().clear();//the radar controls the situational awareness cache.
 		super.onDrawStart(gc);
 	}
 
 	@Override
 	protected void drawObject( GC gc, IPhysical physicalobj ){
+		if( count > 1 )
+			return;
+		count++;
 		IVessel reference = (IVessel) getInput().getReference(); 
 		int centrex = getCentre().x;
 		int centrey = getCentre().y;

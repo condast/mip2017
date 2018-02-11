@@ -481,20 +481,16 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 					try{
 						Button button = (Button) e.getSource();
 						PlayerImages.Images image = (PlayerImages.Images) button.getData();
+						Button clear = (Button) getButton( PlayerImages.Images.RESET);
 						switch( image ){
 						case START:
 							environment.addListener(listener);
 							environment.start();
 							environment.getSituationalAwareness().addlistener(shlistener);
 							radarGroup.setInput( environment.getSituationalAwareness());
-							//setModels( environment.getModels());
-							//setInput(ce.getBehaviour());
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
-							Button clear = (Button) getButton( PlayerImages.Images.RESET);
 							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
-							//Button btn = (Button) e.widget;
-							//btn.setText( !environment.isPaused()? "Stop": "Start");
 							getDisplay().asyncExec( new Runnable(){
 
 								@Override

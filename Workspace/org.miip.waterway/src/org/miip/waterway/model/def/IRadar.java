@@ -12,7 +12,8 @@ public interface IRadar<V extends Object> {
 		WARP,
 		HUMAN_ASSIST,
 		AVERAGE,
-		POND;
+		POND,
+		LED_RING;
 
 		@Override
 		public String toString() {
