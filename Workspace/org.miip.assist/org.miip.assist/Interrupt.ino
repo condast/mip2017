@@ -7,7 +7,7 @@ int int_counter = 0;
 boolean flank;
 
 /**
-   Set timer0 to increment with steps of 10 Hz
+ *  Set timer0 to increment with steps of 10 Hz
 */
 void setup_Interrupt() {
   lock = false;

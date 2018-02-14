@@ -6,7 +6,9 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.servlet;version="3.0.0",
+ org.condast.commons,
  org.condast.commons.data.binary,
+ org.condast.commons.data.filter,
  org.condast.commons.data.latlng,
  org.condast.commons.data.operations,
  org.condast.commons.i18n,

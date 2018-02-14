@@ -103,6 +103,7 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 		
 		@Override
 		public void notifySituationChanged(SituationEvent<V> event) {
+			onPrepare( event );
 			getDisplay().asyncExec( new Runnable() {
 
 				@Override
@@ -174,6 +175,10 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 		return 2*Math.PI*part;
 	}
 
+	protected void onPrepare( SituationEvent<V> event ) {
+		/* DEFAULT NOTHING */
+	}
+	
 	protected void onDrawStart( GC gc ){
 		logger.fine( "Radar settings: rage = " + radar.getRange() + ", sensitivity = " + radar.getSensitivity() );
 	}
@@ -191,7 +196,7 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 	}
 
 	protected Color getColour( double distance ){
-		int colour = SWT.COLOR_BLACK;
+		int colour = SWT.COLOR_RED;
 		if( sa == null)
 			return getDisplay().getSystemColor( colour );
 		

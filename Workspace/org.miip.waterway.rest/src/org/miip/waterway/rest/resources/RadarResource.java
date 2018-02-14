@@ -1,5 +1,9 @@
 package org.miip.waterway.rest.resources;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -115,24 +119,18 @@ public class RadarResource{
 			RestRadar radar = new RestRadar();
 			radar.setInput(sa);
 			SequentialBinaryTreeSet<Vector<Double>>  data = radar.getBinaryView();
-			//if(( data == null ) ||  data.isEmpty())
-			//	return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
+			if(( data == null ) ||  data.isEmpty())
+				return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 
 			int scale = StringUtils.isEmpty( leds )? 1: Integer.parseInt( leds );
-			//Iterator<Vector<Double>> iterator  = data.getValues( data.scale( scale ) -1).iterator();
-			//while( iterator.hasNext() ){
-			//	Map.Entry<Double, Double> entry = iterator.next();
-			//	rgbs.add( getColour(sa, (int)entry.getKey().doubleValue(), entry.getValue()));
-			//}
-			int counter = settings.getCounter();
-			int transparancy = settings.getTransparency();
-			RGB rgb = new RGB( counter, counter, 255-1, (int)( 255 * Math.random()), transparancy );
-			logger.info( rgb.toString());
-			counter++;
-			counter%=scale;
-			settings.setCounter(counter);
+			Iterator<Vector<Double>> iterator = data.fill( scale).iterator();
+			Collection<RGB> rgbs = new ArrayList<RGB>();
+			while( iterator.hasNext() ){
+				Map.Entry<Double, Double> entry = iterator.next();
+				rgbs.add( getColour(sa, (int)entry.getKey().doubleValue(), entry.getValue()));
+			}
 			Gson gson = new Gson();
-			return Response.ok( gson.toJson( rgb )).build();
+			return Response.ok( gson.toJson( rgbs )).build();
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
