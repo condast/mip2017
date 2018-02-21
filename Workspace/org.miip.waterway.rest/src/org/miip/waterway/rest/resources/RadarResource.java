@@ -159,7 +159,6 @@ public class RadarResource{
 		return new RGB( angle, red, green, blue, 0 );
 	}
 
-	@SuppressWarnings("unused")
 	private class RGB{
 		private int a;
 		private int r,g,b;
