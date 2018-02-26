@@ -5,7 +5,7 @@ import java.util.TreeMap;
 
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.condast.commons.data.latlng.Waypoint;
+import org.condast.commons.data.latlng.Motion;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -21,12 +21,12 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical> {
 	
 	private int leds;
 	
-	private Map<Integer, Waypoint> radar;
+	private Map<Integer, Motion> radar;
 
 	public LedRing(Composite parent, int style ) {
 		super(parent, style);
 		this.leds = NR_OF_LEDS;
-		radar = new TreeMap<Integer, Waypoint>( );
+		radar = new TreeMap<Integer, Motion>( );
 	}
 	
 	@Override
@@ -40,25 +40,25 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical> {
 		IVessel reference = (IVessel) getInput().getReference(); 
 		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
 		int key = ( int )( this.leds * angle /( 2*Math.PI ));
-		Waypoint waypoint = calculate(key, ship );
+		Motion waypoint = calculate(key, ship );
 		this.radar.put(key, waypoint);
 	}
 
-	public Waypoint calculate( int key, IPhysical phys) {
+	public Motion calculate( int key, IPhysical phys) {
 		IVessel reference = (IVessel) getInput().getReference(); 
 		double latitude = 0; double longitude = 0;
 		double angle = LatLngUtils.getBearing(reference.getLocation(), phys.getLocation());
 		double distance = LatLngUtils.getDistance(reference.getLocation(), phys.getLocation());
-		Waypoint waypoint = radar.get(key);
+		Motion waypoint = radar.get(key);
 		if( waypoint == null ) {
-			waypoint = new Waypoint( phys.getLocation(), angle, distance );
+			waypoint = new Motion( phys.getLocation(), angle, distance );
 		}else {
 			latitude = ( waypoint.getLocation().getLatitude() + phys.getLocation().getLatitude())/2; 
 			longitude = ( waypoint.getLocation().getLongitude() + phys.getLocation().getLongitude())/2; 
 			angle += ( waypoint.getBearing() + angle )/2;
 			if( distance > waypoint.getDistance() )
 				distance = waypoint.getDistance();
-			waypoint = new Waypoint( new LatLng( latitude, longitude ), angle, distance );
+			waypoint = new Motion( new LatLng( latitude, longitude ), angle, distance );
 		}
 		return waypoint;
 	}
@@ -72,7 +72,7 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical> {
 		Color background = gc.getBackground();
 		double distance = super.getRange() + 10;
 		for( int i=0; i< this.leds; i++ ) {
-			Waypoint waypoint = radar.get( i );
+			Motion waypoint = radar.get( i );
 			if( waypoint != null )
 				distance = waypoint.getDistance();
 			double phi = i * 2 * Math.PI/this.leds;
