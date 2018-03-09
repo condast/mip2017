@@ -51,13 +51,13 @@ void loop() {
         neoPixel.update_Pixel();
         break;
       case 1:
-        logger.setup();
+        //logger.setup();
         //Serial.println( "LOGGER SETUP COMPLETE" );
         break;
       default:
         //Serial.println( "READING RADAR" );
         //neoPixel.loop_Pixel();
-        logger.logPrintln( "LOOPED PIXELS" );
+        //logger.logPrintln( "LOOPED PIXELS" );
         //Serial.println( "LOOP RADAR COMPLETE" );
         break;
     }

@@ -160,7 +160,7 @@ public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironme
 				double diff = LatLngUtils.distance(newpos, newotherpos);		
 				double bearing = LatLngUtils.getBearingInDegrees(newpos,newotherpos);		
 				//buffer.append( "\t bearing and distance at time: " + interval + " is {" + bearing + ", " + diff + "}\n");
-				RadarData data = new RadarData(newpos, interval, bearing, diff); 
+				RadarData data = new RadarData( other, newpos, interval, bearing, diff); 
 				if( shortest == null ) {
 					shortest = data;
 				}else{
@@ -214,21 +214,30 @@ public abstract class AbstractSituationalAwareness<I extends IReferenceEnvironme
 	}
 	
 	public class RadarData{
+		private IPhysical physical;
 		private LatLng latlng;
 		private long time;
 		private double angle;
 		private double distance;
 		private boolean shortest;
 		private boolean past;
-		protected RadarData(LatLng latlng, long time, double angle, double distance) {
+		
+		protected RadarData( IPhysical physical, LatLng latlng, long time, double angle, double distance) {
 			super();
+			this.physical = physical;
 			this.latlng = latlng;
 			this.time = time;
 			this.angle = angle;
 			this.distance = distance;
 			this.shortest = false;
+			this.past = false;
 		}
-		
+	
+		public IPhysical getPhysical() {
+			return physical;
+		}
+
+
 		public LatLng getLatlng() {
 			return latlng;
 		}

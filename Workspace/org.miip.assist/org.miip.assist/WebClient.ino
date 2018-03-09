@@ -186,21 +186,21 @@ boolean WebClient::logMessage( String message ) {
 /**
    Translate to the correct REST path
 */
-char * WebClient::requeststr( int request ) {
-  strcpy(req_str, "          ");//prepare buffer
+String WebClient::requeststr( int request ) {
+  String str;
   switch ( request ) {
     case REQ_RADAR:
-      strcpy( req_str, "radar" );
+      str = "radar";
       break;
     case REQ_LOG:
-      strcpy( req_str, "log" );
+      str = "log";
       break;
     default:
-      strcpy( req_str, "setup" );
+      str = "setup";
       break;
   }
   //Serial.print( "PREPARE REQUEST: " ); Serial.println( request ); Serial.println( " " ); Serial.println( req_str );
-  return req_str;
+  return str;
 }
 
 boolean WebClient::sendHttp( int request, boolean post, String msg ) {
@@ -211,7 +211,10 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
   memset( send_str, 0, sizeof send_str);
   strcpy( send_str, post ? "POST " : "GET ");
   strcat( send_str, CONTEXT );
-  strcat( send_str, requeststr( request ) );
+  String str = requeststr( request );
+  char temp[str.length()];
+  str.toCharArray( temp, str.length() );
+  strcat( send_str, temp );
   strcat( send_str, "?id=" );
   strcat( send_str, id );
   strcat( send_str, "&token=");

@@ -47,7 +47,7 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 		reference.setCollisionAvoidance(ca);
 		
 		this.others.clear();
-		latlng = field.transform(field.getLength()/2 - 10,0);
+		latlng = field.transform(field.getLength()/2,0);
 		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
 		ca = new DefaultCollisionAvoidance( other); 
 		other.setCollisionAvoidance(ca);
@@ -174,7 +174,7 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
 
 		public DefaultCollisionAvoidance( IVessel vessel ) {
-			super( vessel, new PondSituationalAwareness( vessel ), true);
+			super( new PondSituationalAwareness( vessel ), true);
 			PondSituationalAwareness psa = (PondSituationalAwareness) super.getSituationalAwareness();
 			psa.setInput( pe);
 			setActive(!( vessel.getName().toLowerCase().equals("other")));

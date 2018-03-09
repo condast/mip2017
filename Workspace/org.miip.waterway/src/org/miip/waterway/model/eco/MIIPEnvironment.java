@@ -263,7 +263,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
 
 		public DefaultCollisionAvoidance( IVessel vessel ) {
-			super( vessel, new SituationalAwareness( vessel ),false);
+			super( new SituationalAwareness( vessel ),false);
 			SituationalAwareness psa = (SituationalAwareness) super.getSituationalAwareness();
 			psa.setInput( environment);
 		}

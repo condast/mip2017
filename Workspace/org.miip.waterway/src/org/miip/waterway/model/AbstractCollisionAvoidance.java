@@ -16,7 +16,7 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 
 	public static int DEFAULT_FUTURE_RANGE = 35000;//35 sec
 
-	private IVessel vessel;
+	//private IVessel vessel;
 	private ISituationalAwareness<IPhysical,?> sa;
 	private boolean activate;
 	
@@ -25,9 +25,9 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 	
-	public AbstractCollisionAvoidance( IVessel vessel, ISituationalAwareness<IPhysical,?> sa, boolean activate ) {
+	public AbstractCollisionAvoidance( ISituationalAwareness<IPhysical,?> sa, boolean activate ) {
 		this.sa = sa;
-		this.vessel = vessel;
+		//this.vessel = vessel;
 		this.activate = activate;
 		waypoints = new LinkedList<LatLng>();
 	}
@@ -39,10 +39,6 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 
 	protected void setActive(boolean active) {
 		this.activate = active;
-	}
-
-	protected IVessel getVessel() {
-		return vessel;
 	}
 
 	@Override
@@ -62,28 +58,30 @@ public class AbstractCollisionAvoidance implements ICollisionAvoidance {
 		if( Utils.assertNull(data))
 			return next;
 		StringBuffer buffer = new StringBuffer();
+		//Remember the last waypoint
 		LatLng last = this.waypoints.isEmpty()?null: this.waypoints.getLast();
 		this.waypoints.clear();
+		int furthestInteraction = 0;
 		for( AbstractSituationalAwareness<?>.RadarData datum: data ) {
-			if( datum.isPast() || ( datum.getDistance() > sa.getCriticalDistance()))
+			if( datum.getDistance() > furthestInteraction )
+				furthestInteraction = (int) datum.getDistance();
+			if( !datum.isPast() || ( datum.getDistance() > sa.getCriticalDistance()))
 				continue;
 			double distance = sa.getCriticalDistance() - datum.getDistance();
 			if( distance < 0 )
 				continue;
-			double angle = datum.getAngle() + 180;//turn away from the pending conflict
+			double angle = 0;//Always move datum.getAngle() + 180;//turn away from the pending conflict
 			buffer.append("Angle is " + angle + "\t");
 			//First move away from the obstruction
-			LatLng waypoint = LatLngUtils.extrapolate(datum.getLatlng(), angle, distance);
-			waypoints.addLast(waypoint);
-
-			//Then move back
-			waypoint = LatLngUtils.extrapolate(datum.getLatlng(), datum.getAngle(), distance);
-			if( last == null )
-				last = waypoint;
+			LatLng waypoint = LatLngUtils.extrapolate( datum.getLatlng(), angle, sa.getCriticalDistance());
+			waypoints.add(waypoint);
 		}
-		last = ( last == null)?next:waypoints.getLast();
-		waypoints.addLast(last);
+		//Try to move back to the original course
+		if( last == null ) 
+			last = ( furthestInteraction == 0 )? next: LatLngUtils.extrapolate(next, vessel.getBearing(), furthestInteraction + sa.getCriticalDistance());
 		
+		waypoints.add(last);
+
 		LatLng first = this.waypoints.getFirst();
 		double bearing = LatLngUtils.getBearingInDegrees(vessel.getLocation(), first);
 		next = plotNext( vessel.getLocation(), interval, bearing, vessel.getSpeed());

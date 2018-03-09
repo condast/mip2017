@@ -42,7 +42,7 @@ public class Vessel extends AbstractModel implements IVessel {
 
 	@Override
 	public double getMinTurnDistance() {
-		return 3*this.length;
+		return 1*this.length;
 	}
 
 	@Override
