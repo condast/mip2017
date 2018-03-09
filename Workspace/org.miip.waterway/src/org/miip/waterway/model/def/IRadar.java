@@ -1,7 +1,7 @@
 package org.miip.waterway.model.def;
 
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.strings.StringStyler;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 public interface IRadar<V extends Object> {
 

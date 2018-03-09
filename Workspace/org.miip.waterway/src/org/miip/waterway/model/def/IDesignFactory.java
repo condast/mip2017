@@ -1,6 +1,6 @@
 package org.miip.waterway.model.def;
 
-import org.miip.waterway.environment.IEnvironment;
+import org.condast.commons.autonomy.env.IEnvironment;
 
 public interface IDesignFactory<D extends Object> {
 

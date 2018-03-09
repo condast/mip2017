@@ -4,12 +4,12 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;

@@ -3,12 +3,12 @@ package org.miip.waterway.ui.swt.pond;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.sa.AbstractSituationalAwareness;
-import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AbstractSWTRadar;
 
 public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysical>{

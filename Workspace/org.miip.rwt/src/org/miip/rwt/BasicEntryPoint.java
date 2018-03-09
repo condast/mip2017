@@ -7,6 +7,8 @@ import org.condast.commons.xml.IBuildListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.condast.commons.autonomy.env.IEnvironment;
+import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
@@ -21,8 +23,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
-import org.miip.waterway.environment.IEnvironment;
-import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.ui.swt.MiipComposite;
 
 public class BasicEntryPoint extends AbstractEntryPoint {

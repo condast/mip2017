@@ -1,5 +1,7 @@
 package org.miip.waterway.ui.radar;
 
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -13,9 +15,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.model.def.IRadar;
-import org.miip.waterway.sa.ISituationalAwareness;
 import org.miip.waterway.ui.swt.AveragingRadar;
 import org.miip.waterway.ui.swt.HumanAssist;
 import org.miip.waterway.ui.swt.LedRing;

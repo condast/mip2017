@@ -2,13 +2,13 @@ package org.miip.waterway.model.eco;
 
 import java.util.Collection;
 
-import org.condast.symbiotic.core.environment.EnvironmentEvent;
-import org.condast.symbiotic.core.environment.IEnvironmentListener;
+import org.condast.commons.autonomy.env.EnvironmentEvent;
+import org.condast.commons.autonomy.env.IEnvironmentListener;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.model.IReferenceEnvironment;
+import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
+import org.condast.commons.autonomy.sa.SituationEvent;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.model.def.IReferenceEnvironment;
-import org.miip.waterway.sa.AbstractSituationalAwareness;
-import org.miip.waterway.sa.SituationEvent;
 
 public class PondSituationalAwareness extends AbstractSituationalAwareness<IReferenceEnvironment<IPhysical>> {
 
@@ -23,7 +23,16 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<IRefe
 	public PondSituationalAwareness( IVessel owner) {
 		super( owner );
 	}
-	
+
+	/**
+	 * Get the critical distance for passage 
+	 */
+	@Override
+	public double getCriticalDistance() {
+		IVessel vessel = (IVessel) getReference(); 
+		return vessel.getMinTurnDistance();
+	}
+
 	@Override
 	public Collection<IPhysical> getRadar() {
 		return super.getInput().getOthers();

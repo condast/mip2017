@@ -1,7 +1,7 @@
 package org.miip.rwt.service;
 
+import org.condast.commons.autonomy.model.IPhysical;
 import org.miip.waterway.model.def.IDesignFactory;
-import org.miip.waterway.model.def.IPhysical;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

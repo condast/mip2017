@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.miip.waterway.internal.model.AbstractModel;
-import org.miip.waterway.model.def.IPhysical;
 
 public class Waterway extends AbstractModel{
 

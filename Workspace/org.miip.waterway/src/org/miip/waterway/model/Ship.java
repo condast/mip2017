@@ -4,11 +4,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.miip.waterway.internal.model.AbstractModel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 public class Ship extends AbstractModel implements IVessel{
 	
@@ -147,7 +148,7 @@ public class Ship extends AbstractModel implements IVessel{
 	}
 
 	@Override
-	public LatLng sail(long interval ) {
+	public LatLng move(long interval ) {
 		LatLng location = super.getLocation();
 		if(( this.ca == null ) ||( !this.ca.isActive())) {
 			location= plotNext(interval);

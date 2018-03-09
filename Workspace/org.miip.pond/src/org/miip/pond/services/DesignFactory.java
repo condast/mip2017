@@ -1,9 +1,9 @@
 package org.miip.pond.services;
 
+import org.condast.commons.autonomy.env.IEnvironment;
+import org.condast.commons.autonomy.model.IPhysical;
 import org.miip.pond.core.PondEnvironment;
-import org.miip.waterway.environment.IEnvironment;
 import org.miip.waterway.model.def.IDesignFactory;
-import org.miip.waterway.model.def.IPhysical;
 import org.osgi.service.component.annotations.Component;
 
 @Component( name="org.miip.pond.design.factory")

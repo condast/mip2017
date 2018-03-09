@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.env.EnvironmentEvent;
+import org.condast.commons.autonomy.env.IEnvironmentListener;
+import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.commons.thread.IExecuteThread;
-import org.condast.symbiotic.core.environment.EnvironmentEvent;
-import org.condast.symbiotic.core.environment.IEnvironmentListener;
-import org.condast.symbiotic.core.environment.IEnvironmentListener.EventTypes;
-import org.miip.waterway.model.AbstractCollisionAvoidance;
-import org.miip.waterway.model.ICollisionAvoidance;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.model.def.MapLocation;
 import org.miip.waterway.model.eco.PondSituationalAwareness;
 
@@ -47,7 +47,7 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 		reference.setCollisionAvoidance(ca);
 		
 		this.others.clear();
-		latlng = field.transform(field.getLength()/2,0);
+		latlng = field.transform( field.getLength()/2 - 11,0);
 		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
 		ca = new DefaultCollisionAvoidance( other); 
 		other.setCollisionAvoidance(ca);
@@ -156,13 +156,13 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 
 		@Override
 		public void onExecute() {
-			reference.sail(time);
+			reference.move(time);
 			if( !pe.getField().isInField(reference.getLocation(), 1))
 				notifyEnvironmentChanged( new EnvironmentEvent<IPhysical>(pe, EventTypes.OUT_OF_BOUNDS, reference));
 				
 			for(IPhysical other: others ) {
 				IVessel vessel = (IVessel) other;
-				vessel.sail(time);
+				vessel.move(time);
 				if( !pe.getField().isInField(vessel.getLocation(), 1))
 					notifyEnvironmentChanged( new EnvironmentEvent<IPhysical>(pe, EventTypes.OUT_OF_BOUNDS, vessel));
 			}

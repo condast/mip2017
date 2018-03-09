@@ -3,13 +3,13 @@ package org.miip.waterway.ui.swt;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 public class DirectRadar extends AbstractSWTRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;

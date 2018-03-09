@@ -8,22 +8,22 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.env.EnvironmentEvent;
+import org.condast.commons.autonomy.env.IEnvironmentListener;
+import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
+import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.thread.AbstractExecuteThread;
-import org.condast.symbiotic.core.environment.EnvironmentEvent;
-import org.condast.symbiotic.core.environment.IEnvironmentListener;
-import org.condast.symbiotic.core.environment.IEnvironmentListener.EventTypes;
-import org.miip.waterway.model.AbstractCollisionAvoidance;
 import org.miip.waterway.model.CentreShip;
-import org.miip.waterway.model.ICollisionAvoidance;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.Ship.Bearing;
 import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.sa.SituationalAwareness;
 
 public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {

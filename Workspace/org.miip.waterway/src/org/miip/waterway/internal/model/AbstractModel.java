@@ -1,7 +1,7 @@
 package org.miip.waterway.internal.model;
 
+import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.data.latlng.LatLng;
-import org.miip.waterway.model.def.IPhysical;
 
 public abstract class AbstractModel implements IPhysical{
 

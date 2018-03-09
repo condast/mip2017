@@ -3,6 +3,7 @@ package org.miip.waterway.ui.swt;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Motion;
@@ -10,7 +11,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
 
 public class LedRing<I> extends AbstractSWTRadar<IPhysical> {
 	private static final long serialVersionUID = 1L;

@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.env.EnvironmentEvent;
+import org.condast.commons.autonomy.env.IEnvironmentListener;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
+import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
-import org.condast.symbiotic.core.environment.EnvironmentEvent;
-import org.condast.symbiotic.core.environment.IEnvironmentListener;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Point;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.model.def.IPhysical;
 
 public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvironment> {
 
@@ -45,6 +47,15 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 	
 	public SituationalAwareness( IVessel vessel ) {
 		super( vessel );
+	}
+
+	/**
+	 * Get the critical distance for passage 
+	 */
+	@Override
+	public double getCriticalDistance() {
+		IVessel vessel = (IVessel) getReference(); 
+		return vessel.getMinTurnDistance();
 	}
 
 	@Override

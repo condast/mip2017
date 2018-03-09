@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.Utils;
-import org.miip.waterway.environment.IEnvironment;
+import org.condast.commons.autonomy.env.IEnvironment;
+import org.condast.commons.autonomy.model.IPhysical;
 import org.miip.waterway.model.def.IDesignFactory;
-import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.rest.store.RadarOptions;
 
 public class Dispatcher {

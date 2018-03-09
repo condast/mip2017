@@ -1,10 +1,11 @@
 package org.miip.waterway.model;
 
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.miip.waterway.internal.model.AbstractModel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 public class Vessel extends AbstractModel implements IVessel {
 
@@ -42,7 +43,7 @@ public class Vessel extends AbstractModel implements IVessel {
 
 	@Override
 	public double getMinTurnDistance() {
-		return 1*this.length;
+		return 2*this.length;
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class Vessel extends AbstractModel implements IVessel {
 	}
 
 	@Override
-	public LatLng sail(long interval ) {
+	public LatLng move(long interval ) {
 		LatLng location = super.getLocation();
 		if(( this.ca == null ) ||(!ca.isActive())){
 			location= plotNext(interval);

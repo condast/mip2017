@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.condast.commons.Utils;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
-import org.miip.waterway.model.def.IPhysical;
 import org.miip.waterway.radar.Radar;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 public class RestRadar extends Radar<IPhysical>{
 

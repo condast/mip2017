@@ -17,19 +17,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.model.IReferenceEnvironment;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.log.LogFactory;
 import org.condast.commons.messaging.rest.ResponseCode;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.model.def.IReferenceEnvironment;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.rest.model.RestRadar;
 import org.miip.waterway.rest.service.Dispatcher;
 import org.miip.waterway.rest.store.RadarOptions;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 import com.google.gson.Gson;
 

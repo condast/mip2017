@@ -3,6 +3,9 @@ package org.miip.waterway.ui.swt;
 import java.util.Comparator;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.sa.ISituationListener;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.data.latlng.Vector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -17,9 +20,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.Radar;
-import org.miip.waterway.sa.ISituationListener;
-import org.miip.waterway.sa.ISituationalAwareness;
-import org.miip.waterway.sa.SituationEvent;
 
 public abstract class AbstractSWTRadar<V extends Object> extends Canvas implements IRadar<V>{
 	private static final long serialVersionUID = 1L;

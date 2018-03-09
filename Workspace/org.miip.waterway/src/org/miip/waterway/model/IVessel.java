@@ -1,18 +1,11 @@
 package org.miip.waterway.model;
 
-import org.condast.commons.data.latlng.LatLng;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.model.IAutonomous;
 
-public interface IVessel extends IPhysical{
+public interface IVessel extends IAutonomous
+{
 
 	float DEFAULT_LENGTH = 4.00f;//4 mtr
-
-	/**
-	 * Get the name of the vessel
-	 * @return
-	 */
-	public String getName();
 		
 	double getTurn(long timemsec);
 
@@ -29,23 +22,4 @@ public interface IVessel extends IPhysical{
 	 * @return
 	 */
 	double getBearing();
-
-	/**
-	 * Plot the next location, based on speed and bearing
-	 * @param next
-	 * @return
-	 */
-	LatLng plotNext( long timeinMillis);
-
-	/**
-	 * Plot the next position and update the current location.
-	 * @param newTime
-	 * @return
-	 */
-	LatLng sail(long timeinMillis);
-
-	ISituationalAwareness<IPhysical,?> getSituationalAwareness();
-
-	void setCollisionAvoidance(ICollisionAvoidance ca);
-
 }

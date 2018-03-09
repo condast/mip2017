@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.data.operations.AbstractOperator;
 import org.miip.waterway.model.def.IRadar;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 public class Radar<V extends Object> implements IRadar<V>{
 	

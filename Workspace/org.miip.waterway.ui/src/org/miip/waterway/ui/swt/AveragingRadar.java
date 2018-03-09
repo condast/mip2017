@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.Field;
@@ -16,8 +18,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IPhysical;
-import org.miip.waterway.sa.ISituationalAwareness;
 
 public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;
