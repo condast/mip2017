@@ -1,7 +1,7 @@
 package org.miip.waterway.model;
 
+import org.condast.commons.autonomy.model.AbstractModel;
 import org.condast.commons.data.latlng.LatLng;
-import org.miip.waterway.internal.model.AbstractModel;
 
 /**
  * With a point, one can choose to either keep the location fixed and change the

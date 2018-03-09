@@ -5,11 +5,11 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.model.AbstractModel;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.miip.waterway.internal.model.AbstractModel;
 
 public class Ship extends AbstractModel implements IVessel{
 	
