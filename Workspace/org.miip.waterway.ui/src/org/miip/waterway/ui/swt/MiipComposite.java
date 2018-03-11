@@ -16,6 +16,7 @@ import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationListener;
 import org.condast.commons.autonomy.sa.SituationEvent;
+import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.ISessionListener;
 import org.condast.commons.ui.session.RefreshSession;
@@ -203,7 +204,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			public void widgetSelected(SelectionEvent e) {
 				try{
 					lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection()));
-					environment.setTimer( slider_speed.getSelection());
+					IExecuteThread thread = (IExecuteThread) environment;
+					thread.setTimer( slider_speed.getSelection());
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
@@ -418,7 +420,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	protected void updateView(){
 		Ship ship = (Ship) environment.getInhabitant();
-		this.slider_speed.setSelection( environment.getTimer());
+		IExecuteThread thread = (IExecuteThread) environment;
+		this.slider_speed.setSelection( thread.getTimer());
 		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					
 		canvas.redraw();
 		this.text_name.setText( ship.getId() );
@@ -434,7 +437,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			if( this.environment.getSituationalAwareness() != null )
 				this.environment.getSituationalAwareness().removelistener(shlistener);
 			this.environment.removeListener(listener);
-			this.environment.stop();
+			IExecuteThread thread = (IExecuteThread) environment;
+			thread.stop();
 		}
 		this.session.stop();
 		this.session.removeSessionListener(slistener);
@@ -465,9 +469,10 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		@Override
 		protected Control createButton(PlayerImages.Images type) {
 			Button button = new Button( this, SWT.FLAT );
+			IExecuteThread thread = (IExecuteThread) environment;
 			switch( type ){
 			case STOP:
-				button.setEnabled(( environment != null ) && environment.isRunning());
+				button.setEnabled(( environment != null ) && thread.isRunning());
 				break;
 			default:
 				break;
@@ -482,10 +487,11 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 						Button button = (Button) e.getSource();
 						PlayerImages.Images image = (PlayerImages.Images) button.getData();
 						Button clear = (Button) getButton( PlayerImages.Images.RESET);
+						IExecuteThread thread = (IExecuteThread) environment;
 						switch( image ){
 						case START:
 							environment.addListener(listener);
-							environment.start();
+							thread.start();
 							environment.getSituationalAwareness().addlistener(shlistener);
 							radarGroup.setInput( environment.getSituationalAwareness());
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
@@ -500,7 +506,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 							});
 							break;
 						case STOP:
-							environment.stop();
+							thread.stop();
 							environment.removeListener(listener);
 							getButton( PlayerImages.Images.START).setEnabled(true);
 							button.setEnabled(false);
@@ -508,7 +514,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
 							break;
 						case NEXT:
-							environment.step();
+							thread.step();
 							clear = (Button) getButton( PlayerImages.Images.RESET);
 							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
 							break;

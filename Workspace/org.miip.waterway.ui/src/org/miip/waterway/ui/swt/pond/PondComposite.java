@@ -14,6 +14,7 @@ import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
+import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.ISessionListener;
 import org.condast.commons.ui.session.RefreshSession;
@@ -168,7 +169,8 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 			public void widgetSelected(SelectionEvent e) {
 				try{
 					lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection()));
-					environment.setTimer( slider_speed.getSelection());
+					IExecuteThread thread = (IExecuteThread) environment;
+					thread.setTimer( slider_speed.getSelection());
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
@@ -316,7 +318,8 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 	protected void updateView(){
 		IVessel ship = (IVessel) environment.getInhabitant();
-		this.slider_speed.setSelection( environment.getTimer());
+		IExecuteThread thread = (IExecuteThread) environment;
+		this.slider_speed.setSelection( thread.getTimer());
 		this.text_name.setText( ship.getName() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
@@ -331,9 +334,9 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 	public void dispose(){
 		if( this.environment != null ){
-			//this.environment.getSituationalAwareness().removelistener(shlistener);
 			this.environment.removeListener(listener);
-			this.environment.stop();
+			IExecuteThread thread = (IExecuteThread) environment;
+			thread.stop();
 		}
 		this.session.stop();
 		this.session.removeSessionListener(slistener);
@@ -368,7 +371,8 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		}
 		
 		public void stop() {
-			environment.stop();
+			IExecuteThread thread = (IExecuteThread) environment;
+			thread.stop();
 			environment.removeListener(listener);
 			getButton( PlayerImages.Images.START).setEnabled(true);
 			Button clear = (Button) getButton( PlayerImages.Images.RESET);
@@ -378,12 +382,13 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		@Override
 		protected Control createButton(PlayerImages.Images type) {
 			Button button = new Button( this, SWT.FLAT );
+			IExecuteThread thread = (IExecuteThread) environment;
 			switch( type ){
 			case START:
 				button.setEnabled( environment != null );
 				break;
 			case STOP:
-				button.setEnabled(( environment != null ) && environment.isRunning());
+				button.setEnabled(( environment != null ) && thread.isRunning());
 				break;
 			default:
 				break;
@@ -398,10 +403,11 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 						Button button = (Button) e.getSource();
 						PlayerImages.Images image = (PlayerImages.Images) button.getData();
 						Button clear;
+						IExecuteThread thread = (IExecuteThread) environment;
 						switch( image ){
 						case START:
 							environment.addListener(listener);
-							environment.start();
+							thread.start();
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
 							clear = (Button) getButton( PlayerImages.Images.RESET);
@@ -418,7 +424,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 							stop();
 							break;
 						case NEXT:
-							environment.step();
+							thread.step();
 							clear = (Button) getButton( PlayerImages.Images.RESET);
 							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
 							break;

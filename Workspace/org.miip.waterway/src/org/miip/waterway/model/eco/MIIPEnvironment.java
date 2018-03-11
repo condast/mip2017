@@ -76,6 +76,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		return NAME;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean onInitialise() {
 		currentTime = Calendar.getInstance().getTime();
@@ -93,7 +94,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		//Position of the ship
 		latlng = this.field.getCentre();
 		reference = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
-		ICollisionAvoidance ca = new DefaultCollisionAvoidance( reference); 
+		ICollisionAvoidance<IVessel> ca = new DefaultCollisionAvoidance( reference); 
 		reference.setCollisionAvoidance(ca);
 		sa = new SituationalAwareness(reference);
 		
@@ -260,8 +261,10 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		return new Location( x, y );	
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
 
+		@SuppressWarnings("unchecked")
 		public DefaultCollisionAvoidance( IVessel vessel ) {
 			super( new SituationalAwareness( vessel ),false);
 			SituationalAwareness psa = (SituationalAwareness) super.getSituationalAwareness();

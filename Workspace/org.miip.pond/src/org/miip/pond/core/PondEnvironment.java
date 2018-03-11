@@ -20,7 +20,7 @@ import org.miip.waterway.model.Vessel;
 import org.miip.waterway.model.def.MapLocation;
 import org.miip.waterway.model.eco.PondSituationalAwareness;
 
-public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
+public class PondEnvironment implements IReferenceEnvironment<IPhysical>, IExecuteThread {
 
 	private Field field;
 	private IVessel reference;
@@ -47,7 +47,7 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 		reference.setCollisionAvoidance(ca);
 		
 		this.others.clear();
-		latlng = field.transform( field.getLength()/2 - 11,0);
+		latlng = field.transform( field.getLength()/2,0);
 		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
 		ca = new DefaultCollisionAvoidance( other); 
 		other.setCollisionAvoidance(ca);
@@ -178,6 +178,18 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical> {
 			}
 			super.sleep(time);
 			notifyEnvironmentChanged( new EnvironmentEvent<IPhysical>(pe));
+		}
+
+		@Override
+		public int getTimer() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void setTimer(int timer) {
+			// TODO Auto-generated method stub
+			
 		}	
 	}
 }

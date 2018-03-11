@@ -228,7 +228,8 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 		this.sa = sa;
 		if( sa != null ) {
 			this.sa.addlistener(slistener);
-			radar.setRange( (int) sa.getField().getLength());
+			if( sa.getField() != null )
+				radar.setRange( (int) sa.getField().getLength());
 		}
 		refresh();
 	}

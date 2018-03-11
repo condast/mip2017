@@ -41,7 +41,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 
 		@Override
 		public void notifyEnvironmentChanged(EnvironmentEvent<IPhysical> event) {
-			notifylisteners( new SituationEvent<IPhysical>( getReference()));
+			notifylisteners( new SituationEvent<IPhysical>( this, getReference()));
 		}
 	};
 	
