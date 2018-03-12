@@ -82,7 +82,7 @@ public class Vessel extends AbstractModel implements IVessel {
 		if(( this.ca == null ) ||(!ca.isActive())){
 			location= plotNext(interval);
 		}else {
-			location = ca.sail( this, interval );
+			location = ca.move( this, interval ).getLocation();
 		}
 		super.setLnglat(location);
 		return location;
