@@ -163,7 +163,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.createComposite(parent, style);
 		this.frontend = this;
 		this.factories = new ArrayList<ICompositeFactory>();
-		this.session = new RefreshSession<>(1000);
+		this.session = new RefreshSession<>();
 		this.session.addSessionListener(slistener);
 		this.session.init(getDisplay());
 		this.session.start();

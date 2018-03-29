@@ -30,13 +30,13 @@ NeoPixel neoPixel;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println( "Setup MIIP Human Assist Radar");
+  Serial.println(F("Setup MIIP Human Assist Radar"));
   webClient.setup_Web();
   neoPixel.setup_Pixel();
   setup_Interrupt();
-  Serial.println( "Setup Complete, Setting up Pixels");
+  Serial.println(F("Setup Complete, Setting up Pixels"));
   neoPixel.update_Pixel();
-  Serial.println( "Pixel Data Received");
+  Serial.println(F("Pixel Data Received"));
   load = 0;
 }
 

@@ -41,11 +41,11 @@ IPAddress ip(10, 30, 8, 74); // de Stadstuin / kantoor
 //IPAddress ip(192, 168, 0, 177);
 
 #define HOST "Host: "
-#define CONNECTION_CLOSE "Connection: close"
+#define CONNECTION_CLOSE F("Connection: close")
 #define HTTP_11 " HTTP/1.1"
-#define ACCEPT "Accept: */*"
-#define CONTEXT_LENGTH "Content-Length: "
-#define CONTENT_TYPE "Content-Type: application/x-www-form-urlencoded ; charset=UTF-8"
+#define ACCEPT F("Accept: */*")
+#define CONTEXT_LENGTH F("Content-Length: ")
+#define CONTENT_TYPE F("Content-Type: application/x-www-form-urlencoded ; charset=UTF-8")
 
 WebClient::WebClient( String name, int tkn ) {
   strcpy( id, name.c_str() );
@@ -190,13 +190,13 @@ String WebClient::requeststr( int request ) {
   String str;
   switch ( request ) {
     case REQ_RADAR:
-      str = "radar";
+      str = F("radar");
       break;
     case REQ_LOG:
-      str = "log";
+      str = F("log");
       break;
     default:
-      str = "setup";
+      str = F("setup");
       break;
   }
   //Serial.print( "PREPARE REQUEST: " ); Serial.println( request ); Serial.println( " " ); Serial.println( req_str );
@@ -213,7 +213,7 @@ boolean WebClient::sendHttp( int request, boolean post, String msg ) {
   strcat( send_str, CONTEXT );
   String str = requeststr( request );
   char temp[str.length()];
-  str.toCharArray( temp, str.length() );
+  str.toCharArray( temp, str.length()+1 );
   strcat( send_str, temp );
   strcat( send_str, "?id=" );
   strcat( send_str, id );

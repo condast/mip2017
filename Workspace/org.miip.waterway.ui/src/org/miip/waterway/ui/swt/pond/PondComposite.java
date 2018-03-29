@@ -128,7 +128,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		this.frontend = this;
 
 		this.factories = new ArrayList<ICompositeFactory>();
-		this.session = new RefreshSession<>(1000);
+		this.session = new RefreshSession<>();
 		this.session.addSessionListener(slistener);
 		this.session.init(getDisplay());
 		this.session.start();

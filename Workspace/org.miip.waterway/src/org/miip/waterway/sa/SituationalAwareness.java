@@ -125,4 +125,10 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 		}
 		return results;	
 	}
+
+	@Override
+	public double getNearestDistance() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

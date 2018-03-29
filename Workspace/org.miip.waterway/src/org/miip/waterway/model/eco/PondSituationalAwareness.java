@@ -47,4 +47,10 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<IRefe
 		}
 		input.addListener(listener);
 	}
+
+	@Override
+	public double getNearestDistance() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
