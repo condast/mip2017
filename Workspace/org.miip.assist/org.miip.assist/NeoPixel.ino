@@ -31,7 +31,7 @@ NeoPixel::NeoPixel() {
   choice = RADAR;
 };
 
-void NeoPixel::setup_Pixel() {
+void NeoPixel::setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
 #if defined (__AVR_ATtiny85__)
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
@@ -57,7 +57,7 @@ void NeoPixel::show_Radar() {
   //Serial.println( "RADAR DATA RECEIVED " );
 }
 
-void NeoPixel::loop_Pixel() {
+void NeoPixel::loop() {
   //Serial.print("NEO PIXEL: Selecting " ); Serial.println( choice );
   switch ( choice ) {
     case RADAR:
@@ -233,8 +233,39 @@ uint32_t NeoPixel::Wheel(byte WheelPos) {
 /**
    Get the waypoints for this vessel
 */
-boolean NeoPixel::update_Pixel( ) {
-  WebClient::PixelData data = webClient.requestSetup();
+boolean NeoPixel::update( ) {
+  if( !webClient.connect()){
+    webClient.disconnect();
+    return false;
+  }
+  Serial.println( "REQUEST SETUP" );
+  bool result = webClient.sendHttp( WebClient::SETUP, false, "" );
+  PixelData data;
+  if ( !result ) {
+    webClient.disconnect();
+    return false;
+  }
+  //Serial.println( "SETUP RECEIVED: TRUE" );
+  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject(webClient.client);
+  if (!root.success()) {
+    Serial.println(F("Parsing failed!"));
+    jsonBuffer.clear();
+    webClient.disconnect();
+    return false;
+  }
+
+  data.index = root[F("i")];
+  data.end = root[F("e")];
+  data.choice = root[F("ch")];
+  data.options = root[F("o")];
+  //Serial.print( "PIXEL DATA " ); Serial.println(data.options);
+  jsonBuffer.clear(); 
+  webClient.disconnect();
   choice = static_cast<Choices>(data.choice );
-  //Serial.print( "NEOPIXEL SETUP " ); Serial.println(choice);
+  Serial.print( "NEOPIXEL SETUP " ); Serial.println(choice);
+  return true;
 }
