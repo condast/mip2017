@@ -6,6 +6,10 @@
 
 #define REFRESH 3
 
+const char NAME[]  = "Miip";
+const int TOKEN = 1025;
+const char* MIIP_CONTEXT = "miip2017/sa/";
+
     /**
        Pixel Data object
     */
@@ -20,19 +24,19 @@
 
 int load;
 
-WebClient webClient;
+WebClient webClient( NAME, TOKEN );
 Logger logger;
 NeoPixel neoPixel;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println(F("Setup MIIP Human Assist Radar"));
-  webClient.setup();
-  neoPixel.setup();
+  Serial.println( "Setup MIIP Human Assist Radar");
+  webClient.setup_Web();
+  neoPixel.setup_Pixel();
   setup_Interrupt();
-  Serial.println(F("Setup Complete, Setting up Pixels"));
-  neoPixel.update();
-  Serial.println(F("Pixel Data Received"));
+  Serial.println( "Setup Complete, Setting up Pixels");
+  neoPixel.update_Pixel();
+  Serial.println( "Pixel Data Received");
   load = 0;
 }
 
@@ -44,7 +48,7 @@ void loop() {
     //Serial.println( balance );
     switch ( balance ) {
       case 0:
-        neoPixel.update();
+        neoPixel.update_Pixel();
         break;
       case 1:
         //logger.setup();
@@ -52,7 +56,7 @@ void loop() {
         break;
       default:
         //Serial.println( "READING RADAR" );
-        neoPixel.loop();
+        //neoPixel.loop_Pixel();
         //logger.logPrintln( "LOOPED PIXELS" );
         //Serial.println( "LOOP RADAR COMPLETE" );
         break;

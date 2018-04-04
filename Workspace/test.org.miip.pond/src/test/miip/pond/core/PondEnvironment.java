@@ -42,8 +42,8 @@ public class PondEnvironment {
 		reference.setCollisionAvoidance(ca);
 		
 		this.others.clear();
-		latlng = field.transform( field.getLength()/2 - 11,0);
-		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
+		latlng = field.transform( field.getWidth()/2 - 10,0);
+		IVessel other = new Vessel( "Other", latlng, 95, 10 );//bearing south, 10 km/h
 		ca = new DefaultCollisionAvoidance( other); 
 		other.setCollisionAvoidance(ca);
 		this.others.add(other);

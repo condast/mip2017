@@ -3,20 +3,7 @@
 
 #include "Arduino.h"
 
-#define PIN 6
-#define LEDS 24
-
 class NeoPixel {
-
-    /**
-       Pixel Data object
-    */
-    struct PixelData {
-      int index;
-      boolean end;
-      int choice;
-      int options;
-    };
 
     enum Choices {
       RADAR,
@@ -34,10 +21,9 @@ class NeoPixel {
 
   private: enum Choices choice = ALL;
     int counter;
-    PixelData data;
     boolean update( JsonObject& root );
     void colorPixel( byte index, byte red, byte green, byte blue, byte transparency );
-    bool show_Radar();
+    void show_Radar();
     void colorWipe(uint32_t c, uint8_t wait);
     void rainbow(uint8_t wait);
     void rainbowCycle(uint8_t wait);
@@ -46,9 +32,9 @@ class NeoPixel {
     uint32_t Wheel(byte WheelPos);
     
   public: NeoPixel(void);
-    void setup();
-    boolean update();
-    void loop();
+    void setup_Pixel();
+    boolean update_Pixel();
+    void loop_Pixel();
 };
 
 #endif
