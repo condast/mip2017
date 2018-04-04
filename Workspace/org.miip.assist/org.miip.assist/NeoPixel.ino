@@ -157,7 +157,7 @@ void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte tra
   byte be = (trn > blue) ? 0 : blue - (byte)trn;
   Serial.print( index ); Serial.print(": {"); Serial.print( rd ); Serial.print(", ");
   Serial.print( gn ); Serial.print(", "); Serial.print( be );
-  Serial.print(", "); Serial.print(( byte)trn ); Serial.println("}");
+  Serial.print(", "); Serial.print(( byte)transparency ); Serial.println("}");
   strip.setPixelColor(index, strip.Color(rd, gn, be ));
   strip.show();
 }
