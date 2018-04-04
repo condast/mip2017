@@ -3,6 +3,7 @@ package org.miip.waterway.ui.swt;
 import java.util.Comparator;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationListener;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
@@ -21,7 +22,7 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.Radar;
 
-public abstract class AbstractSWTRadar<V extends Object> extends Canvas implements IRadar<V>{
+public abstract class AbstractSWTRadar<V extends IPhysical> extends Canvas implements IRadar<V>{
 	private static final long serialVersionUID = 1L;
 	
 	public enum RadarColours{
@@ -114,7 +115,6 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 		}
 	};
 	
-	private int steps;
 	private Radar<V> radar;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
@@ -146,12 +146,17 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 		radar.setRange(range);
 	}
 
-	protected int getSteps() {
-		return steps;
+	public int getSteps() {
+		return radar.getSteps();
 	}
 
-	protected void setSteps(int steps) {
-		this.steps = steps;
+	public void setSteps(int steps) {
+		this.radar.setSteps(steps);
+	}
+
+	@Override
+	public double toRadians(int step) {
+		return radar.toRadians(step);
 	}
 
 	/**
@@ -165,16 +170,6 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 		return new Point((int) centrex, (int)centrey);
 	}
 	
-	/**
-	 * Get the radians for the given step size
-	 * @param step
-	 * @return
-	 */
-	protected double toRadians( int step ){
-		double part = (double)step/steps;
-		return 2*Math.PI*part;
-	}
-
 	protected void onPrepare( SituationEvent<V> event ) {
 		/* DEFAULT NOTHING */
 	}
@@ -214,7 +209,8 @@ public abstract class AbstractSWTRadar<V extends Object> extends Canvas implemen
 	
 	protected abstract void drawObject( GC gc, V object );
 
-	protected ISituationalAwareness<V,?> getInput() {
+	@Override
+	public ISituationalAwareness<V,?> getInput() {
 		return sa;
 	}
 

@@ -3,6 +3,9 @@
 
 #include "Arduino.h"
 
+#define PIN 6
+#define LEDS 24
+
 class NeoPixel {
 
     /**
@@ -34,7 +37,7 @@ class NeoPixel {
     PixelData data;
     boolean update( JsonObject& root );
     void colorPixel( byte index, byte red, byte green, byte blue, byte transparency );
-    void show_Radar();
+    bool show_Radar();
     void colorWipe(uint32_t c, uint8_t wait);
     void rainbow(uint8_t wait);
     void rainbowCycle(uint8_t wait);

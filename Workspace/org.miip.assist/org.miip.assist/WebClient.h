@@ -69,19 +69,7 @@ class WebClient {
       RADAR = 3
     };
 
-    /**
-       Radar Data object
-    */
-    struct RadarData {
-      byte red;
-      byte green;
-      byte blue;
-      byte index;
-      byte transparency;
-    };
-
     boolean requestLog();
-    RadarData requestRadar( int leds );
     boolean logMessage( String message );
     void setup();
     void loop();

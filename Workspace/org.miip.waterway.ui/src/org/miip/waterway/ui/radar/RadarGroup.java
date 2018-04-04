@@ -188,7 +188,7 @@ public class RadarGroup extends Group {
 	public void setInput( ISituationalAwareness<IPhysical,?> sa ) {
 		this.sa = sa;
 		this.radar.setInput( sa );
-		if( sa != null ) {
+		if(( sa != null ) && ( sa.getField() != null )) {
 			this.slider_range.setMaximum( (int) (sa.getField().getLength()));
 			radar.setRange((int) sa.getField().getWidth());
 		}

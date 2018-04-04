@@ -11,6 +11,9 @@ import org.miip.waterway.rest.store.RadarOptions;
 
 public class Dispatcher {
 
+	public static final String S_POND = "org.miip.pond.model.PondEnvironment";
+	public static final String S_MIIP = "org.miip.waterway.model.eco.MIIPEnvironment";
+
 	public static final String S_VESSEL_NAME = "Rest";
 	
 	private static Dispatcher dispatcher = new Dispatcher();
@@ -30,6 +33,16 @@ public class Dispatcher {
 
 	public RadarOptions getOptions() {
 		return options;
+	}
+
+	public IEnvironment<IPhysical> getActiveEnvironment() {
+		if(( this.environments == null ) ||( this.environments.isEmpty() ))
+			return null;
+		for( IEnvironment<IPhysical> env: this.environments.values() ){
+			if( env.isActive() )
+				return env;
+		}
+		return getEnvironment( S_MIIP);
 	}
 
 	public IEnvironment<IPhysical> getEnvironment( String id ) {

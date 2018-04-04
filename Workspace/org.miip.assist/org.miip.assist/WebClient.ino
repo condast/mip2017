@@ -17,6 +17,7 @@ void WebClient::setup() {
   Serial.print(F("SERVER ADDRESS:")); server.printTo( Serial );
   Serial.println();
   Serial.print(F("IP ADDRESS:")); server.printTo( Serial );
+  Serial.println();
 
   // start the Ethernet connection:
   Serial.println( "SETUP WEB CLIENT ");
@@ -43,44 +44,9 @@ bool WebClient::connect() {
 }
 
 void WebClient::disconnect() {
-  Serial.print(F("Disconnecting: "));
+  //Serial.print(F("Disconnecting: "));
   client.stop();
-  Serial.println(F("Complete "));
-}
-
-/**
-    Send a request for radar data
-*/
-WebClient::RadarData WebClient::requestRadar( int leds ) {
-  //Serial.print("TOKEN: " ); Serial.println( token );
-  connect();
-  //Serial.print( "LEDS:" ); Serial.println( leds );
-  boolean result = sendHttp( RADAR, false, String( leds ));
-  RadarData data;
-  if ( !result ) {
-    disconnect();
-    return data;
-  }
-  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
-  DynamicJsonBuffer jsonBuffer(capacity);
-
-  // Parse JSON object
-  JsonObject& root = jsonBuffer.parseObject(client);
-  if (!root.success()) {
-    Serial.println(F("Parsing failed!"));
-    jsonBuffer.clear();
-    disconnect();
-    return data;
-  }
-  data.index = root["a"];
-  data.red = root["r"];
-  data.green = root["g"];
-  data.blue = root["b"];
-  data.transparency = root["t"];
-  //Serial.print( "RADAR DATA Available for index " ); Serial.println( data.index );
-  jsonBuffer.clear();
-  disconnect();
-  return data;
+  //Serial.println(F("Complete "));
 }
 
 /**
@@ -101,9 +67,8 @@ boolean WebClient::logMessage( String message ) {
     disconnect();
     return false;
   }
-  //PixelData data = getPixelData();
   disconnect();
-  return false;// ( data.options && 1 ) > 0;
+  return true;// ( data.options && 1 ) > 0;
 }
 
 /**
@@ -113,21 +78,19 @@ String WebClient::requestStr( int request ) {
   String str;
   switch ( request ) {
     case RADAR:
-      str = F("radar");
+      str += F("radar");
       break;
     case LOG:
-      str = F("log");
+      str += F("log");
       break;
     default:
-      str = F("setup");
+      str += F("setup");
       break;
   }
-  //Serial.print( "PREPARE REQUEST: " ); Serial.println( request ); Serial.println( " " ); Serial.println( req_str );
   return str;
 }
 
 void WebClient::requestService( int request ) {
-  String str;
   switch ( request ) {
     case RADAR:
       client.print( F("radar"));
@@ -139,7 +102,6 @@ void WebClient::requestService( int request ) {
       client.print(F("setup"));
       break;
   }
-  //Serial.print( "PREPARE REQUEST: " ); Serial.println( request ); Serial.println( " " ); Serial.println( req_str );
 }
 
 boolean WebClient::sendHttp( int request, String message ) {
@@ -153,7 +115,7 @@ boolean WebClient::sendHttp( int request, String message ) {
 
 boolean WebClient::sendHttp( int request, boolean post, String attrs ) {
   if ( client.connected()) {
-    Serial.print(F("REQUEST ")); requestStr( request ); Serial.print(F(" ")); Serial.print(attrs ); Serial.println();
+    Serial.print(F("REQUEST ")); Serial.print( requestStr( request )); Serial.print(F(" ")); Serial.println(attrs );
     //logRequest( request, post, attrs );
 
     // Make a HTTP request:
@@ -208,6 +170,11 @@ bool WebClient::processResponse( int request ) {
     Serial.println( F( "Invalid response (" )); requestStr( request); Serial.print(F( "):" ));
     return false;
   }
+  //while ( client.available() ){
+  //  char chr = client.read();
+  //  Serial.print( chr );
+  //}
+  // Serial.println( );
   return true;
 }
 

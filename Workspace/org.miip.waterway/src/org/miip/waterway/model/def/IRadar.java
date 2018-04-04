@@ -7,6 +7,7 @@ public interface IRadar<V extends Object> {
 
 	public static final int DEFAULT_SENSITIVITY = 210;//0-1000
 	public static final int DEFAULT_RANGE = 1200;//max 3000 meters
+	public static final int DEFAULT_STEPS = 360;//max 3000 meters
 
 	public enum RadarSelect{
 		WARP,
@@ -59,4 +60,12 @@ public interface IRadar<V extends Object> {
 	void setSensitivity(int sensitivity);
 
 	void setRange(int range);
+
+	int getSteps();
+
+	void setSteps(int steps);
+
+	double toRadians(int step);
+
+	ISituationalAwareness<V, ?> getInput();
 }

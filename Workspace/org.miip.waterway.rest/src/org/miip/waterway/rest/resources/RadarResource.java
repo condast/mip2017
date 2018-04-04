@@ -1,9 +1,6 @@
 package org.miip.waterway.rest.resources;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,8 +17,6 @@ import javax.ws.rs.core.Response;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.data.binary.SequentialBinaryTreeSet;
-import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.log.LogFactory;
 import org.condast.commons.messaging.rest.ResponseCode;
 import org.condast.commons.strings.StringUtils;
@@ -36,12 +31,11 @@ import com.google.gson.Gson;
 @Path("/sa")
 public class RadarResource{
 		
-	private String S_ENVIRONMENT = "org.miip.pond.model.PondEnvironment";
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 	private RadarOptions settings;
-	
+		
 	public RadarResource() {
 		super();
 		settings = dispatcher.getOptions();
@@ -104,6 +98,7 @@ public class RadarResource{
 	}
 
 	// This method is called if TEXT_PLAIN is request
+	@SuppressWarnings("unchecked")
 	@GET
 	@Path("/radar")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -111,81 +106,33 @@ public class RadarResource{
 	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("msg") String leds ) {
 		try {
 			logger.info("Query for Radar " + id );
-			IReferenceEnvironment<IPhysical> env = (IReferenceEnvironment<IPhysical>) Dispatcher.getInstance().getEnvironment( S_ENVIRONMENT ); 
+			IReferenceEnvironment<IPhysical> env = (IReferenceEnvironment<IPhysical>) Dispatcher.getInstance().getActiveEnvironment(); 
+			Response response = null;
+			if( env == null )
+				return Response.noContent().build();
 			IVessel reference = (IVessel) env.getInhabitant();
+			if( reference == null )
+				return Response.noContent().build();
 			ISituationalAwareness<IPhysical, ?> sa = reference.getSituationalAwareness();
 			if( sa == null )
 				return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
-			RestRadar radar = new RestRadar();
-			radar.setInput(sa);
-			SequentialBinaryTreeSet<Vector<Double>>  data = radar.getBinaryView();
-			if(( data == null ) ||  data.isEmpty())
-				return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
-
-			int scale = StringUtils.isEmpty( leds )? 1: Integer.parseInt( leds );
-			Iterator<Vector<Double>> iterator = data.fill( scale).iterator();
-			Collection<RGB> rgbs = new ArrayList<RGB>();
-			while( iterator.hasNext() ){
-				Map.Entry<Double, Double> entry = iterator.next();
-				rgbs.add( getColour(sa, (int)entry.getKey().doubleValue(), entry.getValue()));
-			}
+			int nrOfLeds = StringUtils.isEmpty(leds)?0: Integer.parseInt(leds);
+			RadarOptions options = dispatcher.getOptions();
+			RestRadar radar = new RestRadar( options, nrOfLeds, sa );
+			List<RestRadar.RadarData> rgbs = radar.drawField();
 			Gson gson = new Gson();
-			return Response.ok( gson.toJson( rgbs )).build();
+			int angle = options.getCounter();
+			response = Response.ok( gson.toJson( rgbs.get( angle ))).build();
+			angle +=1;
+			angle %= nrOfLeds;
+			options.setCounter( angle );
+			return response;
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			return Response.serverError().build();
 		}
-	}
-
-	protected RGB getColour( ISituationalAwareness<IPhysical,?> sa, int angle, double distance ){
-		if( sa == null)
-			return new RGB( angle, 0, 0, 0, 0 );
-	
-		RestRadar radar = new RestRadar();
-		radar.setInput(sa);
-		if( distance <= radar.getSensitivity() )
-			return new RGB( angle, 255, 0, 0, 0 );
-		if( distance > radar.getRange())
-			return new RGB( angle, 255, 0, 0, 255 );
-		return getLinearColour( angle, (int) distance, (int) radar.getRange(), (int)radar.getSensitivity() );
-	}
-	
-	private RGB getLinearColour( int angle, int distance, int range, int sensitivity ){
-		boolean far = ( distance > ( range - sensitivity ));
-		int red = far? 50: (int)( 255 * ( 1 - distance/range ));
-		int green = far? 255: (int)( 255 * distance/range );
-		int blue = 50;
-		return new RGB( angle, red, green, blue, 0 );
-	}
-
-	private class RGB{
-		private int a;
-		private int r,g,b;
-		private int t;
-
-		RGB( int angle, int r, int g, int b, int transparency) {
-			super();
-			this.a = angle;
-			this.r = r;
-			this.g = g;
-			this.b = b;
-			this.t= transparency;
-		}
-
-		@Override
-		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("RGB[" + a + ":]= {");
-			buffer.append(String.valueOf(r) + ", ");
-			buffer.append(String.valueOf(g) + ", ");
-			buffer.append(String.valueOf(b) + ", ");
-			buffer.append(String.valueOf(t) + "}");
-			return buffer.toString();
-		}
-		
-		
-	}
+	}	
 	
 	private class OptionsData{
 		private boolean o;

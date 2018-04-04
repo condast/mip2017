@@ -61,6 +61,8 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 	@Override
 	public Collection<IPhysical> getRadar() {
 		Collection<IPhysical> results = new ArrayList<IPhysical>();
+		if( super.getInput() == null )
+			return results;
 		Waterway waterway = super.getInput().getWaterway();
 		for( IPhysical phobj: waterway.getShips() )
 			results.add(phobj);

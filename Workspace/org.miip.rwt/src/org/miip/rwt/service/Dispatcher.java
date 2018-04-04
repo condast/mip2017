@@ -1,6 +1,7 @@
 package org.miip.rwt.service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.Utils;
@@ -10,6 +11,9 @@ import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.ui.factory.ICompositeFactory;
 
 public class Dispatcher {
+
+	public static final String S_POND = "org.miip.pond.model.PondEnvironment";
+	public static final String S_MIIP = "org.miip.waterway.model.eco.MIIPEnvironment";
 
 	private static Dispatcher dispatcher = new Dispatcher();
 
@@ -24,6 +28,26 @@ public class Dispatcher {
 
 	public static Dispatcher getInstance(){
 		return dispatcher;
+	}
+
+	public void activateEnvironment( String id ) {
+		if(( this.environments == null ) ||( this.environments.isEmpty() ))
+			return;
+		Iterator<Map.Entry<String, IEnvironment<IPhysical>>> iterator = this.environments.entrySet().iterator();
+		while( iterator.hasNext() ) {
+			Map.Entry<String, IEnvironment<IPhysical>> entry = iterator.next();
+			entry.getValue().setActive( entry.getKey().equals(id));
+		}
+	}
+
+	public IEnvironment<IPhysical> getActiveEnvironment() {
+		if(( this.environments == null ) ||( this.environments.isEmpty() ))
+			return null;
+		for( IEnvironment<IPhysical> env: this.environments.values() ){
+			if( env.isActive() )
+				return env;
+		}
+		return getEnvironment( S_MIIP);
 	}
 
 	public IEnvironment<IPhysical> getEnvironment( String id ) {

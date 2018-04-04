@@ -54,6 +54,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private int bankWidth;
 	private boolean initialsed;
 	private boolean manual;
+	private boolean active;
 	private MIIPEnvironment environment; 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -64,6 +65,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
 		this.field = new Field( new LatLng( NAME, LATITUDE, LONGITUDE), length, width);
 		this.bankWidth = bankWidth;
+		this.active = false;
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
 		lock = new ReentrantLock();
@@ -74,6 +76,16 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	@Override
 	public String getName() {
 		return NAME;
+	}
+
+	@Override
+	public boolean isActive() {
+		return active;
+	}
+
+	@Override
+	public void setActive(boolean choice) {
+		this.active = choice;
 	}
 
 	@SuppressWarnings("unchecked")

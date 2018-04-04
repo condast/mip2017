@@ -26,6 +26,8 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical>, IExecu
 	private IVessel reference;
 	private List<IPhysical> others;
 	
+	private boolean active;
+	
 	private Collection<IEnvironmentListener<IPhysical>> listeners;
 	
 	private IExecuteThread thread = new ExecuteThread();
@@ -35,6 +37,7 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical>, IExecu
 		this.others = new ArrayList<IPhysical>();
 		this.listeners = new ArrayList<IEnvironmentListener<IPhysical>>();
 		pe = this; 
+		this.active = false;
 		this.clear();
 	}
 
@@ -117,6 +120,17 @@ public class PondEnvironment implements IReferenceEnvironment<IPhysical>, IExecu
 	@Override
 	public boolean isInitialsed() {
 		return true;
+	}
+
+	
+	@Override
+	public boolean isActive() {
+		return active;
+	}
+
+	@Override
+	public void setActive(boolean choice) {
+		this.active = choice;
 	}
 
 	@Override

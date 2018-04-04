@@ -12,12 +12,15 @@ import org.osgi.service.prefs.Preferences;
 
 public class RadarOptions extends AbstractPreferenceStore{
 
+	public static final int DEFAULT_NR_OF_LEDS = 24;
+	
 	public enum Options{
 		TOKEN,
 		CHOICE,
 		SENSITIVITY,
 		RANGE,
 		TRANSPARENCY,
+		NR_OF_LEDS,
 		OPTIONS,
 		COUNTER;
 
@@ -70,6 +73,15 @@ public class RadarOptions extends AbstractPreferenceStore{
 	}
 
 	public void setRange( int range ) {
+		super.putSettings(Options.RANGE, String.valueOf( range ));
+	}
+
+	public int getNrOfLeds() {
+		String str = super.getSettings( Options.NR_OF_LEDS);
+		return StringUtils.isEmpty(str)? DEFAULT_NR_OF_LEDS: Integer.parseInt(str);
+	}
+
+	public void setNrOfLeds( int range ) {
 		super.putSettings(Options.RANGE, String.valueOf( range ));
 	}
 
