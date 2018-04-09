@@ -29,15 +29,11 @@ NeoPixel::NeoPixel() {
 };
 
 void NeoPixel::setup() {
-  // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
-#if defined (__AVR_ATtiny85__)
-  if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
-#endif
-  // End of trinket special code
 
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
   counter = 0;
+  enable = true;
 }
 
 bool NeoPixel::show_Radar() {
@@ -54,7 +50,7 @@ bool NeoPixel::show_Radar() {
     webClient.disconnect();
     return false;
   }
-  
+
   const size_t capacity = JSON_OBJECT_SIZE(5) + 30;
   DynamicJsonBuffer jsonBuffer(capacity);
 
@@ -75,6 +71,11 @@ bool NeoPixel::show_Radar() {
 }
 
 void NeoPixel::loop() {
+  if(!enable ){
+    strip.show();
+    return;
+  }
+  
   //Serial.print("NEO PIXEL: Selecting " ); Serial.println( choice );
   switch ( choice ) {
     case RADAR:
@@ -157,7 +158,7 @@ void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte tra
   byte be = (trn > blue) ? 0 : blue - (byte)trn;
   Serial.print( index ); Serial.print(": {"); Serial.print( rd ); Serial.print(", ");
   Serial.print( gn ); Serial.print(", "); Serial.print( be );
-  Serial.print(", "); Serial.print(( byte)transparency ); Serial.println("}");
+  Serial.print(", "); Serial.print(( byte)transparancy ); Serial.println("}");
   strip.setPixelColor(index, strip.Color(rd, gn, be ));
   strip.show();
 }
@@ -276,7 +277,8 @@ boolean NeoPixel::update( ) {
   }
 
   data.index = root[F("i")];
-  data.end = root[F("e")];
+  data.enable = root[F("en")];
+  data.end = root[F("end")];
   data.choice = root[F("ch")];
   data.options = root[F("o")];
   //Serial.print( "PIXEL DATA " ); Serial.println(data.options);

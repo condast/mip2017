@@ -6,18 +6,6 @@
 
 #define REFRESH 3
 
-    /**
-       Pixel Data object
-    */
-    struct PixelData {
-      char* remarks;
-      int index;
-      boolean end;
-      int choice;
-      int options;
-    };
-
-
 int load;
 
 WebClient webClient;
