@@ -4,6 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.radar.IRadarData.Choices;
 import org.miip.waterway.rest.service.Dispatcher;
@@ -18,10 +19,10 @@ public class RadarSettingsComposite extends Composite {
 	private static final long serialVersionUID = 1L;
 
 	private Combo radarCombo;
+	private Combo typeCombo;
 	private Spinner rangeSpinner;
 	private Spinner senseSpinner;
 	private Spinner transparencySpinner;
-
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 	private RadarOptions settings;
 
@@ -52,9 +53,28 @@ public class RadarSettingsComposite extends Composite {
 				super.widgetSelected(e);
 			}
 		});
+		
+		Label lblType = new Label(this, SWT.NONE);
+		lblType.setText("Type:");
+		
+		typeCombo = new Combo(this, SWT.NONE);
+		typeCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		typeCombo.setItems( IRadar.RadarSelect.getItems());
+		typeCombo.select(0);
+		typeCombo.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Combo combo = (Combo) e.widget;
+				settings.setRadarType( IRadar.RadarSelect.values()[ combo.getSelectionIndex()] );
+				super.widgetSelected(e);
+			}
+		});
+
+		
 		Label lblRange = new Label(this, SWT.NONE);
 		lblRange.setText("Range:");
-		
 		rangeSpinner = new Spinner(this, SWT.BORDER);
 		rangeSpinner.setPageIncrement(1);
 		rangeSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -110,6 +130,7 @@ public class RadarSettingsComposite extends Composite {
 
 	private void setInput( RadarOptions settings ){
 		this.radarCombo.select( settings.getChoice().ordinal());
+		this.typeCombo.select( settings.getRadarType().ordinal());
 		this.rangeSpinner.setSelection( settings.getRange());
 		this.senseSpinner.setSelection( settings.getSensitivity());
 		this.transparencySpinner.setSelection( settings.getTransparency());

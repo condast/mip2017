@@ -276,8 +276,8 @@ boolean NeoPixel::update( ) {
     return false;
   }
 
+  enable = root[F("enb")];
   data.index = root[F("i")];
-  data.enable = root[F("en")];
   data.end = root[F("end")];
   data.choice = root[F("ch")];
   data.options = root[F("o")];

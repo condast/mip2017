@@ -25,10 +25,12 @@ public class RestRadar{
 	private RadarOptions options;
 	private List<RadarData> colours;
 	private int leds;
-	
+	private IRadar.RadarSelect radarType;
+
 	public RestRadar( RadarOptions options, int leds, ISituationalAwareness<IPhysical, ?> sa ) {
 		colours = new ArrayList<RadarData>();
 		this.options = options;
+		this.radarType = options.getRadarType();
 		this.leds = leds;
 		this.radar = new Radar<IPhysical>();
 		this.radar.setInput(sa);
