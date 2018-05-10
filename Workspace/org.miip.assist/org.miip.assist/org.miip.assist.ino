@@ -6,6 +6,7 @@
 
 #define REFRESH 3
 
+<<<<<<< HEAD
 const char NAME[]  = "Miip";
 const int TOKEN = 1025;
 const char* MIIP_CONTEXT = "miip2017/sa/";
@@ -22,6 +23,8 @@ const char* MIIP_CONTEXT = "miip2017/sa/";
     };
 
 
+=======
+>>>>>>> branch 'master' of https://github.com/condast/mip2017.git
 int load;
 
 WebClient webClient( NAME, TOKEN );

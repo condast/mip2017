@@ -4,6 +4,7 @@ import org.condast.commons.preferences.AbstractPreferenceStore;
 import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
+import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.radar.IRadarData.Choices;
 import org.miip.waterway.rest.Activator;
@@ -15,6 +16,8 @@ public class RadarOptions extends AbstractPreferenceStore{
 	public static final int DEFAULT_NR_OF_LEDS = 24;
 	
 	public enum Options{
+		ENABLE,
+		TYPE,
 		TOKEN,
 		CHOICE,
 		SENSITIVITY,
@@ -39,7 +42,15 @@ public class RadarOptions extends AbstractPreferenceStore{
 	protected RadarOptions(Preferences preferences) {
 		super(preferences);
 	}
+
+	public boolean isEnabled() {
+		return getBoolean(Options.ENABLE.name(), (byte)0);
+	}
 	
+	public void setEnable( boolean choice ) {
+		super.setBoolean(Options.ENABLE.name(), (byte)0, choice);
+	}
+
 	private final String getToken( byte[] vesselName ) {
 		int token = 0;
 		for( byte bt: vesselName ) {
@@ -57,7 +68,18 @@ public class RadarOptions extends AbstractPreferenceStore{
 	public void setChoice( Choices choice ) {
 		super.putSettings(Options.CHOICE, choice.name());
 	}
-	
+
+	public IRadar.RadarSelect getRadarType() {
+		String str = super.getSettings( Options.TYPE);
+		IRadar.RadarSelect type = StringUtils.isEmpty(str)? IRadar.RadarSelect.LED_RING: 
+			IRadar.RadarSelect.valueOf(str);
+		return type;
+	}
+
+	public void setRadarType( IRadar.RadarSelect type ) {
+		super.putSettings(Options.TYPE, type.name());
+	}
+
 	public int getSensitivity() {
 		String str = super.getSettings( Options.SENSITIVITY);
 		return StringUtils.isEmpty(str)?0: Integer.parseInt(str);

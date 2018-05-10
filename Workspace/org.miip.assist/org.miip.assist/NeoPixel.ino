@@ -31,16 +31,21 @@ NeoPixel::NeoPixel() {
   choice = RADAR;
 };
 
+<<<<<<< HEAD
 void NeoPixel::setup_Pixel() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
 #if defined (__AVR_ATtiny85__)
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
 #endif
   // End of trinket special code
+=======
+void NeoPixel::setup() {
+>>>>>>> branch 'master' of https://github.com/condast/mip2017.git
 
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
   counter = 0;
+  enable = true;
 }
 
 void NeoPixel::show_Radar() {
@@ -49,15 +54,55 @@ void NeoPixel::show_Radar() {
   WebClient::RadarData root = webClient.requestRadar( leds );
   //Serial.print( "SHOW RADAR IMAGE: ");Serial.println( root.index );
 
+<<<<<<< HEAD
   colorPixel( root.index,
               root.red,
               root.green,
               root.blue,
               root.transparency);
   //Serial.println( "RADAR DATA RECEIVED " );
+=======
+  if ( !webClient.connect()) {
+    webClient.disconnect();
+    return false;
+  }
+  Serial.print( F("REQUEST RADAR ")); Serial.print(F("LEDS:")); Serial.println( leds );
+  bool result = webClient.sendHttp( WebClient::RADAR, String( leds ));
+  if ( !result ) {
+    webClient.disconnect();
+    return false;
+  }
+
+  const size_t capacity = JSON_OBJECT_SIZE(5) + 30;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject( webClient.client);
+  if (!root.success()) {
+    Serial.println(F("Parsing failed!"));
+    jsonBuffer.clear();
+    webClient.disconnect();
+    return false;
+  }
+  colorPixel( root[F("a")], root[F("r")], root[F("g")], root[F("b")], root[F("t")]);
+  Serial.print(F("RADAR DATA Available for index ")); Serial.println( root.size() );
+  jsonBuffer.clear();
+  webClient.disconnect();
+  Serial.println(F("RADAR DATA RECEIVED "));
+  return true;
+>>>>>>> branch 'master' of https://github.com/condast/mip2017.git
 }
 
+<<<<<<< HEAD
 void NeoPixel::loop_Pixel() {
+=======
+void NeoPixel::loop() {
+  if(!enable ){
+    strip.show();
+    return;
+  }
+  
+>>>>>>> branch 'master' of https://github.com/condast/mip2017.git
   //Serial.print("NEO PIXEL: Selecting " ); Serial.println( choice );
   switch ( choice ) {
     case RADAR:
@@ -134,6 +179,7 @@ void NeoPixel::loop_Pixel() {
 
 // Fill the dots at the index with the given RGB values
 void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte transparancy ) {
+<<<<<<< HEAD
   double trn = transparancy*2.55;
   byte rd = (trn > red) ? 0 : red - trn;
   byte gn = (trn > green) ? 0 : green - trn;
@@ -141,6 +187,15 @@ void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte tra
   //Serial.print( index ); Serial.print(": {"); Serial.print( rd ); Serial.print(", "); 
   //Serial.print( gn ); Serial.print(", ");Serial.print( be ); 
   //Serial.print(", ");Serial.print(( byte)trn ); Serial.println("}");
+=======
+  double trn = transparancy * 2.55;
+  byte rd = (trn > red) ? 0 : red - (byte)trn;
+  byte gn = (trn > green) ? 0 : green - (byte)trn;
+  byte be = (trn > blue) ? 0 : blue - (byte)trn;
+  Serial.print( index ); Serial.print(": {"); Serial.print( rd ); Serial.print(", ");
+  Serial.print( gn ); Serial.print(", "); Serial.print( be );
+  Serial.print(", "); Serial.print(( byte)transparancy ); Serial.println("}");
+>>>>>>> branch 'master' of https://github.com/condast/mip2017.git
   strip.setPixelColor(index, strip.Color(rd, gn, be ));
   strip.show();
 }
@@ -233,8 +288,44 @@ uint32_t NeoPixel::Wheel(byte WheelPos) {
 /**
    Get the waypoints for this vessel
 */
+<<<<<<< HEAD
 boolean NeoPixel::update_Pixel( ) {
   WebClient::PixelData data = webClient.requestSetup();
+=======
+boolean NeoPixel::update( ) {
+  if ( !webClient.connect()) {
+    webClient.disconnect();
+    return false;
+  }
+  //Serial.println( "REQUEST SETUP" );
+  bool result = webClient.sendHttp( WebClient::SETUP, false, "" );
+  PixelData data;
+  if ( !result ) {
+    webClient.disconnect();
+    return false;
+  }
+  //Serial.println( "SETUP RECEIVED: TRUE" );
+  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject(webClient.client);
+  if (!root.success()) {
+    Serial.println(F("Parsing failed!"));
+    jsonBuffer.clear();
+    webClient.disconnect();
+    return false;
+  }
+
+  enable = root[F("enb")];
+  data.index = root[F("i")];
+  data.end = root[F("end")];
+  data.choice = root[F("ch")];
+  data.options = root[F("o")];
+  //Serial.print( "PIXEL DATA " ); Serial.println(data.options);
+  jsonBuffer.clear();
+  webClient.disconnect();
+>>>>>>> branch 'master' of https://github.com/condast/mip2017.git
   choice = static_cast<Choices>(data.choice );
   //Serial.print( "NEOPIXEL SETUP " ); Serial.println(choice);
 }
