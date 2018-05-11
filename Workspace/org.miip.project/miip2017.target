@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Miip2017" sequenceNumber="40">
+<?pde version="3.8"?><target name="Miip2017" sequenceNumber="56">
 <locations>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\core" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\ext" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\registry" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\security" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\rap" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\nebula" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\p2" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\log" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\gson" type="Directory"/>
-<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\persistence" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jaxrs" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\apache" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\security" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\core" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\ext" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\rap" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\log" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\nebula" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\p2" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\http" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\gson" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\EclipseLink" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\persistence" type="Directory"/>
 </locations>
 <includeBundles>
 <plugin id="ch.qos.logback.access"/>
