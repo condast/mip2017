@@ -19,6 +19,7 @@ public class TestSuite extends AbstractTestSuite {
 
 	
 	protected TestSuite() {
+		super("hoi", null);
 	}
 
 	public static TestSuite getInstance(){

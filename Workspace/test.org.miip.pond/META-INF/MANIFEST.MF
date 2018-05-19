@@ -21,3 +21,4 @@ Import-Package: org.condast.commons.autonomy.ca,
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: test.miip.pond.Activator
 Export-Package: test.miip.pond.core
+Automatic-Module-Name: test.org.miip.pond
