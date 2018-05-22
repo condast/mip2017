@@ -3,7 +3,7 @@ package org.miip.waterway.rest;
 import javax.servlet.Servlet;
 import javax.ws.rs.ApplicationPath;
 
-import org.condast.commons.http.AbstractServletWrapper;
+import org.condast.commons.messaging.http.AbstractServletWrapper;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.miip.waterway.rest.resources.RadarResource;

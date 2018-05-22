@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Miip2017" sequenceNumber="56">
+<?pde version="3.8"?><target name="Miip2017" sequenceNumber="60">
 <locations>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\registry" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jaxrs" type="Directory"/>
@@ -18,8 +18,8 @@
 </locations>
 <includeBundles>
 <plugin id="ch.qos.logback.access"/>
-<plugin id="ch.qos.logback.classic"/>
-<plugin id="ch.qos.logback.core"/>
+<plugin id="ch.qos.logback.classic" version="1.2.3"/>
+<plugin id="ch.qos.logback.core" version="1.2.3"/>
 <plugin id="com.google.gson"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="com.ibm.icu.source"/>
@@ -33,16 +33,15 @@
 <plugin id="javax.annotation"/>
 <plugin id="javax.annotation-api"/>
 <plugin id="javax.el"/>
-<plugin id="javax.jms"/>
+<plugin id="javax.jms" version="1.1.0.v201205091237"/>
 <plugin id="javax.mail.glassfish"/>
-<plugin id="javax.persistence"/>
+<plugin id="javax.persistence" version="2.2.0.v201708071007"/>
 <plugin id="javax.servlet" version="3.1.0.20170128"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.jstl-api"/>
-<plugin id="javax.transaction"/>
+<plugin id="javax.transaction" version="1.1.1.v201105210645"/>
 <plugin id="javax.validation.api"/>
 <plugin id="javax.ws.rs-api"/>
-<plugin id="javax.xml" version="1.3.4.v201005080400"/>
 <plugin id="javax.xml" version="1.3.4.v201005080400"/>
 <plugin id="oevm.javax.portlet"/>
 <plugin id="oevm.org.aopalliance"/>
@@ -79,9 +78,8 @@
 <plugin id="org.eclipse.equinox.ds"/>
 <plugin id="org.eclipse.equinox.http.jetty"/>
 <plugin id="org.eclipse.equinox.http.registry"/>
-<plugin id="org.eclipse.equinox.http.servlet" version="1.1.500.v20140318-1755"/>
 <plugin id="org.eclipse.equinox.http.servlet" version="1.4.0.v20170524-1452"/>
-<plugin id="org.eclipse.equinox.http.servlet.source"/>
+<plugin id="org.eclipse.equinox.http.servlet.source" version="1.4.0.v20170524-1452"/>
 <plugin id="org.eclipse.equinox.p2.core"/>
 <plugin id="org.eclipse.equinox.p2.core.source"/>
 <plugin id="org.eclipse.equinox.p2.director"/>
@@ -99,7 +97,6 @@
 <plugin id="org.eclipse.equinox.preferences"/>
 <plugin id="org.eclipse.equinox.region"/>
 <plugin id="org.eclipse.equinox.registry"/>
-<plugin id="org.eclipse.equinox.security" version="1.2.0.v20130424-1801"/>
 <plugin id="org.eclipse.equinox.security" version="1.2.0.v20130424-1801"/>
 <plugin id="org.eclipse.equinox.security.source"/>
 <plugin id="org.eclipse.equinox.security.ui"/>
@@ -130,8 +127,8 @@
 <plugin id="org.eclipse.osgi"/>
 <plugin id="org.eclipse.osgi.services" version="3.5.0.v20150519-2006"/>
 <plugin id="org.eclipse.osgi.services.source"/>
-<plugin id="org.eclipse.persistence.core"/>
-<plugin id="org.eclipse.persistence.core.source"/>
+<plugin id="org.eclipse.persistence.core" version="2.7.1.v20171221-bd47e8f"/>
+<plugin id="org.eclipse.persistence.core.source" version="2.7.1.v20171221-bd47e8f"/>
 <plugin id="org.eclipse.rap.jface"/>
 <plugin id="org.eclipse.rap.jface.source"/>
 <plugin id="org.eclipse.rap.nebula.jface.gridviewer"/>
@@ -175,7 +172,7 @@
 <plugin id="org.objectweb.asm"/>
 <plugin id="org.sat4j.core"/>
 <plugin id="org.sat4j.pb"/>
-<plugin id="org.slf4j.api"/>
+<plugin id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
 <plugin id="org.slf4j.jcl"/>
 <plugin id="org.slf4j.jul"/>
 <plugin id="org.springframework.aop"/>

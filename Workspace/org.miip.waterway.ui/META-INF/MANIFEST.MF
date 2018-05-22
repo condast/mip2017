@@ -13,6 +13,7 @@ Import-Package: javax.servlet;version="3.0.0",
  org.condast.commons.data.latlng,
  org.condast.commons.data.operations,
  org.condast.commons.i18n,
+ org.condast.commons.messaging.http,
  org.condast.commons.strings,
  org.condast.commons.thread,
  org.condast.commons.ui.image,
@@ -45,3 +46,4 @@ Export-Package: org.miip.waterway.ui,
  org.miip.waterway.ui.lang,
  org.miip.waterway.ui.swt,
  org.miip.waterway.ui.swt.pond
+Automatic-Module-Name: org.miip.waterway.ui
