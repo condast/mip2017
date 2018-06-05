@@ -1,7 +1,6 @@
 package org.miip.waterway.ui.swt;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,18 +25,30 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 
 	IOperator<Vector<Integer>, Vector<Integer>> average = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
 
+		
 		@Override
-		public Vector<Integer> calculate(Collection<Vector<Integer>> parents) {
+		public Vector<Integer> calculate(Vector<Integer>[] parents) {
 			Double avgdist = 0d;
-			Iterator<Vector<Integer>> iterator = parents.iterator();
 			int degree = 0;
-			while( iterator.hasNext() ){
-				Vector<Integer> value = iterator.next();
+			for( int i=0; i< parents.length; i++ ){
+				Vector<Integer> value = parents[i];
 				degree += value.getKey();
 				avgdist+=value.getValue();
 			}
-			degree = (int)((float)degree/parents.size());
-			return new Vector<Integer>( degree, new Double((double)avgdist/parents.size()));
+			degree = (int)((float)degree/parents.length);
+			return new Vector<Integer>( degree, new Double((double)avgdist/parents.length));
+		}
+
+		@Override
+		public boolean check(Vector<Integer> input) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		protected Vector<Integer> onNext() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	};
