@@ -110,7 +110,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			//int height = StringUtils.isEmpty( height_str )? 50: Integer.parseInt( height_str );
 			String size_str = getAttribute( attributes, AttributeNames.SIZE );
 			int size = StringUtils.isEmpty( size_str )? 50: Integer.parseInt( size_str );
-			int style = StringUtils.isEmpty(style_str)? SWT.NONE: IStyle.SWT.convert( style_str );
+			int style = StringUtils.isEmpty(style_str)? SWT.NONE: IStyle.SWT_ENUM.convert( style_str );
 			boolean horizontal = SWT.HORIZONTAL == style;
 			String class_str = getAttribute( attributes, AttributeNames.CLASS );
 
@@ -129,7 +129,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				super.addPreferenceStore(id, name);
 				break;
 			case FRONTEND:
-				widget = new Composite((Composite) parent, IStyle.SWT.convert( style_str ) | SWT.BORDER );
+				widget = new Composite((Composite) parent, IStyle.SWT_ENUM.convert( style_str ) | SWT.BORDER );
 				composite = (Composite) widget;
 				composite.setLayout( new FillLayout( SWT.HORIZONTAL ));
 				retval = composite;
@@ -206,7 +206,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				}
 				break;
 			case BODY:
-				comp = new Composite((Composite) parent, IStyle.SWT.convert( style_str ));
+				comp = new Composite((Composite) parent, IStyle.SWT_ENUM.convert( style_str ));
 				comp.setLayout(new FillLayout());
 				widget = comp;
 				GridData gd_body = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
@@ -216,7 +216,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				control.setLayoutData( gd_body);
 				break;
 			case STATUS_BAR:
-				StatusBar bar = new StatusBar((Composite) parent, IStyle.SWT.convert( style_str ));
+				StatusBar bar = new StatusBar((Composite) parent, IStyle.SWT_ENUM.convert( style_str ));
 				widget = bar;
 				if( !StringUtils.isEmpty( name ))				
 					bar.setLabelText( name );
@@ -331,7 +331,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		private void setGridLayoutData( Selection layout, Attributes attributes ){
 			String align_str = getAttribute( attributes, LayoutAttributes.ALIGN );
 			Integer align = StringUtils.isEmpty( align_str )? SWT.FILL: 
-				IStyle.SWT.convert( StringStyler.styleToEnum( align_str )); 
+				IStyle.SWT_ENUM.convert( StringStyler.styleToEnum( align_str )); 
 			String grab_excess_str = getAttribute( attributes, LayoutAttributes.GRAB_EXCESS );
 			boolean grab_excess = StringUtils.isEmpty( grab_excess_str)? false: 
 				Boolean.parseBoolean( grab_excess_str);
