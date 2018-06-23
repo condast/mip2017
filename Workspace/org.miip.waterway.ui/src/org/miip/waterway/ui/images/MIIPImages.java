@@ -12,6 +12,11 @@ import org.condast.commons.ui.image.AbstractImages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * @See: https://www.iconfinder.com/savlon
+ * @author Condast
+ *
+ */
 public class MIIPImages extends AbstractImages{
 
 	public static final String BUNDLE_ID = "org.miip.waterway.ui";
