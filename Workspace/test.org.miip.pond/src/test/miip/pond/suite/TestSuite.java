@@ -3,10 +3,11 @@ package test.miip.pond.suite;
 import java.util.logging.Logger;
 
 import org.condast.commons.test.core.AbstractTestSuite;
+import org.condast.commons.test.core.ITestEvent;
 
 import test.miip.pond.core.PondEnvironment;
 
-public class TestSuite extends AbstractTestSuite {
+public class TestSuite extends AbstractTestSuite<Object> {
 
 	public enum Tests{
 		TEST_COLLISION_AVOIDANCE,
@@ -61,6 +62,18 @@ public class TestSuite extends AbstractTestSuite {
 		StringBuffer buffer = new StringBuffer();
 		env.execute(1000);
 		logger.info( buffer.toString());
+	}
+
+	@Override
+	protected void onPrepare(ITestEvent<Object> event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onPerform(ITestEvent<Object> event) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
