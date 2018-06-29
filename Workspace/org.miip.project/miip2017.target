@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Miip2017" sequenceNumber="60">
+<?pde version="3.8"?><target name="Miip2017" sequenceNumber="68">
 <locations>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\registry" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jaxrs" type="Directory"/>
@@ -45,8 +45,8 @@
 <plugin id="javax.xml" version="1.3.4.v201005080400"/>
 <plugin id="oevm.javax.portlet"/>
 <plugin id="oevm.org.aopalliance"/>
-<plugin id="org.apache.commons.codec" version="1.6.0"/>
 <plugin id="org.apache.commons.codec" version="1.10.0.v20151023-1447"/>
+<plugin id="org.apache.commons.codec" version="1.6.0"/>
 <plugin id="org.apache.commons.fileupload"/>
 <plugin id="org.apache.commons.io"/>
 <plugin id="org.apache.commons.lang3"/>
@@ -76,10 +76,10 @@
 <plugin id="org.eclipse.equinox.console"/>
 <plugin id="org.eclipse.equinox.console.ssh"/>
 <plugin id="org.eclipse.equinox.ds"/>
-<plugin id="org.eclipse.equinox.http.jetty"/>
+<plugin id="org.eclipse.equinox.http.jetty" version="3.0.200.v20131021-1843"/>
 <plugin id="org.eclipse.equinox.http.registry"/>
 <plugin id="org.eclipse.equinox.http.servlet" version="1.4.0.v20170524-1452"/>
-<plugin id="org.eclipse.equinox.http.servlet.source" version="1.4.0.v20170524-1452"/>
+<plugin id="org.eclipse.equinox.http.servlet.source"/>
 <plugin id="org.eclipse.equinox.p2.core"/>
 <plugin id="org.eclipse.equinox.p2.core.source"/>
 <plugin id="org.eclipse.equinox.p2.director"/>
@@ -127,8 +127,17 @@
 <plugin id="org.eclipse.osgi"/>
 <plugin id="org.eclipse.osgi.services" version="3.5.0.v20150519-2006"/>
 <plugin id="org.eclipse.osgi.services.source"/>
-<plugin id="org.eclipse.persistence.core" version="2.7.1.v20171221-bd47e8f"/>
-<plugin id="org.eclipse.persistence.core.source" version="2.7.1.v20171221-bd47e8f"/>
+<plugin id="org.eclipse.persistence.asm"/>
+<plugin id="org.eclipse.persistence.core"/>
+<plugin id="org.eclipse.persistence.core.source"/>
+<plugin id="org.eclipse.persistence.jpa"/>
+<plugin id="org.eclipse.persistence.jpa.jpql"/>
+<plugin id="org.eclipse.persistence.jpa.jpql.source"/>
+<plugin id="org.eclipse.persistence.jpa.modelgen"/>
+<plugin id="org.eclipse.persistence.jpa.modelgen.source"/>
+<plugin id="org.eclipse.persistence.jpa.source"/>
+<plugin id="org.eclipse.persistence.jpars"/>
+<plugin id="org.eclipse.persistence.jpars.source"/>
 <plugin id="org.eclipse.rap.jface"/>
 <plugin id="org.eclipse.rap.jface.source"/>
 <plugin id="org.eclipse.rap.nebula.jface.gridviewer"/>
