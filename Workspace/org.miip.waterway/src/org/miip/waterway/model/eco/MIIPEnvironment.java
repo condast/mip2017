@@ -49,7 +49,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private Waterway waterway;
 	private SituationalAwareness sa;
 	
-	private Collection<IEnvironmentListener<IPhysical>> listeners;
+	private Collection<IEnvironmentListener<IVessel>> listeners;
 	private int counter;
 	private int bankWidth;
 	private boolean initialsed;
@@ -69,7 +69,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
 		lock = new ReentrantLock();
-		this.listeners = new ArrayList<IEnvironmentListener<IPhysical>>();
+		this.listeners = new ArrayList<IEnvironmentListener<IVessel>>();
 		this.environment = this;
 	}
 
@@ -106,7 +106,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		//Position of the ship
 		latlng = this.field.getCentre();
 		reference = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
-		ICollisionAvoidance<IVessel> ca = new DefaultCollisionAvoidance( reference); 
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
 		reference.setCollisionAvoidance(ca);
 		sa = new SituationalAwareness(reference);
 		
@@ -116,7 +116,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
 		
 		this.initialsed = true;
-		notifyChangeEvent( new EnvironmentEvent<IPhysical>( this, EventTypes.INITIALSED, null ));
+		notifyChangeEvent( new EnvironmentEvent<IVessel>( this, EventTypes.INITIALSED, null ));
 		counter = 0;
 		return true;
 	}
@@ -204,7 +204,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#addListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
 	 */
 	@Override
-	public void addListener( IEnvironmentListener<IPhysical> listener ){
+	public void addListener( IEnvironmentListener<IVessel> listener ){
 		this.listeners.add( listener );
 	}
 
@@ -212,12 +212,12 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#removeListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
 	 */
 	@Override
-	public void removeListener( IEnvironmentListener<IPhysical> listener ){
+	public void removeListener( IEnvironmentListener<IVessel> listener ){
 		this.listeners.remove( listener );
 	}
 	
-	protected void notifyChangeEvent( EnvironmentEvent<IPhysical> event ){
-		for( IEnvironmentListener<IPhysical> listener: listeners)
+	protected void notifyChangeEvent( EnvironmentEvent<IVessel> event ){
+		for( IEnvironmentListener<IVessel> listener: listeners)
 			listener.notifyEnvironmentChanged(event);
 	}
 	
@@ -249,7 +249,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			sa.controlShip( min_distance, this.manual );
 			
 			counter = ( counter + 1)%10;
-			notifyChangeEvent( new EnvironmentEvent<IPhysical>( this ));
+			notifyChangeEvent( new EnvironmentEvent<IVessel>( this ));
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -290,11 +290,4 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public Collection<IPhysical> getAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

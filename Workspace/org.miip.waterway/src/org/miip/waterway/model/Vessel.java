@@ -56,8 +56,8 @@ public class Vessel extends AbstractModel implements IVessel {
 		return bearing;
 	}
 
-	@Override
-	public ISituationalAwareness<IPhysical,?> getSituationalAwareness(){
+	//@Override
+	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness(){
 		return ca.getSituationalAwareness();
 	}
 	
@@ -65,7 +65,7 @@ public class Vessel extends AbstractModel implements IVessel {
 		return ca;
 	}
 
-	@Override
+	//@Override
 	public void setCollisionAvoidance(ICollisionAvoidance ca) {
 		this.ca = ca;
 	}

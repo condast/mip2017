@@ -38,14 +38,14 @@ public class PondEnvironment {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		reference = new Vessel( "Reference", latlng, 90, 10);//bearing east, 10 km/h
-		ICollisionAvoidance ca = new DefaultCollisionAvoidance( reference); 
-		reference.setCollisionAvoidance(ca);
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
+		//reference.setCollisionAvoidance(ca);
 		
 		this.others.clear();
 		latlng = field.transform( field.getWidth()/2 - 10,0);
 		IVessel other = new Vessel( "Other", latlng, 95, 10 );//bearing south, 10 km/h
 		ca = new DefaultCollisionAvoidance( other); 
-		other.setCollisionAvoidance(ca);
+		//other.setCollisionAvoidance(ca);
 		this.others.add(other);
 	}
 

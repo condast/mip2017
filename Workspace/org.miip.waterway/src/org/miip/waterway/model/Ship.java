@@ -160,11 +160,10 @@ public class Ship extends AbstractModel implements IVessel{
 	}
 
 	@Override
-	public ISituationalAwareness<IPhysical,?> getSituationalAwareness() {
+	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
 		return ca.getSituationalAwareness();
 	}
 
-	@Override
 	public void setCollisionAvoidance(ICollisionAvoidance ca) {
 		this.ca = ca;
 	}

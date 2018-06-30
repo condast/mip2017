@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class LedRing<I> extends AbstractSWTRadar<IPhysical> {
+public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int NR_OF_LEDS = 24;

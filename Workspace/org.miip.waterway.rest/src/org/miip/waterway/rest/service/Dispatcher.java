@@ -35,7 +35,7 @@ public class Dispatcher {
 		return options;
 	}
 
-	public IEnvironment<IPhysical> getActiveEnvironment() {
+	public IEnvironment<? extends IPhysical> getActiveEnvironment() {
 		if(( this.environments == null ) ||( this.environments.isEmpty() ))
 			return null;
 		for( IEnvironment<IPhysical> env: this.environments.values() ){

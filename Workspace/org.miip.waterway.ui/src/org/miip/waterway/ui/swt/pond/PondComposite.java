@@ -16,8 +16,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
-import org.condast.commons.ui.session.ISessionListener;
-import org.condast.commons.ui.session.RefreshSession;
+import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
@@ -40,7 +39,7 @@ import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
-public class PondComposite extends Composite implements IInputWidget<IReferenceEnvironment<IPhysical>> {
+public class PondComposite extends Composite implements IInputWidget<IReferenceEnvironment<IVessel,IPhysical>> {
 	private static final long serialVersionUID = 1L;
 
 	public static enum Tools{
@@ -53,47 +52,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	public static final String S_RDM_COE_URL = "http://www.rdmcoe.nl//";
 	public static final String S_CONDAST_URL = "http://www.condast.com/";
 
-	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
-
-		@Override
-		public void notifyEnvironmentChanged(final EnvironmentEvent<IPhysical> event) {
-			try{
-				switch( event.getType() ){
-				case INITIALSED:
-					break;
-				case OUT_OF_BOUNDS:
-					getDisplay().asyncExec( new Runnable() {
-
-						@Override
-						public void run() {
-							playerbar.stop();
-						}
-					});
-					break;
-				default:
-					session.addData(event);
-					break;
-				}
-			}
-			catch( Exception ex ){
-				ex.printStackTrace();
-			}
-		}
-	};
-
-	private RefreshSession<EnvironmentEvent<IPhysical>> session;
-	private ISessionListener<EnvironmentEvent<IPhysical>> slistener = new ISessionListener<EnvironmentEvent<IPhysical>>(){
-
-		@Override
-		public void notifySessionChanged(SessionEvent<EnvironmentEvent<IPhysical>> event){
-			try{
-				updateView();
-			}
-			catch( Exception ex ){
-				ex.printStackTrace();
-			}
-		}	
-	};
+	private SessionHandler handler;
 
 	private PondPresentation canvas;
 	private Text text_name;
@@ -113,7 +72,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private Label lblActiveShips;
 
 	private RadarGroup radarGroup;
-	private IReferenceEnvironment<IPhysical> environment;
+	private IReferenceEnvironment<IVessel, IPhysical> environment;
 
 	private int hits;
 
@@ -128,10 +87,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		this.frontend = this;
 
 		this.factories = new ArrayList<ICompositeFactory>();
-		this.session = new RefreshSession<>();
-		this.session.addSessionListener(slistener);
-		this.session.init(getDisplay());
-		this.session.start();
+		this.handler = new SessionHandler(getDisplay());
 	}
 
 	protected void createComposite( Composite parent, int style ){
@@ -297,12 +253,12 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	}
 
 	@Override
-	public IReferenceEnvironment<IPhysical> getInput() {
+	public IReferenceEnvironment<IVessel, IPhysical> getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IReferenceEnvironment<IPhysical> environment){
+	public void setInput( IReferenceEnvironment<IVessel, IPhysical> environment){
 		if(( this.environment != null ) && ( this.environment.equals( environment )))
 			return;
 		this.environment = environment;
@@ -312,7 +268,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		IVessel reference = (IVessel) this.environment.getInhabitant();
 		this.radarGroup.setInput( reference.getSituationalAwareness() );
 		if( this.environment != null )
-			this.environment.addListener(listener);
+			this.environment.addListener(handler);
 		this.playerbar.getButton(PlayerImages.Images.START).setEnabled( this.environment != null );
 	}
 
@@ -334,13 +290,11 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 	public void dispose(){
 		if( this.environment != null ){
-			this.environment.removeListener(listener);
+			this.environment.removeListener(handler);
 			IExecuteThread thread = (IExecuteThread) environment;
 			thread.stop();
 		}
-		this.session.stop();
-		this.session.removeSessionListener(slistener);
-		this.session.dispose();
+		this.handler.dispose();
 		super.dispose();
 	}
 
@@ -373,7 +327,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		public void stop() {
 			IExecuteThread thread = (IExecuteThread) environment;
 			thread.stop();
-			environment.removeListener(listener);
+			environment.removeListener(handler);
 			getButton( PlayerImages.Images.START).setEnabled(true);
 			Button clear = (Button) getButton( PlayerImages.Images.RESET);
 			clear.setEnabled( true );
@@ -406,7 +360,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 						IExecuteThread thread = (IExecuteThread) environment;
 						switch( image ){
 						case START:
-							environment.addListener(listener);
+							environment.addListener( handler);
 							thread.start();
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
@@ -445,5 +399,48 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 			button.setImage( PlayerImages.getInstance().getImage(type));
 			return button;
 		}
+	}
+
+	private class SessionHandler extends AbstractSessionHandler<EnvironmentEvent<IVessel>> 
+	implements IEnvironmentListener<IVessel>{
+
+		protected SessionHandler(Display display) {
+			super(display);
+		}
+
+		@Override
+		protected void onHandleSession(SessionEvent<EnvironmentEvent<IVessel>> sevent) {
+			try{
+				updateView();
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+			}
+		}
+
+		@Override
+		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
+			try{
+				switch( event.getType() ){
+				case INITIALSED:
+					break;
+				case OUT_OF_BOUNDS:
+					getDisplay().asyncExec( new Runnable() {
+
+						@Override
+						public void run() {
+							playerbar.stop();
+						}
+					});
+					break;
+				default:
+					addData(event);
+					break;
+				}
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+			}
+		}	
 	}
 }

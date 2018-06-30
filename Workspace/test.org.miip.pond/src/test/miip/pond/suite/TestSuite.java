@@ -7,7 +7,7 @@ import org.condast.commons.test.core.ITestEvent;
 
 import test.miip.pond.core.PondEnvironment;
 
-public class TestSuite extends AbstractTestSuite<Object> {
+public class TestSuite extends AbstractTestSuite<Object, Object> {
 
 	public enum Tests{
 		TEST_COLLISION_AVOIDANCE,
@@ -65,13 +65,13 @@ public class TestSuite extends AbstractTestSuite<Object> {
 	}
 
 	@Override
-	protected void onPrepare(ITestEvent<Object> event) {
+	protected void onPrepare(ITestEvent<Object, Object> event) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	protected void onPerform(ITestEvent<Object> event) {
+	protected void onPerform(ITestEvent<Object, Object> event) {
 		// TODO Auto-generated method stub
 		
 	}

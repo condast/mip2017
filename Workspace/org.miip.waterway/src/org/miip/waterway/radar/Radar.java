@@ -4,9 +4,9 @@ package org.miip.waterway.radar;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.miip.waterway.model.def.IRadar;
 
-public class Radar<V extends Object> implements IRadar<V>{
+public class Radar<V,O extends Object> implements IRadar<V,O>{
 	
-	private ISituationalAwareness<V,?> sa;
+	private ISituationalAwareness<V,O> sa;
 	
 	private long range;
 	private int sensitivity; //part of the range
@@ -64,12 +64,12 @@ public class Radar<V extends Object> implements IRadar<V>{
 	}
 
 	@Override
-	public ISituationalAwareness<V,?> getInput() {
+	public ISituationalAwareness<V,O> getInput() {
 		return sa;
 	}
 
 	@Override
-	public void setInput( ISituationalAwareness<V,?> sa ){
+	public void setInput( ISituationalAwareness<V,O> sa ){
 		if( this.sa != null ) {
 			if( this.sa.equals(sa))
 				return;

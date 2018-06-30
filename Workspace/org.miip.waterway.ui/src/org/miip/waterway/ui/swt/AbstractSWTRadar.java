@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.Radar;
 
-public abstract class AbstractSWTRadar<V extends IPhysical> extends Canvas implements IRadar<V>{
+public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas implements IRadar<V,O>{
 	private static final long serialVersionUID = 1L;
 	
 	public enum RadarColours{
@@ -99,11 +99,11 @@ public abstract class AbstractSWTRadar<V extends IPhysical> extends Canvas imple
 		}
 	};
 
-	private ISituationalAwareness<V,?> sa;
-	private ISituationListener<V> slistener = new ISituationListener<V>() {
+	private ISituationalAwareness<V,O> sa;
+	private ISituationListener<O> slistener = new ISituationListener<O>() {
 		
 		@Override
-		public void notifySituationChanged(SituationEvent<V> event) {
+		public void notifySituationChanged(SituationEvent<O> event) {
 			onPrepare( event );
 			getDisplay().asyncExec( new Runnable() {
 
@@ -115,13 +115,13 @@ public abstract class AbstractSWTRadar<V extends IPhysical> extends Canvas imple
 		}
 	};
 	
-	private Radar<V> radar;
+	private Radar<V,O> radar;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
 	protected AbstractSWTRadar(Composite parent, int style) {
 		super(parent, style);
-		radar = new Radar<V>();
+		radar = new Radar<V,O>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_DARK_GRAY));
 		super.addPaintListener( listener );
 	}
@@ -170,7 +170,7 @@ public abstract class AbstractSWTRadar<V extends IPhysical> extends Canvas imple
 		return new Point((int) centrex, (int)centrey);
 	}
 	
-	protected void onPrepare( SituationEvent<V> event ) {
+	protected void onPrepare( SituationEvent<O> event ) {
 		/* DEFAULT NOTHING */
 	}
 	
@@ -184,7 +184,7 @@ public abstract class AbstractSWTRadar<V extends IPhysical> extends Canvas imple
 		if( sa == null )
 			return;
 		this.onDrawStart(gc);
-		for( V obj: sa.getRadar() ){
+		for( O obj: sa.getRadar() ){
 			drawObject(gc, obj );
 		}
 		this.onDrawEnd(gc);
@@ -207,15 +207,15 @@ public abstract class AbstractSWTRadar<V extends IPhysical> extends Canvas imple
 		//return new Color (getDisplay(), red, green, 0);
 	}
 	
-	protected abstract void drawObject( GC gc, V object );
+	protected abstract void drawObject( GC gc, O object );
 
 	@Override
-	public ISituationalAwareness<V,?> getInput() {
+	public ISituationalAwareness<V,O> getInput() {
 		return sa;
 	}
 
 	@Override
-	public void setInput( ISituationalAwareness<V,?> sa ){
+	public void setInput( ISituationalAwareness<V,O> sa ){
 		if( this.sa != null ) {
 			if( this.sa.equals(sa))
 				return;
