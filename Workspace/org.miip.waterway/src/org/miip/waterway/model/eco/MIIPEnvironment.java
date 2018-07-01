@@ -107,7 +107,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		latlng = this.field.getCentre();
 		reference = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
 		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
-		reference.setCollisionAvoidance(ca);
+		reference.init(ca);
 		sa = new SituationalAwareness(reference);
 		
 		//The bank at the bottom

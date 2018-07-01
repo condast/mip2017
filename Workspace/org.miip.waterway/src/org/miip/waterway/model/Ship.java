@@ -62,7 +62,11 @@ public class Ship extends AbstractModel implements IVessel{
 		this.rotation = (( double )this.length + 5 * Math.random()) * this.speed; 
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
 	}
-	
+
+	public void init(ICollisionAvoidance<IVessel, IPhysical>  ca) {
+		this.ca = ca;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#getTurn(long)
 	 */
@@ -162,9 +166,5 @@ public class Ship extends AbstractModel implements IVessel{
 	@Override
 	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
 		return ca.getSituationalAwareness();
-	}
-
-	public void setCollisionAvoidance(ICollisionAvoidance<IVessel, IPhysical>  ca) {
-		this.ca = ca;
 	}
 }
