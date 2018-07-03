@@ -1,13 +1,13 @@
 package org.miip.waterway.designer.services;
 
-import org.condast.commons.autonomy.model.IPhysical;
+import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.osgi.service.component.annotations.Component;
 
 @Component( name="org.miip.wterway.design.factory")
-public class DesignFactory implements IDesignFactory<IPhysical>{
+public class DesignFactory implements IDesignFactory<IVessel>{
 
 	private static final String ID = "org.miip.waterway.model.eco.MIIPEnvironment";
 	

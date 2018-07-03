@@ -6,16 +6,16 @@ import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
-import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
+import org.condast.commons.autonomy.sa.AbstractAutonomousSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.miip.waterway.model.IVessel;
 
-public class PondSituationalAwareness extends AbstractSituationalAwareness<IReferenceEnvironment<IPhysical>> {
+public class PondSituationalAwareness extends AbstractAutonomousSituationalAwareness<IPhysical,IVessel> {
 
-	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
+	private IEnvironmentListener<IVessel> listener = new IEnvironmentListener<IVessel>() {
 
 		@Override
-		public void notifyEnvironmentChanged(EnvironmentEvent<IPhysical> event) {
+		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
 			notifylisteners( new SituationEvent<IPhysical>( this, getReference()));
 		}
 	};
@@ -39,7 +39,7 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<IRefe
 	}
 
 	@Override
-	protected void onSetInput(IReferenceEnvironment<IPhysical> input) {
+	protected void onSetInput(IReferenceEnvironment<IVessel, IPhysical> input) {
 		if( super.getInput() != null ) {
 			if ( super.getInput().equals(input ))
 				return;

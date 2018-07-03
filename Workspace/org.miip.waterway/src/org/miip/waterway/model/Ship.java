@@ -39,7 +39,7 @@ public class Ship extends AbstractModel implements IVessel{
 	private float length;
 	private float speed;//-20 - 60 km/hour
 	private int bearing; //0-360
-	private ICollisionAvoidance ca;
+	private ICollisionAvoidance<IVessel, IPhysical> ca;
 	
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
@@ -62,7 +62,11 @@ public class Ship extends AbstractModel implements IVessel{
 		this.rotation = (( double )this.length + 5 * Math.random()) * this.speed; 
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
 	}
-	
+
+	public void init(ICollisionAvoidance<IVessel, IPhysical>  ca) {
+		this.ca = ca;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#getTurn(long)
 	 */
@@ -160,12 +164,7 @@ public class Ship extends AbstractModel implements IVessel{
 	}
 
 	@Override
-	public ISituationalAwareness<IPhysical,?> getSituationalAwareness() {
+	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
 		return ca.getSituationalAwareness();
-	}
-
-	@Override
-	public void setCollisionAvoidance(ICollisionAvoidance ca) {
-		this.ca = ca;
 	}
 }

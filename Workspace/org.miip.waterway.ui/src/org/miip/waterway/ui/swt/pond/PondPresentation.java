@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class PondPresentation extends Canvas implements IInputWidget<IReferenceEnvironment<IPhysical>>{
+public class PondPresentation extends Canvas implements IInputWidget<IReferenceEnvironment<IVessel, IPhysical>>{
 	private static final long serialVersionUID = 1L;
 
 	public static final int GRIDX = 100;//meters
@@ -44,7 +44,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 		}
 	};
 
-	private IReferenceEnvironment<IPhysical> environment;
+	private IReferenceEnvironment<IVessel, IPhysical> environment;
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
@@ -65,12 +65,12 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	}
 	
 	@Override
-	public IReferenceEnvironment<IPhysical> getInput() {
+	public IReferenceEnvironment<IVessel, IPhysical> getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IReferenceEnvironment<IPhysical> environment){
+	public void setInput( IReferenceEnvironment<IVessel, IPhysical> environment){
 		this.environment = environment;
 	}
 	

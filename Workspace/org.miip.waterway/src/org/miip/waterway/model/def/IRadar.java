@@ -3,7 +3,7 @@ package org.miip.waterway.model.def;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.strings.StringStyler;
 
-public interface IRadar<V extends Object> {
+public interface IRadar<V, O extends Object> {
 
 	public static final int DEFAULT_SENSITIVITY = 210;//0-1000
 	public static final int DEFAULT_RANGE = 1200;//max 3000 meters
@@ -34,11 +34,13 @@ public interface IRadar<V extends Object> {
 		}
 	}
 	
+	ISituationalAwareness<V, O> getInput();
+
 	/**
 	 * set the input for this radar by adding the SA and the range (m)
 	 * @param sa
 	 */
-	void setInput( ISituationalAwareness<V,?> sa);
+	void setInput( ISituationalAwareness<V,O> sa);
 
 	/**
 	 * Get the sensitivity of the radar
@@ -66,6 +68,4 @@ public interface IRadar<V extends Object> {
 	void setSteps(int steps);
 
 	double toRadians(int step);
-
-	ISituationalAwareness<V, ?> getInput();
 }

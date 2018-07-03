@@ -18,8 +18,7 @@ import org.condast.commons.autonomy.sa.ISituationListener;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
-import org.condast.commons.ui.session.ISessionListener;
-import org.condast.commons.ui.session.RefreshSession;
+import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
@@ -37,6 +36,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.CentreShip;
+import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.eco.MIIPEnvironment;
@@ -73,24 +73,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Collection<ICompositeFactory> factories;
 	private Composite frontend;
 
-	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
-
-		@Override
-		public void notifyEnvironmentChanged(final EnvironmentEvent<IPhysical> event) {
-			try{
-				switch( event.getType() ){
-				case INITIALSED:
-					break;
-				default:
-					session.addData(event);
-					break;
-				}
-			}
-			catch( Exception ex ){
-				ex.printStackTrace();
-			}
-		}
-	};
 	private PlayerComposite<MIIPEnvironment> playerbar;
 
 	private Slider slider_speed;
@@ -100,19 +82,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	private int hits;
 
-	private RefreshSession<EnvironmentEvent<IPhysical>> session;
-	private ISessionListener<EnvironmentEvent<IPhysical>> slistener = new ISessionListener<EnvironmentEvent<IPhysical>>(){
-
-		@Override
-		public void notifySessionChanged(SessionEvent<EnvironmentEvent<IPhysical>> event){
-			try{
-				updateView();
-			}
-			catch( Exception ex ){
-				ex.printStackTrace();
-			}
-		}	
-	};
+	private SessionHandler handler;
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -163,10 +133,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.createComposite(parent, style);
 		this.frontend = this;
 		this.factories = new ArrayList<ICompositeFactory>();
-		this.session = new RefreshSession<>();
-		this.session.addSessionListener(slistener);
-		this.session.init(getDisplay());
-		this.session.start();
+		this.handler = new SessionHandler( getDisplay());
 	}
 
 	protected void createComposite( Composite parent, int style ){
@@ -436,13 +403,11 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		if( this.environment != null ){
 			if( this.environment.getSituationalAwareness() != null )
 				this.environment.getSituationalAwareness().removelistener(shlistener);
-			this.environment.removeListener(listener);
+			this.environment.removeListener(handler);
 			IExecuteThread thread = (IExecuteThread) environment;
 			thread.stop();
 		}
-		this.session.stop();
-		this.session.removeSessionListener(slistener);
-		this.session.dispose();
+		handler.dispose();
 		super.dispose();
 	}
 
@@ -490,7 +455,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 						IExecuteThread thread = (IExecuteThread) environment;
 						switch( image ){
 						case START:
-							environment.addListener(listener);
+							environment.addListener(handler);
 							thread.start();
 							environment.getSituationalAwareness().addlistener(shlistener);
 							radarGroup.setInput( environment.getSituationalAwareness());
@@ -507,7 +472,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 							break;
 						case STOP:
 							thread.stop();
-							environment.removeListener(listener);
+							environment.removeListener(handler);
 							getButton( PlayerImages.Images.START).setEnabled(true);
 							button.setEnabled(false);
 							clear = (Button) getButton( PlayerImages.Images.RESET);
@@ -534,5 +499,39 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			button.setImage( PlayerImages.getInstance().getImage(type));
 			return button;
 		}
+	}
+	
+	private class SessionHandler extends AbstractSessionHandler<EnvironmentEvent<IVessel>> 
+	implements IEnvironmentListener<IVessel>{
+
+		protected SessionHandler(Display display) {
+			super(display);
+		}
+
+		@Override
+		protected void onHandleSession(SessionEvent<EnvironmentEvent<IVessel>> sevent) {
+			try{
+				updateView();
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+			}
+		}
+
+		@Override
+		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
+			try{
+				switch( event.getType() ){
+				case INITIALSED:
+					break;
+				default:
+					addData(event);
+					break;
+				}
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+			}
+		}	
 	}
 }

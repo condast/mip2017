@@ -7,7 +7,9 @@ import java.util.logging.Logger;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
+import org.condast.commons.autonomy.sa.RadarData;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
@@ -16,7 +18,7 @@ import org.miip.waterway.model.Point;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 
-public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvironment> {
+public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical, IVessel> {
 
 	/*
 	private AbstractOperator<Vector<Integer>, Vector<Integer>> operator = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
@@ -37,10 +39,10 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
-	private IEnvironmentListener<IPhysical> listener = new IEnvironmentListener<IPhysical>() {
+	private IEnvironmentListener<IVessel> listener = new IEnvironmentListener<IVessel>() {
 
 		@Override
-		public void notifyEnvironmentChanged(EnvironmentEvent<IPhysical> event) {
+		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
 			notifylisteners( new SituationEvent<IPhysical>( this, getReference()));
 		}
 	};
@@ -63,21 +65,42 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IMIIPEnvi
 		Collection<IPhysical> results = new ArrayList<IPhysical>();
 		if( super.getInput() == null )
 			return results;
-		Waterway waterway = super.getInput().getWaterway();
+		IMIIPEnvironment env = (IMIIPEnvironment) super.getInput();
+		Waterway waterway = env.getWaterway();
 		for( IPhysical phobj: waterway.getShips() )
 			results.add(phobj);
 		results.addAll(getBanks(waterway));
 		return results;
 	}
 
+	
 	@Override
-	protected void onSetInput(IMIIPEnvironment environment) {
-		if( super.getInput() != null ) {
-			if( super.getInput().equals(environment ))
+	public Collection<RadarData<IPhysical>> predictFuture(int time, IVessel reference, IPhysical other) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public RadarData<IPhysical> getFreePath(IPhysical phys, double distance) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected void onSetInput(IReferenceEnvironment<IVessel, IPhysical> input) {
+		IMIIPEnvironment env = (IMIIPEnvironment) super.getInput();
+		if( env!= null ) {
+			if( env.equals(input ))
 				return;
-			super.getInput().removeListener(listener);
+			env.removeListener(listener);
 		}
-		environment.addListener(listener);
+		input.addListener(listener);
 	}
 
 	public void controlShip( float min_distance, boolean max ){

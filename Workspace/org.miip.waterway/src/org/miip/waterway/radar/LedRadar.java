@@ -11,12 +11,12 @@ import org.condast.commons.data.latlng.Motion;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IRadar;
 
-public class LedRadar<V extends IPhysical>{
+public class LedRadar<V,O extends IPhysical>{
 	
 	private Map<Integer, Motion> radarData;
-	private IRadar<V> radar;
+	private IRadar<V,O> radar;
 	
-	public LedRadar( IRadar<V> radar ) {
+	public LedRadar( IRadar<V,O> radar ) {
 		super(); 
 		this.radar = radar;
 		radarData = new HashMap<Integer, Motion>();
@@ -31,12 +31,12 @@ public class LedRadar<V extends IPhysical>{
 	}
 
 	public void refresh() {
-		ISituationalAwareness<V,?> sa = radar.getInput();
+		ISituationalAwareness<V,O> sa = radar.getInput();
 		this.radarData.clear();
 		if( sa == null )
 			return;
 		IVessel reference = (IVessel) radar.getInput().getReference(); 
-		for( V obj: sa.getRadar() ){
+		for( O obj: sa.getRadar() ){
 			double angle = LatLngUtils.getBearing(reference.getLocation(), obj.getLocation());
 			int key = ( int )( radar.getSteps() * angle /( 2*Math.PI ));
 			Motion waypoint = calculate(key, obj );

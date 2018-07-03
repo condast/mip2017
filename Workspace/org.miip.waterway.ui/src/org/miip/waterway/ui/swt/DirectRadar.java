@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class DirectRadar extends AbstractSWTRadar<IPhysical>{
+public class DirectRadar extends AbstractSWTRadar<IVessel, IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
@@ -22,7 +22,7 @@ public class DirectRadar extends AbstractSWTRadar<IPhysical>{
 	
 	@Override
 	protected void drawObject( GC gc, IPhysical ship ){
-		ISituationalAwareness<IPhysical,?> sa = super.getInput();
+		ISituationalAwareness<IVessel, IPhysical> sa = super.getInput();
 		IVessel reference = (IVessel) sa.getReference(); 
 		if( ship.equals( reference ))
 			return;

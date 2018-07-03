@@ -8,6 +8,7 @@ import java.util.Map;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Motion;
+import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.LedRadar;
 import org.miip.waterway.radar.Radar;
@@ -21,30 +22,34 @@ public class RestRadar{
 		BLUE;
 	}
 	
-	private IRadar<IPhysical> radar;
+	private IRadar<IVessel, IPhysical> radar;
 	private RadarOptions options;
 	private List<RadarData> colours;
 	private int leds;
 	private IRadar.RadarSelect radarType;
 
-	public RestRadar( RadarOptions options, int leds, ISituationalAwareness<IPhysical, ?> sa ) {
+	public RestRadar( RadarOptions options, int leds, ISituationalAwareness<IVessel, IPhysical> sa ) {
 		colours = new ArrayList<RadarData>();
 		this.options = options;
 		this.radarType = options.getRadarType();
 		this.leds = leds;
-		this.radar = new Radar<IPhysical>();
+		this.radar = new Radar<IVessel, IPhysical>();
 		this.radar.setInput(sa);
 	}
 
+	public IRadar.RadarSelect getRadarType() {
+		return radarType;
+	}
+	
 	public List<RadarData> drawField(){
 		colours.clear();
-		ISituationalAwareness<IPhysical, ?> sa = radar.getInput();
+		ISituationalAwareness<IVessel, IPhysical> sa = radar.getInput();
 		if( sa == null )
 			return colours;
 		radar.setRange( options.getRange());
 		radar.setSensitivity( options.getSensitivity());
 		radar.setSteps( this.leds );
-		LedRadar<IPhysical> lr = new LedRadar<IPhysical>( radar );
+		LedRadar<IVessel, IPhysical> lr = new LedRadar<IVessel, IPhysical>( radar );
 		lr.refresh();
 		for( int i=0; i< radar.getSteps(); i++ ) {
 			byte[] colour = getBackgroundColour();

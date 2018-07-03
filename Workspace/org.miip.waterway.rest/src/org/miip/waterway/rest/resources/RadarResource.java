@@ -106,14 +106,14 @@ public class RadarResource{
 	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("msg") String leds ) {
 		try {
 			logger.info("Query for Radar " + id );
-			IReferenceEnvironment<IPhysical> env = (IReferenceEnvironment<IPhysical>) Dispatcher.getInstance().getActiveEnvironment(); 
+			IReferenceEnvironment<IVessel, IPhysical> env = (IReferenceEnvironment<IVessel, IPhysical>) Dispatcher.getInstance().getActiveEnvironment(); 
 			Response response = null;
 			if( env == null )
 				return Response.noContent().build();
 			IVessel reference = (IVessel) env.getInhabitant();
 			if( reference == null )
 				return Response.noContent().build();
-			ISituationalAwareness<IPhysical, ?> sa = reference.getSituationalAwareness();
+			ISituationalAwareness<IVessel,IPhysical> sa = reference.getSituationalAwareness();
 			if( sa == null )
 				return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 			int nrOfLeds = StringUtils.isEmpty(leds)?0: Integer.parseInt(leds);

@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysical>{
+public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private IBinaryTreeSet<Vector<Integer>> data;
@@ -60,8 +60,8 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 	
 	@Override
 	protected void onDrawStart(GC gc) {
-		ISituationalAwareness<IPhysical,?> sa = super.getInput();
-		IVessel reference = (IVessel) sa.getReference(); 
+		ISituationalAwareness<IVessel,IPhysical> sa = super.getInput();
+		IVessel reference = sa.getReference(); 
 		
 		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
 		Collection<IPhysical> radar = sa.getRadar();

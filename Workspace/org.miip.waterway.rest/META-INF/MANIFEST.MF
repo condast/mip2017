@@ -39,3 +39,4 @@ Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/org.miip.waterway.rest.service.composite.provider.xml,
  OSGI-INF/org.miip.waterway.rest.service.xml
 Require-Bundle: org.eclipse.equinox.preferences
+Export-Package: org.miip.waterway.rest.model

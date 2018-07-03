@@ -13,7 +13,7 @@ public class Vessel extends AbstractModel implements IVessel {
 	private double bearing;
 	private float length;//mtr
 	
-	private ICollisionAvoidance ca;
+	private ICollisionAvoidance<IVessel, IPhysical> ca;
 
 	public Vessel(String name, double latitude, double longitude, double bearing, double speed) {
 		this( new LatLng(name, latitude, longitude ), bearing, speed);
@@ -28,6 +28,11 @@ public class Vessel extends AbstractModel implements IVessel {
 		this.speed = speed;
 		this.bearing = bearing;
 		this.length = IVessel.DEFAULT_LENGTH;
+	}
+	
+	@Override
+	public void init( ICollisionAvoidance<IVessel, IPhysical> ca ) {
+		this.ca = ca;
 	}
 
 	@Override
@@ -56,8 +61,8 @@ public class Vessel extends AbstractModel implements IVessel {
 		return bearing;
 	}
 
-	@Override
-	public ISituationalAwareness<IPhysical,?> getSituationalAwareness(){
+	//@Override
+	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness(){
 		return ca.getSituationalAwareness();
 	}
 	
@@ -65,7 +70,7 @@ public class Vessel extends AbstractModel implements IVessel {
 		return ca;
 	}
 
-	@Override
+	//@Override
 	public void setCollisionAvoidance(ICollisionAvoidance ca) {
 		this.ca = ca;
 	}

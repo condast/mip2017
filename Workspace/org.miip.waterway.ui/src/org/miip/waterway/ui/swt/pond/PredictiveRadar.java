@@ -4,14 +4,14 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.RadarData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.ui.swt.AbstractSWTRadar;
 
-public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysical>{
+public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel,IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private int  totalTime = 35000;//35 sec
@@ -42,14 +42,14 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		if(!( physicalobj instanceof IVessel ))
 			return;
 		
-		ISituationalAwareness<IPhysical,?> psa = getInput();
+		ISituationalAwareness<IVessel,IPhysical> psa = getInput();
 		psa.clear();
-		Collection<AbstractSituationalAwareness<?>.RadarData> timemap = psa.predictFuture(this.totalTime, reference, (IVessel) physicalobj);
+		Collection<RadarData<IPhysical>> timemap = psa.predictFuture(this.totalTime, reference, (IVessel) physicalobj);
 		if( timemap.isEmpty() )
 			return;
 		double offset = ((double)getClientArea().width)/getInput().getField().getLength();
-		Iterator<AbstractSituationalAwareness<?>.RadarData> iterator = timemap.iterator();
-		AbstractSituationalAwareness<?>.RadarData ref = iterator.next();
+		Iterator<RadarData<IPhysical>> iterator = timemap.iterator();
+		RadarData<IPhysical> ref = iterator.next();
 		double angle = ref.getAngle();//0-360, north=0
 		double distance = ref.getDistance();
 		int startx = centrex + (int)(offset * distance * Math.sin( Math.toRadians(angle)));
@@ -58,7 +58,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		int xposf=startx, yposf = starty;
 		int xposb=startx, yposb = starty;
 		while( iterator.hasNext() ) {
-			AbstractSituationalAwareness<?>.RadarData data = iterator.next();
+			RadarData<IPhysical> data = iterator.next();
 			angle = data.getAngle();//0-360, north=0
 			distance = data.getDistance();
 				
