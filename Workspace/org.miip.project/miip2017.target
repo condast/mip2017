@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Miip2017" sequenceNumber="68">
+<?pde version="3.8"?><target name="Miip2017" sequenceNumber="77">
 <locations>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\registry" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jaxrs" type="Directory"/>
@@ -15,6 +15,7 @@
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\gson" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\EclipseLink" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\persistence" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jpa" type="Directory"/>
 </locations>
 <includeBundles>
 <plugin id="ch.qos.logback.access"/>
@@ -23,7 +24,7 @@
 <plugin id="com.google.gson"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="com.ibm.icu.source"/>
-<plugin id="com.mysql.jdbc"/>
+<plugin id="com.mysql.jdbc" version="5.1.46"/>
 <plugin id="com.springsource.org.apache.commons.httpclient"/>
 <plugin id="com.squareup.okhttp3"/>
 <plugin id="com.squareup.okio"/>
@@ -36,6 +37,7 @@
 <plugin id="javax.jms" version="1.1.0.v201205091237"/>
 <plugin id="javax.mail.glassfish"/>
 <plugin id="javax.persistence" version="2.2.0.v201708071007"/>
+<plugin id="javax.persistence.source" version="2.2.0.v201708071007"/>
 <plugin id="javax.servlet" version="3.1.0.20170128"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.jstl-api"/>
@@ -45,8 +47,8 @@
 <plugin id="javax.xml" version="1.3.4.v201005080400"/>
 <plugin id="oevm.javax.portlet"/>
 <plugin id="oevm.org.aopalliance"/>
-<plugin id="org.apache.commons.codec" version="1.10.0.v20151023-1447"/>
 <plugin id="org.apache.commons.codec" version="1.6.0"/>
+<plugin id="org.apache.commons.codec" version="1.10.0.v20151023-1447"/>
 <plugin id="org.apache.commons.fileupload"/>
 <plugin id="org.apache.commons.io"/>
 <plugin id="org.apache.commons.lang3"/>
@@ -110,6 +112,9 @@
 <plugin id="org.eclipse.gemini.blueprint.extender"/>
 <plugin id="org.eclipse.gemini.blueprint.extensions"/>
 <plugin id="org.eclipse.gemini.blueprint.io"/>
+<plugin id="org.eclipse.gemini.dbaccess.mysql"/>
+<plugin id="org.eclipse.gemini.dbaccess.util"/>
+<plugin id="org.eclipse.gemini.jpa"/>
 <plugin id="org.eclipse.gemini.management"/>
 <plugin id="org.eclipse.jdt.core.compiler.batch"/>
 <plugin id="org.eclipse.jetty.continuation"/>
@@ -127,6 +132,8 @@
 <plugin id="org.eclipse.osgi"/>
 <plugin id="org.eclipse.osgi.services" version="3.5.0.v20150519-2006"/>
 <plugin id="org.eclipse.osgi.services.source"/>
+<plugin id="org.eclipse.persistence.antlr"/>
+<plugin id="org.eclipse.persistence.antlr.source"/>
 <plugin id="org.eclipse.persistence.asm"/>
 <plugin id="org.eclipse.persistence.core"/>
 <plugin id="org.eclipse.persistence.core.source"/>
