@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="Miip2017" sequenceNumber="60">
+<?pde version="3.8"?><target name="Miip2017" sequenceNumber="77">
 <locations>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\registry" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jaxrs" type="Directory"/>
@@ -15,6 +15,7 @@
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\gson" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\EclipseLink" type="Directory"/>
 <location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\persistence" type="Directory"/>
+<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\jpa" type="Directory"/>
 </locations>
 <includeBundles>
 <plugin id="ch.qos.logback.access"/>
@@ -23,7 +24,7 @@
 <plugin id="com.google.gson"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="com.ibm.icu.source"/>
-<plugin id="com.mysql.jdbc"/>
+<plugin id="com.mysql.jdbc" version="5.1.46"/>
 <plugin id="com.springsource.org.apache.commons.httpclient"/>
 <plugin id="com.squareup.okhttp3"/>
 <plugin id="com.squareup.okio"/>
@@ -110,6 +111,9 @@
 <plugin id="org.eclipse.gemini.blueprint.extender"/>
 <plugin id="org.eclipse.gemini.blueprint.extensions"/>
 <plugin id="org.eclipse.gemini.blueprint.io"/>
+<plugin id="org.eclipse.gemini.dbaccess.mysql"/>
+<plugin id="org.eclipse.gemini.dbaccess.util"/>
+<plugin id="org.eclipse.gemini.jpa"/>
 <plugin id="org.eclipse.gemini.management"/>
 <plugin id="org.eclipse.jdt.core.compiler.batch"/>
 <plugin id="org.eclipse.jetty.continuation"/>
@@ -127,8 +131,18 @@
 <plugin id="org.eclipse.osgi"/>
 <plugin id="org.eclipse.osgi.services" version="3.5.0.v20150519-2006"/>
 <plugin id="org.eclipse.osgi.services.source"/>
+<plugin id="org.eclipse.persistence.antlr"/>
+<plugin id="org.eclipse.persistence.asm"/>
 <plugin id="org.eclipse.persistence.core" version="2.7.1.v20171221-bd47e8f"/>
 <plugin id="org.eclipse.persistence.core.source" version="2.7.1.v20171221-bd47e8f"/>
+<plugin id="org.eclipse.persistence.jpa"/>
+<plugin id="org.eclipse.persistence.jpa.jpql"/>
+<plugin id="org.eclipse.persistence.jpa.jpql.source"/>
+<plugin id="org.eclipse.persistence.jpa.modelgen"/>
+<plugin id="org.eclipse.persistence.jpa.modelgen.source"/>
+<plugin id="org.eclipse.persistence.jpa.source"/>
+<plugin id="org.eclipse.persistence.jpars"/>
+<plugin id="org.eclipse.persistence.jpars.source"/>
 <plugin id="org.eclipse.rap.jface"/>
 <plugin id="org.eclipse.rap.jface.source"/>
 <plugin id="org.eclipse.rap.nebula.jface.gridviewer"/>
