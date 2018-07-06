@@ -133,10 +133,16 @@
 <plugin id="org.eclipse.osgi.services" version="3.5.0.v20150519-2006"/>
 <plugin id="org.eclipse.osgi.services.source"/>
 <plugin id="org.eclipse.persistence.antlr"/>
+<<<<<<< HEAD
 <plugin id="org.eclipse.persistence.antlr.source"/>
 <plugin id="org.eclipse.persistence.asm"/>
 <plugin id="org.eclipse.persistence.core"/>
 <plugin id="org.eclipse.persistence.core.source"/>
+=======
+<plugin id="org.eclipse.persistence.asm"/>
+<plugin id="org.eclipse.persistence.core" version="2.7.1.v20171221-bd47e8f"/>
+<plugin id="org.eclipse.persistence.core.source" version="2.7.1.v20171221-bd47e8f"/>
+>>>>>>> branch 'master' of https://github.com/condast/mip2017.git
 <plugin id="org.eclipse.persistence.jpa"/>
 <plugin id="org.eclipse.persistence.jpa.jpql"/>
 <plugin id="org.eclipse.persistence.jpa.jpql.source"/>
