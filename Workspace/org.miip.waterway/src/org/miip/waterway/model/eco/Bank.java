@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.strings.StringStyler;
 import org.miip.waterway.model.Location;
@@ -26,14 +27,14 @@ public class Bank{
 	private Collection<Location> shore;
 	private int nrOfShoreObjects;
 	
-	private Field field;
+	private IField field;
 	private int xoffset, yoffset;
 
-	public Bank( Field field ) {
+	public Bank( IField field ) {
 		this( field, 0, 0, DEFAULT_NR_OF_TREES );
 	}
 
-	public Bank( Field field, int xoffset, int yoffset ) {
+	public Bank( IField field, int xoffset, int yoffset ) {
 		this( field, xoffset, yoffset, DEFAULT_NR_OF_TREES );
 	}
 
@@ -45,7 +46,7 @@ public class Bank{
 		this( new Field( location, length, width ), xoffset, yoffset, nrOfShoreObjects );
 	}
 	
-	public Bank( Field field, int xoffset, int yoffset, int nrOfShoreObjects) {
+	public Bank( IField field, int xoffset, int yoffset, int nrOfShoreObjects) {
 		this.field = field;
 		this.xoffset = xoffset;
 		this.yoffset = yoffset;

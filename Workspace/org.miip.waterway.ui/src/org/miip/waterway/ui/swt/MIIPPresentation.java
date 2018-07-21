@@ -14,7 +14,7 @@ import org.miip.waterway.ui.images.MIIPImages;
 
 import java.util.Map;
 
-import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.eclipse.swt.SWT;
@@ -146,7 +146,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 			}
 		}
 
-		Field field = this.environment.getField();
+		IField field = this.environment.getField();
 		for( IVessel ship: environment.getWaterway().getShips()){
 			if( !field.isInField( ship.getLocation(), 0))
 				continue;
@@ -176,7 +176,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 
 	public Point scaleToCanvas( LatLng location ){
 		Rectangle clientArea = getClientArea();
-		Field field = this.environment.getField();
+		IField field = this.environment.getField();
 		Map.Entry<Double, Double> vector = field.getVector(location);
 		int x= (int)(clientArea.width * vector.getKey()/field.getLength());
 		int y = (int)(clientArea.height * vector.getValue()/field.getWidth());
@@ -185,7 +185,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 
 	public Point scaleToCanvas( Location location ){
 		Rectangle clientArea = getClientArea();
-		Field field = this.environment.getField();
+		IField field = this.environment.getField();
 		int x=  (int)(location.getX() * clientArea.width/field.getLength());
 		int y = (int)(location.getY() * clientArea.height/field.getWidth());
 		return new Point((int) x, (int) y );

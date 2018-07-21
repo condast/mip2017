@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
-import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.ui.swt.IInputWidget;
@@ -108,7 +108,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 			Color color = gc.getForeground();
 			gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
 
-			Field field = environment.getField();
+			IField field = environment.getField();
 			int i = 0;
 			while( i < field.getLength() ){
 				int xpos = su.scaleXToDisplay( i ); 

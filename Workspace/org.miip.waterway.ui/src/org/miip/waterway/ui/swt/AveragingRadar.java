@@ -8,7 +8,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
-import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Vector;
 import org.condast.commons.data.operations.AbstractOperator;
@@ -65,7 +65,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,
 		
 		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
 		Collection<IPhysical> radar = sa.getRadar();
-		Field field = sa.getField();
+		IField field = sa.getField();
 		for( IPhysical vessel: radar ){
 			if( vessel.equals( reference ))
 				continue;
