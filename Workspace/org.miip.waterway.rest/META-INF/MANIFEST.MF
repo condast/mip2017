@@ -40,3 +40,4 @@ Service-Component: OSGI-INF/org.miip.waterway.rest.service.composite.provider.xm
  OSGI-INF/org.miip.waterway.rest.service.xml
 Require-Bundle: org.eclipse.equinox.preferences
 Export-Package: org.miip.waterway.rest.model
+Automatic-Module-Name: org.miip.waterway.rest

@@ -19,3 +19,4 @@ Export-Package: org.miip.waterway.model,
  org.miip.waterway.model.eco,
  org.miip.waterway.radar,
  org.miip.waterway.sa
+Automatic-Module-Name: org.miip.waterway
