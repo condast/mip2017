@@ -3,9 +3,13 @@ package test.miip.pond;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import test.miip.pond.suite.TestSuite;
+
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
+
+	private TestSuite suite = TestSuite.getInstance();
 
 	static BundleContext getContext() {
 		return context;
@@ -17,6 +21,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		suite.runTests();
 	}
 
 	/*

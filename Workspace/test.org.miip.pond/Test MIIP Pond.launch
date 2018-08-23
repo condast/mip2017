@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.EquinoxLauncher">
+<booleanAttribute key="append.args" value="true"/>
+<booleanAttribute key="automaticAdd" value="true"/>
+<booleanAttribute key="automaticValidate" value="true"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/Test MIIP Pond"/>
+<booleanAttribute key="default" value="true"/>
+<booleanAttribute key="default_auto_start" value="true"/>
+<intAttribute key="default_start_level" value="4"/>
+<stringAttribute key="deselected_workspace_plugins" value="org.apache.oltu,org.condast.commons.authentication,org.condast.commons.authentication.ui,org.condast.commons.bugzilla,org.condast.commons.legal,org.condast.commons.na,org.condast.commons.persistence,org.condast.commons.tinkerpop,org.condast.commons.ui,org.condast.js.commons,org.condast.reporting,org.condast.symbiotic,org.condast.wph,org.condast.wph.builder,org.condast.wph.core,org.condast.wph.rest,org.condast.wph.ui,org.google.geo.mapping,org.google.geo.mapping.ui,org.miip.rwt,org.miip.waterway.designer,org.miip.waterway.rest,org.miip.waterway.ui,org.openlayer.map,org.satr.arnac.authentication,org.satr.arnac.core,org.satr.arnac.dashboard,org.satr.arnac.management,org.satr.arnac.rest,org.satr.arnac.ui,org.satr.usvrdm.simulator,test.condast.commons.messaging,test.openlayers.map,test.org.condast.rbc,test.satr.arnac"/>
+<booleanAttribute key="includeOptional" value="true"/>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Declipse.ignoreApp=true -Dosgi.noShutdown=true"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<stringAttribute key="target_bundles" value="com.google.gson@default:default,javax.activation@default:default,javax.servlet*3.1.0.20170128@default:default,javax.transaction*1.1.1.v201105210645@default:false,javax.ws.rs@default:default,javax.xml.bind@default:default,javax.xml@default:default,org.apache.felix.gogo.command@default:default,org.apache.felix.gogo.runtime@default:default,org.apache.felix.gogo.shell@default:default,org.eclipse.core.jobs@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.console@default:default,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.registry@default:default,org.eclipse.osgi.services@default:default,org.eclipse.osgi@-1:true,org.eclipse.rap.rwt@default:default"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useCustomFeatures" value="false"/>
+<booleanAttribute key="useDefaultConfigArea" value="true"/>
+<stringAttribute key="workspace_bundles" value="org.condast.commons.autonomy@default:default,org.condast.commons.data@default:default,org.condast.commons.messaging@default:default,org.condast.commons.test@default:default,org.condast.commons@default:default,org.miip.pond@default:default,org.miip.waterway@default:default,test.org.miip.pond@default:default"/>
+</launchConfiguration>

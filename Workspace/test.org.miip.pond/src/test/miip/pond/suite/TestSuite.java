@@ -2,8 +2,11 @@ package test.miip.pond.suite;
 
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.env.EnvironmentEvent;
+import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.test.core.AbstractTestSuite;
 import org.condast.commons.test.core.ITestEvent;
+import org.miip.waterway.model.IVessel;
 
 import test.miip.pond.core.PondEnvironment;
 
@@ -15,7 +18,19 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 	
 	private static TestSuite suite = new TestSuite();
 	PondEnvironment env;
+	
+	boolean completed;
 
+	private IEnvironmentListener<IVessel> listener = new IEnvironmentListener<IVessel>() {
+
+		@Override
+		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
+			if( completed )
+				return;
+			completed = EventTypes.OUT_OF_BOUNDS.equals( event.getType());
+		}
+	};
+	
 	private static Logger logger = Logger.getLogger( TestSuite.class.getName() );
 
 	
@@ -29,6 +44,7 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 
 	public void runTests(  ){
 		try {
+			this.completed = false;
 			testSuite();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,8 +76,16 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 	private void testEnvironment( PondEnvironment env ){
 		logger.info("START POSITION: " + env.getName());
 		StringBuffer buffer = new StringBuffer();
-		env.execute(1000);
+		env.addListener(listener);
+		env.setActive(true);
+		while(!completed ) {
+			boolean active = env.execute(1000);
+			if(!completed && !active)
+				completed = true;
+		}
+		env.removeListener(listener);
 		logger.info( buffer.toString());
+		logger.info("TEST COMPLETE");
 	}
 
 	@Override
