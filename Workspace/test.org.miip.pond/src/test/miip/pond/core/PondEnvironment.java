@@ -39,17 +39,27 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		pe = this; 
 		this.clear();
 	}
-
+	
+	@Override
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
-		LatLng latlng = field.transform(0, field.getWidth()/2);
-		reference = new Vessel( "Reference", latlng, 90, 10);//bearing east, 10 km/h
+	}
+
+
+	public void clear( int refAngle, int otherAngle, int distance) {
+		this.clear();
+		double angle = Math.toRadians(refAngle);
+		double bearing = Math.toRadians(( refAngle + 180  )%360);
+		LatLng latlng = LatLngUtils.extrapolate(field.getCentre(), angle, distance);
+		reference = new Vessel( "Reference", latlng, bearing, 10);//bearing east, 10 km/h
 		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
 		reference.init(ca);
 		
 		this.others.clear();
-		latlng = field.transform( field.getWidth()/2 - 10,0);
-		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
+		angle = Math.toRadians( otherAngle);
+		bearing = Math.toRadians(( otherAngle + 180  )%360);
+		latlng = LatLngUtils.extrapolate( field.getCentre(), angle, distance);
+		IVessel other = new Vessel( "Other", latlng, bearing, 10 );//bearing south, 10 km/h
 		ca = new DefaultCollisionAvoidance( other); 
 		other.init(ca);
 		this.others.add(other);

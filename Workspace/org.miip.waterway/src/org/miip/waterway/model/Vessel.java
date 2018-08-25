@@ -10,7 +10,7 @@ import org.condast.commons.data.latlng.LatLngUtils;
 public class Vessel extends AbstractModel implements IVessel {
 
 	private double speed;
-	private double bearing;
+	private double bearing;//rad
 	private float length;//mtr
 	
 	private ICollisionAvoidance<IVessel, IPhysical> ca;
@@ -23,6 +23,12 @@ public class Vessel extends AbstractModel implements IVessel {
 		this( name, location.getLatitude(), location.getLongitude(), bearing, speed );
 	}
 	
+	/**
+	 * Create a vessel with the given name, bearing (radians) and speed
+	 * @param location
+	 * @param bearing
+	 * @param speed
+	 */
 	public Vessel( LatLng location, double bearing, double speed) {
 		super( IPhysical.ModelTypes.VESSEL, location );
 		this.speed = speed;
@@ -66,12 +72,12 @@ public class Vessel extends AbstractModel implements IVessel {
 		return ca.getSituationalAwareness();
 	}
 	
-	public ICollisionAvoidance getCollisionAvoidance() {
+	public ICollisionAvoidance<IVessel, IPhysical> getCollisionAvoidance() {
 		return ca;
 	}
 
 	//@Override
-	public void setCollisionAvoidance(ICollisionAvoidance ca) {
+	public void setCollisionAvoidance(ICollisionAvoidance<IVessel, IPhysical> ca) {
 		this.ca = ca;
 	}
 

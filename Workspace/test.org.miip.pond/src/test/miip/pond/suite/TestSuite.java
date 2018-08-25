@@ -61,7 +61,11 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 			env.clear();
 			switch( test ){
 			case TEST_COLLISION_AVOIDANCE:
-				testEnvironment( env);
+				for( int i=0; i< 360; i++ ) {
+					this.completed = false;
+					for( int j=0; j< 360; j++ )		
+						testEnvironment( env, i, j);
+				}
 				break;
 			default:
 				break;
@@ -73,8 +77,9 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 		logger.info("Tests completed");
 	}
 
-	private void testEnvironment( PondEnvironment env ){
+	private void testEnvironment( PondEnvironment env, int refAngle, int otherAngle ){
 		logger.info("START POSITION: " + env.getName());
+		env.clear(refAngle, otherAngle, 100);
 		StringBuffer buffer = new StringBuffer();
 		env.addListener(listener);
 		env.setActive(true);
