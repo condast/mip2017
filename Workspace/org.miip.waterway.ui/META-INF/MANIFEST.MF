@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.servlet;version="3.0.0",
+ org.condast.commons,
  org.condast.commons.autonomy.env,
  org.condast.commons.autonomy.model,
  org.condast.commons.autonomy.sa,

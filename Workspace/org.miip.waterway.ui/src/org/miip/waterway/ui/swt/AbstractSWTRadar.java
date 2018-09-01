@@ -191,7 +191,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 	}
 
 	protected Color getColour( double distance ){
-		int colour = SWT.COLOR_RED;
+		int colour = SWT.COLOR_GREEN;
 		if( sa == null)
 			return getDisplay().getSystemColor( colour );
 		
@@ -224,6 +224,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 		this.sa = sa;
 		if( sa != null ) {
 			this.sa.addlistener(slistener);
+			radar.setSensitivity((int) sa.getCriticalDistance());
 			if( sa.getField() != null )
 				radar.setRange( (int) sa.getField().getLength());
 		}

@@ -76,6 +76,11 @@ public class Vessel extends AbstractModel implements IVessel {
 		return ca;
 	}
 
+	@Override
+	public boolean hasCollisionAvoidance() {
+		return (this.ca != null ) &&( this.ca.isActive());
+	}
+
 	//@Override
 	public void setCollisionAvoidance(ICollisionAvoidance<IVessel, IPhysical> ca) {
 		this.ca = ca;

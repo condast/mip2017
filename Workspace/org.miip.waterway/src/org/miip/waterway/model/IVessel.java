@@ -11,6 +11,12 @@ public interface IVessel extends IAutonomous<IPhysical>
 
 	void init(ICollisionAvoidance<IVessel, IPhysical> ca);
 	
+	/**
+	 * Returns true if the vessel has collision avoidance
+	 * @return
+	 */
+	public boolean hasCollisionAvoidance();
+	
 	double getTurn(long timemsec);
 
 	double getMinTurnDistance();

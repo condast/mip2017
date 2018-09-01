@@ -4,9 +4,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Motion;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -61,6 +63,19 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 			waypoint = new Motion( new LatLng( latitude, longitude ), angle, distance );
 		}
 		return waypoint;
+	}
+	
+	@Override
+	protected Color getColour(double distance) {
+		int colour = SWT.COLOR_GREEN;
+		if( super.getInput() == null)
+			return super.getColour(distance);
+		ISituationalAwareness<IVessel, IPhysical> sa = super.getInput();
+		int sensitivity = (int)sa.getCriticalDistance()*5;
+		if( distance < sensitivity)
+			colour = SWT.COLOR_DARK_RED;
+		return getDisplay().getSystemColor( colour );
+		//return super.getColour(distance);
 	}
 
 	@Override

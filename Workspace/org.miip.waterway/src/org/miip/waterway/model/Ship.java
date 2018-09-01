@@ -67,6 +67,11 @@ public class Ship extends AbstractModel implements IVessel{
 		this.ca = ca;
 	}
 
+	@Override
+	public boolean hasCollisionAvoidance() {
+		return (this.ca != null ) &&( this.ca.isActive());
+	}
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#getTurn(long)
 	 */
