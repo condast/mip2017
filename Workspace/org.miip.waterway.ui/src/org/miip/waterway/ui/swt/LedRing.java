@@ -2,13 +2,12 @@ package org.miip.waterway.ui.swt;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.condast.commons.data.latlng.Motion;
-import org.eclipse.swt.SWT;
+import org.condast.commons.range.DoubleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -23,12 +22,14 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	
 	private int leds;
 	
-	private Map<Integer, Motion> radar;
+	private Map<Integer, Double> radar;
+	
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public LedRing(Composite parent, int style ) {
 		super(parent, style);
 		this.leds = NR_OF_LEDS;
-		radar = new TreeMap<Integer, Motion>( );
+		radar = new TreeMap<>( );
 	}
 	
 	@Override
@@ -37,45 +38,75 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		super.onDrawStart(gc);
 	}
 
-	@Override
-	protected void drawObject( GC gc, IPhysical ship ){
-		IVessel reference = (IVessel) getInput().getReference(); 
-		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
-		int key = ( int )( this.leds * angle /( 2*Math.PI ));
-		Motion waypoint = calculate(key, ship );
-		this.radar.put(key, waypoint);
+	public int getKey( double angle ) {
+		int key = ( int )((double) this.leds * angle /( 2*Math.PI ));
+		int range = isInRange(key, angle);
+		return (this.leds + key + range ) % this.leds;
 	}
-
-	public Motion calculate( int key, IPhysical phys) {
-		IVessel reference = (IVessel) getInput().getReference(); 
-		double latitude = 0; double longitude = 0;
-		double angle = LatLngUtils.getBearing(reference.getLocation(), phys.getLocation());
-		double distance = LatLngUtils.getDistance(reference.getLocation(), phys.getLocation());
-		Motion waypoint = radar.get(key);
-		if( waypoint == null ) {
-			waypoint = new Motion( phys.getLocation(), angle, distance );
-		}else {
-			latitude = ( waypoint.getLocation().getLatitude() + phys.getLocation().getLatitude())/2; 
-			longitude = ( waypoint.getLocation().getLongitude() + phys.getLocation().getLongitude())/2; 
-			angle += ( waypoint.getBearing() + angle )/2;
-			if( distance > waypoint.getDistance() )
-				distance = waypoint.getDistance();
-			waypoint = new Motion( new LatLng( latitude, longitude ), angle, distance );
-		}
-		return waypoint;
+	
+	protected void setKey( int key, double distance ) {
+		Double dist = this.radar.get(key);
+		if(( dist != null ) && ( dist < distance ))
+			distance = dist;
+		this.radar.put(key, distance);		
 	}
 	
 	@Override
-	protected Color getColour(double distance) {
-		int colour = SWT.COLOR_GREEN;
+	protected void drawObject( GC gc, IPhysical ship ){
+		IVessel reference = (IVessel) getInput().getReference(); 
+		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
+		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
+		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
+		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
+		int key = getKey( angle );
+		setKey(key, distance);
+		logger.fine("Key:" + key + "; Angle of vessel: " + angle);
+		if( distance < reference.getSituationalAwareness().getCriticalDistance() *3) {
+			int lowkey = (this.leds + key - 1)%this.leds;
+			setKey(lowkey, distance);
+			int highkey = (this.leds + key + 1)%this.leds;
+			setKey(highkey, distance);
+			if( distance < reference.getSituationalAwareness().getCriticalDistance() *2) {
+				lowkey = (this.leds + key - 2)%this.leds;
+				setKey(lowkey, distance);
+				highkey = (this.leds + key + 2)%this.leds;
+				setKey(highkey, distance);
+			}
+		}
+	}
+
+	protected int isInRange( int key, double angle ) {
+		double step = 2*Math.PI/this.leds;
+		double ref = key*2*Math.PI/this.leds;
+		DoubleRange range = new DoubleRange(ref-step, ref+step);
+		return range.compareTo(angle);
+	}
+	
+	protected Color getColour( int key, double distance) {
+		RadarColours colour = RadarColours.GREEN;
 		if( super.getInput() == null)
 			return super.getColour(distance);
 		ISituationalAwareness<IVessel, IPhysical> sa = super.getInput();
-		int sensitivity = (int)sa.getCriticalDistance()*5;
-		if( distance < sensitivity)
-			colour = SWT.COLOR_DARK_RED;
-		return getDisplay().getSystemColor( colour );
-		//return super.getColour(distance);
+		int sensitivity = (int)(distance/sa.getCriticalDistance());
+		logger.fine("Comparing distance: " + distance + " with sensitivity: " + sensitivity);
+		switch( sensitivity) {
+		case 6:
+			colour = RadarColours.getColour( RadarColours.DARK_ORANGE.getIndex() );
+			break;
+		case 5:
+		case 4:
+		case 3:
+			colour = RadarColours.getColour( RadarColours.ORANGE.getIndex() );
+			break;
+		case 2:
+		case 1:
+		case 0:
+			colour = RadarColours.getColour( RadarColours.RED.getIndex());
+			break;
+		default:
+			break;
+		}
+		return RadarColours.getColour(getDisplay(), colour);
 	}
 
 	@Override
@@ -87,13 +118,12 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		Color background = gc.getBackground();
 		double distance = super.getRange() + 10;
 		for( int i=0; i< this.leds; i++ ) {
-			Motion waypoint = radar.get( i );
-			if( waypoint != null )
-				distance = waypoint.getDistance();
+			Double value = radar.get( i );
+			distance = ( value == null )?Double.MAX_VALUE: value;
 			double phi = i * 2 * Math.PI/this.leds;
 			double x = length * Math.sin( phi );
 			double y = length * Math.cos( phi );
-			gc.setBackground( getColour( distance ));
+			gc.setBackground( getColour( i, distance ));
 			gc.fillOval((int)(centrex + x), (int)(centrey-y), RADIUS, RADIUS );			
 		}
 		gc.setBackground(background);

@@ -299,7 +299,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 								@Override
 								public void run() {
-									layout();
+									requestLayout();
 								}		
 							});
 							break;
@@ -352,6 +352,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 			try{
 				switch( event.getType() ){
 				case INITIALSED:
+					radarGroup.setInput(event.getData().getSituationalAwareness());
 					break;
 				case OUT_OF_BOUNDS:
 					getDisplay().asyncExec( new Runnable() {

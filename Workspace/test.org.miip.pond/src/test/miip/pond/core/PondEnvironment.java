@@ -63,6 +63,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		ca = new DefaultCollisionAvoidance( other); 
 		other.init(ca);
 		this.others.add(other);
+		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this,  EventTypes.INITIALSED,  this.reference));
 	}
 
 	public IVessel getInhabitant() {

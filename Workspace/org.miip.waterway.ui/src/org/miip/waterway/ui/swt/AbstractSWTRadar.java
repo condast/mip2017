@@ -31,6 +31,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 		GREEN( SWT.COLOR_GREEN ),
 		YELLOW( SWT.COLOR_YELLOW ),
 		ORANGE( SWT.COLOR_RED | SWT.COLOR_YELLOW ),
+		DARK_ORANGE( SWT.COLOR_RED | SWT.COLOR_YELLOW | 1),
 		RED( SWT.COLOR_RED );
 		
 		private int index;
@@ -61,6 +62,8 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 			}
 			if( RadarColours.ORANGE.getIndex() == index )
 				colour = RadarColours.ORANGE;
+			else if( RadarColours.DARK_ORANGE.getIndex() == index )
+				colour = RadarColours.DARK_ORANGE;
 			return colour;
 		}
 		
@@ -69,6 +72,8 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 			switch( rc ){
 			case ORANGE:
 				colour = new Color (device, 225, 113, 0);
+			case DARK_ORANGE:
+				colour = new Color (device, 215, 70, 0);
 			default:
 				colour = device.getSystemColor( rc.getIndex());
 				break;

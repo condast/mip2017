@@ -137,7 +137,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 */
 	@Override
 	public void clear(){
-		waterway.clear();
+		if( waterway != null)
+			waterway.clear();
 		this.manual = false;
 	}
 	
