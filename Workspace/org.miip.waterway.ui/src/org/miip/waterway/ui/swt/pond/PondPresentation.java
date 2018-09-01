@@ -6,6 +6,8 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.ui.images.MIIPImages;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
@@ -46,6 +48,8 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 
 	private IReferenceEnvironment<IVessel, IPhysical> environment;
 	
+	private Map<IVessel, Point> points;
+	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
 	/**
@@ -55,6 +59,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	 */
 	public PondPresentation(Composite parent, Integer style) {
 		super(parent, style);
+		points = new HashMap<>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener(listener);
 	}
@@ -99,13 +104,14 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 			ScalingUtils su = new ScalingUtils( this, this.environment.getField());
 			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
 				su.scaleToCanvas(vessel.getLocation());
+			Color color = gc.getForeground();
+			drawLine(gc, vessel, point);
 			drawImage( gc, point, MIIPImages.Images.SHIP);
 
 			if(!environment.isInitialsed() )
 				return;
 
 			//The raster
-			Color color = gc.getForeground();
 			gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
 
 			IField field = environment.getField();
@@ -133,13 +139,23 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 				IVessel other = (IVessel) phobj;
 				logger.fine("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
 				MIIPImages.Images img = ( other.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
-				drawImage(gc, su.scaleToCanvas( phobj.getLocation() ), img );
+				Point otherPoint = su.scaleToCanvas( phobj.getLocation() );
+				drawLine(gc, other, otherPoint);
+				drawImage(gc, otherPoint, img );
 			}
 		}catch( Exception ex ) {
 			ex.printStackTrace();
 		}
 
 		gc.dispose();
+	}
+
+	protected void drawLine( GC gc, IVessel vessel, Point point ){
+		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_BLUE ));
+		Point current = points.get(vessel);
+		if( current != null )
+			gc.drawLine(current.x, current.y, point.x, point.y);
+		points.put(vessel, point);
 	}
 
 	protected Image drawImage( GC gc, Point point, MIIPImages.Images image ){

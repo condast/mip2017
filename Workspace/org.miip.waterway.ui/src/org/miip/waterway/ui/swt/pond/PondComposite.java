@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -20,9 +19,6 @@ import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -32,10 +28,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.eco.MIIPEnvironment;
-import org.miip.waterway.ui.dialog.SettingsDialog;
+import org.miip.waterway.ui.banner.Banner;
 import org.miip.waterway.ui.factory.ICompositeFactory;
-import org.miip.waterway.ui.images.MIIPImages;
-import org.miip.waterway.ui.images.MIIPImages.Images;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
@@ -45,12 +39,6 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	public static enum Tools{
 		SETTINGS
 	}
-
-	public static final String S_MIIP_URL = "http://www.maritiemland.nl/news/startbijeenkomst-maritieme-innovatie-impuls-projecten-2017/";
-	public static final String S_NMT_URL = "http://www.maritiemland.nl/innovatie/projecten/maritieme-innovatie-impuls-projecten/";
-	public static final String S_KC_DHS_URL = "https://www.hogeschoolrotterdam.nl/onderzoek/kenniscentra/duurzame-havenstad/over-het-kenniscentrum/";
-	public static final String S_RDM_COE_URL = "http://www.rdmcoe.nl//";
-	public static final String S_CONDAST_URL = "http://www.condast.com/";
 
 	private SessionHandler handler;
 
@@ -62,9 +50,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private Text text_lng;
 	private Text text_lat;
 	private Label lblHits;
-
-	private Collection<ICompositeFactory> factories;
-	private Composite frontend;
+	private Banner banner;
 	
 	private PlayerComposite<MIIPEnvironment> playerbar;
 
@@ -84,16 +70,13 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	public PondComposite(Composite parent, int style) {
 		super(parent, style);
 		this.createComposite(parent, style);
-		this.frontend = this;
-
-		this.factories = new ArrayList<ICompositeFactory>();
 		this.handler = new SessionHandler(getDisplay());
 	}
 
 	protected void createComposite( Composite parent, int style ){
 		setLayout(new GridLayout(2, false));
 
-		createImageBar(this, style);
+		banner = new Banner( this, SWT.FULL_SELECTION);
 		canvas = new PondPresentation(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 
@@ -194,62 +177,8 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 
-	private void createImageBar(Composite parent, int style) {
-		Composite comp = new Composite( parent, SWT.NONE );
-		comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false ));
-		comp.setLayout( new GridLayout( 1, false));
-		Button button = new Button( comp, SWT.NONE );
-		button.setImage( MIIPImages.getImage( Images.SETTINGS ));
-		button.setLayoutData( new GridData(SWT.FILL, SWT.TOP, true, true));
-		button.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				SettingsDialog dialog = new SettingsDialog( frontend, factories.toArray( new ICompositeFactory[ factories.size()]) );
-				if( Dialog.OK == dialog.open()){
-					
-				}
-				super.widgetSelected(e);
-			}			
-		});
-		createImageButton( comp, Images.MIIP, S_MIIP_URL );
-		createImageButton( comp, Images.NMT, S_NMT_URL );
-		createImageButton( comp, Images.RDM_COE, S_RDM_COE_URL );
-		createImageButton( comp, Images.KC_DHS, S_KC_DHS_URL );
-		createImageButton( comp, Images.CONDAST, S_CONDAST_URL );
-	}
-
-	private Button createImageButton( Composite parent, Images image, final String url ){
-		Button button = new Button(parent, SWT.FLAT);
-		button.setImage( MIIPImages.getImage( image ));
-		button.addSelectionListener( new SelectionAdapter(){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Display.getCurrent().asyncExec( new Runnable(){
-
-					@Override
-					public void run() {
-						try{
-							UrlLauncher launcher = RWT.getClient().getService( UrlLauncher.class );
-							launcher.openURL( url );
-						}
-						catch( Exception ex ){
-							ex.printStackTrace();
-						}
-					}					
-				});
-			}
-		});
-		GridData nmtData = new GridData(SWT.FILL, SWT.TOP, true, true);
-		button.setLayoutData(nmtData);
-		return button;
-	}
-
 	public void setInput( Collection<ICompositeFactory> factories ){
-		this.factories = factories;
+		banner.setFactories(factories);
 	}
 
 	@Override
