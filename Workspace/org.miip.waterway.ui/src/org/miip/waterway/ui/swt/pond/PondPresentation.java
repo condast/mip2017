@@ -178,7 +178,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	}
 
 	protected void drawOval( GC gc, IVessel vessel, Point point ){
-		double crit = vessel.getSituationalAwareness().getCriticalDistance();
+		double crit = !vessel.hasCollisionAvoidance()? 0: vessel.getSituationalAwareness().getCriticalDistance();
 		ScalingUtils su = new ScalingUtils( this, this.environment.getField());
 		int radius = su.scaleXToDisplay((int)crit); 
 		int transform = (int)( radius/2);
