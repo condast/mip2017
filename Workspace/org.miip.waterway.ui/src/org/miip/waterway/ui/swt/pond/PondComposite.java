@@ -351,6 +351,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
 			try{
 				switch( event.getType() ){
+				case PROCEED:
 				case INITIALSED:
 					radarGroup.setInput(event.getData().getSituationalAwareness());
 					break;

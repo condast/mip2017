@@ -60,7 +60,7 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		int key = getKey( angle );
 		setKey(key, distance);
-		logger.fine("Key:" + key + "; Angle of vessel: " + angle);
+		logger.info("Key:" + key + "; Angle of vessel: " + angle + ", distance = " + distance);
 		if( distance < reference.getSituationalAwareness().getCriticalDistance() *3) {
 			int lowkey = (this.leds + key - 1)%this.leds;
 			setKey(lowkey, distance);
