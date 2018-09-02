@@ -224,14 +224,14 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 			reference.move(time);
 			if( !pe.getField().isInField(reference.getLocation(), 1)) {
 				proceed();
-				//notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.OUT_OF_BOUNDS, reference));
 			}
 			for(IPhysical other: others ) {
 				IVessel vessel = (IVessel) other;
 				vessel.move(time);
+				if( reference.getSituationalAwareness().isInCriticalDistance(vessel.getLocation()))
+					notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
 				if( !pe.getField().isInField(vessel.getLocation(), 1)) {
 					proceed();
-					//notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.OUT_OF_BOUNDS, vessel));
 				}
 			}
 			super.sleep(time);

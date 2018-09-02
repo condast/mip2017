@@ -354,6 +354,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 				case INITIALSED:
 					radarGroup.setInput(event.getData().getSituationalAwareness());
 					break;
+				case COLLISION_DETECT:
 				case OUT_OF_BOUNDS:
 					getDisplay().asyncExec( new Runnable() {
 

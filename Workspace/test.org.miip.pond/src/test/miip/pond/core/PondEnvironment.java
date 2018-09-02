@@ -22,6 +22,10 @@ import org.miip.waterway.model.eco.PondSituationalAwareness;
 
 public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical>{
 
+	public static final int DEFAULT_START_ANGLE = 90;
+	public static final int DEFAULT_OFFSET = 90;
+
+	private int proceedCounter, countRef;
 	private Field field;
 	private IVessel reference;
 	private List<IPhysical> others;
@@ -64,6 +68,35 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		other.init(ca);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this,  EventTypes.INITIALSED,  this.reference));
+	}
+
+	protected void proceed() {
+		this.others.clear();
+		this.proceedCounter++;
+		int countOther = proceedCounter%360;
+		if( countOther == 0)
+			countRef++;
+		double angle = field.getAngle() + countRef;
+		double bearing = (180+angle)%360;
+		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
+		LatLng latlng = LatLngUtils.extrapolate( field.getCentre(), bearing, half );
+		if( !field.isInField(latlng, 1))
+			logger.info("out of bounds");
+		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
+		reference.init(ca);
+
+		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
+		bearing = (180+angle)%360;
+		half = (int) (field.getWidth()/2);
+		latlng = LatLngUtils.extrapolate( field.getCentre(), bearing, half);
+		if( !field.isInField(latlng, 1))
+			logger.info("out of bounds");
+		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h
+		ca = new DefaultCollisionAvoidance( other); 
+		other.init(ca);
+		this.others.add(other);
+		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}
 
 	public IVessel getInhabitant() {
@@ -130,12 +163,16 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 	public boolean execute( int time ) {
 		reference.move(time);
 		if( !pe.getField().isInField(reference.getLocation(), 1))
-			notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.OUT_OF_BOUNDS, reference));
+			proceed();
+			//notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.OUT_OF_BOUNDS, reference));
 		for(IPhysical other: others ) {
 			IVessel vessel = (IVessel) other;
 			vessel.move(time);
-			if( !pe.getField().isInField(vessel.getLocation(), 1))
-				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.OUT_OF_BOUNDS, vessel));
+			if( reference.getSituationalAwareness().isInCriticalDistance(vessel.getLocation()))
+				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
+			if( !pe.getField().isInField(vessel.getLocation(), 1)) {
+				proceed();
+			}
 			double distance = LatLngUtils.distance(reference.getLocation(), other.getLocation());
 			logger.info( "Distance: " + distance);
 			if( distance < 5 ) {
