@@ -18,8 +18,8 @@
         <project-root>P:/GitHub/org.miip</project-root>
         <workspace-root>P:/Windows/Condast/Workspace/org.miip</workspace-root>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
-        <neon-update-repo.url>http://download.eclipse.org/eclipse/updates/4.6</neon-update-repo.url>
-        <rap-repo.url>http://download.eclipse.org/rt/rap/3.1/</rap-repo.url>
+        <eclipse-update-repo.url>http://download.eclipse.org/eclipse/updates/4.7</eclipse-update-repo.url>
+        <rap-repo.url>http://download.eclipse.org/rt/rap/3.4/</rap-repo.url>
         <condast-commons>file:${generics}/org.condast.commons/Workspace/</condast-commons>
         <condast-js>file:${generics}/org.condast.js/Workspace/</condast-js>
         <condast-symbiot>file:${generics}/org.condast.symbiotic/Workspace/</condast-symbiot>
@@ -28,8 +28,8 @@
 
     <repositories>
         <repository>
-            <id>neon-update</id>
-            <url>${neon-update-repo.url}</url>
+            <id>eclipse-update</id>
+            <url>${eclipse-update-repo.url}</url>
             <layout>p2</layout>
         </repository>
         <repository>

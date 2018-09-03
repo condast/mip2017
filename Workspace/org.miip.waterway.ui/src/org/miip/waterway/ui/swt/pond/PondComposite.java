@@ -349,30 +349,30 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 		@Override
 		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
-			try{
-				switch( event.getType() ){
-				case PROCEED:
-				case INITIALSED:
-					radarGroup.setInput(event.getData().getSituationalAwareness());
-					break;
-				case COLLISION_DETECT:
-				case OUT_OF_BOUNDS:
-					getDisplay().asyncExec( new Runnable() {
+			getDisplay().asyncExec( new Runnable() {
 
-						@Override
-						public void run() {
+				@Override
+				public void run() {
+					try{
+						switch( event.getType() ){
+						case PROCEED:
+						case INITIALSED:
+							radarGroup.setInput(event.getData().getSituationalAwareness());
+							break;
+						case COLLISION_DETECT:
+						case OUT_OF_BOUNDS:
 							playerbar.stop();
+							break;
+						default:
+							addData(event);
+							break;
 						}
-					});
-					break;
-				default:
-					addData(event);
-					break;
+					}
+					catch( Exception ex ){
+						ex.printStackTrace();
+					}
 				}
-			}
-			catch( Exception ex ){
-				ex.printStackTrace();
-			}
+			});
 		}	
 	}
 }
