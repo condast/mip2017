@@ -8,6 +8,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.range.DoubleRange;
+import org.condast.commons.ui.radar.IRadarColours;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -32,6 +33,15 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		radar = new TreeMap<>( );
 	}
 	
+	
+	@Override
+	public void setInput(ISituationalAwareness<IVessel, IPhysical> sa) {
+		super.setInput(sa);
+		if( sa != null )
+			setSensitivity((int)(10*sa.getCriticalDistance()));
+	}
+
+
 	@Override
 	protected void onDrawStart(GC gc) {
 		this.radar.clear();
@@ -60,17 +70,17 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		int key = getKey( angle );
 		setKey(key, distance);
-		logger.info("Key:" + key + "; Angle of vessel: " + angle + ", distance = " + distance);
+		logger.fine("Key:" + key + "; Angle of vessel: " + angle + ", distance = " + distance);
 		if( distance < reference.getSituationalAwareness().getCriticalDistance() *3) {
 			int lowkey = (this.leds + key - 1)%this.leds;
-			setKey(lowkey, distance);
+			setKey(lowkey, 1.2*distance);
 			int highkey = (this.leds + key + 1)%this.leds;
-			setKey(highkey, distance);
+			setKey(highkey, 1.2*distance);
 			if( distance < reference.getSituationalAwareness().getCriticalDistance() *2) {
 				lowkey = (this.leds + key - 2)%this.leds;
-				setKey(lowkey, distance);
+				setKey(lowkey, 1.5*distance);
 				highkey = (this.leds + key + 2)%this.leds;
-				setKey(highkey, distance);
+				setKey(highkey, 1.5*distance);
 			}
 		}
 	}
@@ -83,30 +93,32 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	}
 	
 	protected Color getColour( int key, double distance) {
-		RadarColours colour = RadarColours.GREEN;
+		IRadarColours.RadarColours colour = IRadarColours.RadarColours.GREEN;
 		if( super.getInput() == null)
 			return super.getColour(distance);
 		ISituationalAwareness<IVessel, IPhysical> sa = super.getInput();
-		int sensitivity = (int)(distance/sa.getCriticalDistance());
-		logger.fine("Comparing distance: " + distance + " with sensitivity: " + sensitivity);
+		//int sensitivity = (int)(distance/sa.getCriticalDistance());
+		//logger.fine("Comparing distance: " + distance + " with sensitivity: " + sensitivity);
+		/*
 		switch( sensitivity) {
 		case 6:
-			colour = RadarColours.getColour( RadarColours.DARK_ORANGE.getIndex() );
+			colour = IRadarColours.RadarColours.getColour( IRadarColours.RadarColours.DARK_ORANGE.getIndex() );
 			break;
 		case 5:
 		case 4:
 		case 3:
-			colour = RadarColours.getColour( RadarColours.ORANGE.getIndex() );
+			colour = IRadarColours.RadarColours.getColour( IRadarColours.RadarColours.ORANGE.getIndex() );
 			break;
 		case 2:
 		case 1:
 		case 0:
-			colour = RadarColours.getColour( RadarColours.RED.getIndex());
+			colour = IRadarColours.RadarColours.getColour( IRadarColours.RadarColours.RED.getIndex());
 			break;
 		default:
 			break;
 		}
-		return RadarColours.getColour(getDisplay(), colour);
+		*/
+		return IRadarColours.RadarColours.getColour(getDisplay(), getSensitivity(), sa.getCriticalDistance(), distance);
 	}
 
 	@Override

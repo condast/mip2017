@@ -137,6 +137,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		setLayout(new GridLayout(2, false));
 
 		banner = new Banner(this, SWT.FULL_SELECTION);
+		banner.setLayoutData( new GridData(SWT.TOP,  SWT.FILL, false, true ));
 		canvas = new MIIPPresentation(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 

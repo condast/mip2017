@@ -237,9 +237,9 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 	}
 
 	public void refresh(){
-		if( Display.getCurrent().isDisposed() )
+		if(( getDisplay() == null ) || getDisplay().isDisposed() )
 			return;
-		Display.getCurrent().asyncExec( new Runnable(){
+		getDisplay().asyncExec( new Runnable(){
 
 			@Override
 			public void run() {
