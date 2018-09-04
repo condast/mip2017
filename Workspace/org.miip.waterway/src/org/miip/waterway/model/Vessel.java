@@ -13,6 +13,11 @@ public class Vessel extends AbstractModel implements IVessel {
 	private double bearing;//rad
 	private float length;//mtr
 	
+	/**
+	 * Needed for awareness of its environment
+	 * @return
+	 */
+	private ISituationalAwareness<IVessel, IPhysical> sa;
 	private ICollisionAvoidance<IVessel, IPhysical> ca;
 
 	public Vessel(String name, double latitude, double longitude, double bearing, double speed) {
@@ -37,7 +42,8 @@ public class Vessel extends AbstractModel implements IVessel {
 	}
 	
 	@Override
-	public void init( ICollisionAvoidance<IVessel, IPhysical> ca ) {
+	public void init( ISituationalAwareness<IVessel, IPhysical> sa, ICollisionAvoidance<IVessel, IPhysical> ca ) {
+		this.sa = sa;
 		this.ca = ca;
 	}
 
@@ -69,11 +75,22 @@ public class Vessel extends AbstractModel implements IVessel {
 
 	//@Override
 	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness(){
-		return ca.getSituationalAwareness();
+		return sa;
 	}
 	
 	public ICollisionAvoidance<IVessel, IPhysical> getCollisionAvoidance() {
 		return ca;
+	}
+
+	@Override
+	public double getCriticalDistance() {
+		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();		
+	}
+
+	@Override
+	public boolean isInCriticalDistance( IPhysical physical ) {
+		double critical = ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
+		return LatLngUtils.getDistance(this.getLocation(), physical.getLocation()) <= critical;
 	}
 
 	@Override

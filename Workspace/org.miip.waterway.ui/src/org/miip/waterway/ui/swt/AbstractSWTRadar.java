@@ -229,7 +229,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 		this.sa = sa;
 		if( sa != null ) {
 			this.sa.addlistener(slistener);
-			radar.setSensitivity((int) sa.getCriticalDistance());
+			radar.setSensitivity((int)(sa.getRange()));
 			if( sa.getField() != null )
 				radar.setRange( (int) sa.getField().getLength());
 		}

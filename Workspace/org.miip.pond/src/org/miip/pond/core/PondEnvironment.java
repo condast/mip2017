@@ -12,31 +12,30 @@ import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.thread.AbstractExecuteThread;
-import org.condast.commons.thread.IExecuteThread;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
 import org.miip.waterway.model.def.MapLocation;
 import org.miip.waterway.model.eco.PondSituationalAwareness;
 
-public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical>, IExecuteThread {
+public class PondEnvironment extends AbstractExecuteThread implements IReferenceEnvironment<IVessel, IPhysical> {
 
 	public static final int DEFAULT_START_ANGLE = 90;
 	public static final int DEFAULT_OFFSET = 90;
+	public static final int DEFAULT_TIME_SECOND = 1000;
 	
 	private int proceedCounter, countRef;
 	private Field field;
 	private IVessel reference;
 	private List<IPhysical> others;
-	
-	private boolean active;
+	private int time;
 	
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	
-	private IExecuteThread thread = new ExecuteThread();
 	private PondEnvironment pe;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -45,7 +44,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		this.others = new ArrayList<IPhysical>();
 		this.listeners = new ArrayList<IEnvironmentListener<IVessel>>();
 		pe = this; 
-		this.active = false;
+		this.time = DEFAULT_TIME_SECOND;
 		this.proceedCounter = 0;
 		this.clear();
 	}
@@ -56,18 +55,30 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		this.proceedCounter = 0;
 		this.countRef = 0;
+		
+		//Vessels have situational awareness and collision avoidance
 		reference = new Vessel( "Reference", latlng, DEFAULT_START_ANGLE, 10);//bearing east, 10 km/h
 		field.setAngle(DEFAULT_START_ANGLE);
-		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
-		reference.init(ca);
+		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		sa.setInput(this);
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
+		reference.init(sa, ca);
 		
 		this.others.clear();
 		latlng = field.transform( field.getLength()/2,0);
 		IVessel other = new Vessel( "Other", latlng, DEFAULT_START_ANGLE + DEFAULT_OFFSET, 10 );//bearing south, 10 km/h
-		ca = new DefaultCollisionAvoidance( other); 
-		other.init(ca);
+		sa = new PondSituationalAwareness( other, field );
+		sa.setInput(this);
+		ca = new DefaultCollisionAvoidance( other, sa); 
+		other.init(sa, ca);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.INITIALSED,  reference));
+	}
+
+	@Override
+	public boolean onInitialise() {
+		clear();
+		return true;
 	}
 
 	protected void proceed() {
@@ -83,8 +94,10 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
-		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
-		reference.init(ca);
+		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		sa.setInput(this);
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
+		reference.init(sa, ca);
 
 		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
 		bearing = (180+angle)%360;
@@ -93,8 +106,10 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h
-		ca = new DefaultCollisionAvoidance( other); 
-		other.init(ca);
+		sa = new PondSituationalAwareness( other, field );
+		sa.setInput(this);
+		ca = new DefaultCollisionAvoidance( other, sa); 
+		other.init(sa, ca);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}
@@ -117,36 +132,6 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 	}
 
 	@Override
-	public boolean isRunning() {
-		return thread.isRunning();
-	}
-
-	@Override
-	public boolean isPaused() {
-		return isPaused();
-	}
-
-	@Override
-	public void start() {
-		thread.start();
-	}
-
-	@Override
-	public void pause() {
-		thread.pause();
-	}
-
-	@Override
-	public void step() {
-		thread.step();
-	}
-
-	@Override
-	public void stop() {
-		thread.stop();
-	}
-
-	@Override
 	public int getTimer() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -163,15 +148,9 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		return true;
 	}
 
-	
 	@Override
 	public boolean isActive() {
-		return active;
-	}
-
-	@Override
-	public void setActive(boolean choice) {
-		this.active = choice;
+		return super.isRunning();
 	}
 
 	@Override
@@ -199,55 +178,39 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		return field.getName();
 	}
 
-	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
-
-		public DefaultCollisionAvoidance( IVessel vessel ) {
-			super( new PondSituationalAwareness( vessel ), true);
-			PondSituationalAwareness psa = (PondSituationalAwareness) super.getSituationalAwareness();
-			psa.setInput( pe);
-			setActive(!( vessel.getName().toLowerCase().equals("other")));
-		}		
-	}
-
-	private class ExecuteThread extends AbstractExecuteThread{
-
-		private int time = 1000;//1 sec
-		
-		@Override
-		public boolean onInitialise() {
-			clear();
-			return true;
+	@Override
+	public void onExecute() {
+		reference.move(time);
+		if( !pe.getField().isInField(reference.getLocation(), 1)) {
+			proceed();
 		}
-
-		@Override
-		public void onExecute() {
-			reference.move(time);
-			if( !pe.getField().isInField(reference.getLocation(), 1)) {
+		for(IPhysical other: others ) {
+			IVessel vessel = (IVessel) other;
+			vessel.move(time);
+			if( reference.isInCriticalDistance(other))
+				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
+			if( !pe.getField().isInField(vessel.getLocation(), 1)) {
 				proceed();
 			}
-			for(IPhysical other: others ) {
-				IVessel vessel = (IVessel) other;
-				vessel.move(time);
-				if( reference.getSituationalAwareness().isInCriticalDistance(vessel.getLocation()))
-					notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
-				if( !pe.getField().isInField(vessel.getLocation(), 1)) {
-					proceed();
-				}
-			}
-			super.sleep(time);
-			notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe));
 		}
+		super.sleep(time);
+		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe));
+	}
 
-		@Override
-		public int getTimer() {
-			// TODO Auto-generated method stub
-			return 0;
+	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
+
+		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ){
+			super( sa, true);
+			setActive(!( vessel.getName().toLowerCase().equals("other")));
 		}
-
+		
+		/**
+		 * Get the critical distance for passage 
+		 */
 		@Override
-		public void setTimer(int timer) {
-			// TODO Auto-generated method stub
-			
-		}	
+		public double getCriticalDistance() {
+			IVessel vessel = (IVessel) getReference(); 
+			return vessel.getMinTurnDistance();
+		}
 	}
 }

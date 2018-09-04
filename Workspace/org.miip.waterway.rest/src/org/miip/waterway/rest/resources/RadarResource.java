@@ -22,8 +22,8 @@ import org.condast.commons.messaging.rest.ResponseCode;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.IRadarData;
+import org.miip.waterway.rest.core.Dispatcher;
 import org.miip.waterway.rest.model.RestRadar;
-import org.miip.waterway.rest.service.Dispatcher;
 import org.miip.waterway.rest.store.RadarOptions;
 
 import com.google.gson.Gson;

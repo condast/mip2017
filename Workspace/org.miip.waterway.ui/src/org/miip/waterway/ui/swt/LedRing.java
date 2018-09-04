@@ -33,15 +33,6 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		radar = new TreeMap<>( );
 	}
 	
-	
-	@Override
-	public void setInput(ISituationalAwareness<IVessel, IPhysical> sa) {
-		super.setInput(sa);
-		if( sa != null )
-			setSensitivity((int)(10*sa.getCriticalDistance()));
-	}
-
-
 	@Override
 	protected void onDrawStart(GC gc) {
 		this.radar.clear();
@@ -71,12 +62,12 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		int key = getKey( angle );
 		setKey(key, distance);
 		logger.fine("Key:" + key + "; Angle of vessel: " + angle + ", distance = " + distance);
-		if( distance < reference.getSituationalAwareness().getCriticalDistance() *3) {
+		if( distance < reference.getCriticalDistance() *3) {
 			int lowkey = (this.leds + key - 1)%this.leds;
 			setKey(lowkey, 1.2*distance);
 			int highkey = (this.leds + key + 1)%this.leds;
 			setKey(highkey, 1.2*distance);
-			if( distance < reference.getSituationalAwareness().getCriticalDistance() *2) {
+			if( distance < reference.getCriticalDistance() *2) {
 				lowkey = (this.leds + key - 2)%this.leds;
 				setKey(lowkey, 1.5*distance);
 				highkey = (this.leds + key + 2)%this.leds;
@@ -118,7 +109,7 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 			break;
 		}
 		*/
-		return IRadarColours.RadarColours.getColour(getDisplay(), getSensitivity(), sa.getCriticalDistance(), distance);
+		return IRadarColours.RadarColours.getColour(getDisplay(), getSensitivity(), sa.getReference().getCriticalDistance(), distance);
 	}
 
 	@Override

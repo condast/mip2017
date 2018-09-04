@@ -103,6 +103,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		protected Widget parseNode( Selection node, Attributes attributes) {
 			Widget  retval = null;
 			String style_str = getAttribute( attributes, AttributeNames.STYLE );
+			String id = getAttribute( attributes, AttributeNames.ID );
 			String name = getAttribute( attributes, AttributeNames.NAME );
 			String url = getAttribute( attributes, AttributeNames.URL );
 			String data = getAttribute( attributes, AttributeNames.DATA );
@@ -125,7 +126,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			case PREFERENCES:
 				break;
 			case STORE:
-				String id = getAttribute( attributes, AttributeNames.ID );
 				super.addPreferenceStore(id, name);
 				break;
 			case FRONTEND:
@@ -201,7 +201,8 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				}else if( super.getCurrentData() instanceof TabFolder ){
 					TabFolder tabcomp = (TabFolder) super.getCurrentData();
 					TabItem item = new TabItem( tabcomp, style );
-					item.setText(name);
+					item.setText( name );
+					item.setData(id);
 					widget = item;
 				}
 				break;

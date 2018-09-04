@@ -19,7 +19,7 @@
 					<input use="org.miip.waterway.model.eco.MIIPEnvironment"/>
 				</composite>
 			</item>
-			<item name="Test">
+			<item id="CollisionAvoidanceDemo" name="Collision Avoidance Demo">
 				<composite class="org.miip.waterway.ui.swt.pond.PondComposite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
