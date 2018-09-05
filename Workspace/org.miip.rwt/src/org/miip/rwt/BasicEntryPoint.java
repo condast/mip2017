@@ -137,13 +137,18 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	};
 		
 	@Override
-    protected void createContents(Composite parent) {
-        preferences = new HashMap<String, IPreferenceStore<String, String>>();
-		parent.setLayout(new FillLayout());       
-        XMLFactoryBuilder builder = new XMLFactoryBuilder( parent, this.getClass());
-        builder.addListener(listener);
-        builder.build();
-        builder.removeListener(listener);
-        preferences.put(S_PREFERENCE_RADAR, builder.getPreferences( S_PREFERENCE_RADAR ));
-   }
+	protected void createContents(Composite parent) {
+		try {
+			preferences = new HashMap<String, IPreferenceStore<String, String>>();
+			parent.setLayout(new FillLayout());       
+			XMLFactoryBuilder builder = new XMLFactoryBuilder( parent, this.getClass());
+			builder.addListener(listener);
+			builder.build();
+			builder.removeListener(listener);
+			preferences.put(S_PREFERENCE_RADAR, builder.getPreferences( S_PREFERENCE_RADAR ));
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+		}
+	}
 }

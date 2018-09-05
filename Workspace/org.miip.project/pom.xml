@@ -65,6 +65,7 @@
     <module>../org.miip.waterway.ui</module>
  	<module>../org.miip.waterway.designer</module>
  	<module>../org.miip.waterway.rest</module>
+ 	<module>../org.miip.pond</module>
     <module>../org.miip.feature</module>
     <module>../org.miip.update</module>
   </modules>

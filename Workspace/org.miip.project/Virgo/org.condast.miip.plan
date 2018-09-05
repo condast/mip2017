@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plan name="org.condast.miip" version="1.0.0" scoped="false" atomic="true"
+        xmlns="http://www.eclipse.org/virgo/schema/plan"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="
+		        http://www.eclipse.org/virgo/schema/plan
+		        http://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd">
+
+     <artifact type="bundle" name="org.condast.symbiotic" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.waterway" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.waterway.ui" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.waterway.rest" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.pond" version="[1.0.0, 2.0.0)"/>
+     <artifact type="bundle" name="org.miip.rwt" version="[1.0.0, 2.0.0)"/>
+</plan>

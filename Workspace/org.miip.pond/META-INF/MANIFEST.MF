@@ -14,7 +14,7 @@ Import-Package: org.condast.commons.autonomy.ca,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
  org.miip.waterway.model.eco,
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework;version="1.7.0",
  org.osgi.service.component.annotations;version="1.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.miip.pond.Activator
