@@ -39,6 +39,8 @@ public class Ship extends AbstractModel implements IVessel{
 	private float length;
 	private float speed;//-20 - 60 km/hour
 	private int bearing; //0-360
+	
+	private ISituationalAwareness<IVessel, IPhysical> sa;
 	private ICollisionAvoidance<IVessel, IPhysical> ca;
 	
 	private double rotation;
@@ -63,7 +65,8 @@ public class Ship extends AbstractModel implements IVessel{
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
 	}
 
-	public void init(ICollisionAvoidance<IVessel, IPhysical>  ca) {
+	public void init(ISituationalAwareness<IVessel, IPhysical> sa, ICollisionAvoidance<IVessel, IPhysical>  ca) {
+		this.sa = sa;
 		this.ca = ca;
 	}
 
@@ -72,6 +75,17 @@ public class Ship extends AbstractModel implements IVessel{
 		return (this.ca != null ) &&( this.ca.isActive());
 	}
 
+	@Override
+	public double getCriticalDistance() {
+		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();		
+	}
+	
+	@Override
+	public boolean isInCriticalDistance( IPhysical physical ) {
+		double critical = ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
+		return LatLngUtils.getDistance(this.getLocation(), physical.getLocation()) <= critical;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#getTurn(long)
 	 */
@@ -170,6 +184,6 @@ public class Ship extends AbstractModel implements IVessel{
 
 	@Override
 	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
-		return ca.getSituationalAwareness();
+		return sa;
 	}
 }

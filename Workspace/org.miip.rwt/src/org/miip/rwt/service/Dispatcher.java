@@ -1,7 +1,6 @@
 package org.miip.rwt.service;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.condast.commons.Utils;
@@ -28,16 +27,6 @@ public class Dispatcher {
 
 	public static Dispatcher getInstance(){
 		return dispatcher;
-	}
-
-	public void activateEnvironment( String id ) {
-		if(( this.environments == null ) ||( this.environments.isEmpty() ))
-			return;
-		Iterator<Map.Entry<String, IEnvironment<IPhysical>>> iterator = this.environments.entrySet().iterator();
-		while( iterator.hasNext() ) {
-			Map.Entry<String, IEnvironment<IPhysical>> entry = iterator.next();
-			entry.getValue().setActive( entry.getKey().equals(id));
-		}
 	}
 
 	public IEnvironment<IPhysical> getActiveEnvironment() {

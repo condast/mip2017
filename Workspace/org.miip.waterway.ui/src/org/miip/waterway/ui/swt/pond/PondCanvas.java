@@ -29,7 +29,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class PondPresentation extends Canvas implements IInputWidget<IReferenceEnvironment<IVessel, IPhysical>>{
+public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnvironment<IVessel, IPhysical>>{
 	private static final long serialVersionUID = 1L;
 
 	public static final int GRIDX = 100;//meters
@@ -60,7 +60,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	 * @param parent
 	 * @param style
 	 */
-	public PondPresentation(Composite parent, Integer style) {
+	public PondCanvas(Composite parent, Integer style) {
 		super(parent, style);
 		points = new HashMap<>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
@@ -158,7 +158,7 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 		int colorCode = vessel.hasCollisionAvoidance()?SWT.COLOR_GREEN: SWT.COLOR_GRAY;
 		if( vessel.hasCollisionAvoidance()) {
 			double minDistance = getMinDistance(vessel, others);
-			if( minDistance < vessel.getSituationalAwareness().getCriticalDistance())
+			if( minDistance < vessel.getCriticalDistance())
 				colorCode = SWT.COLOR_DARK_RED;
 		}
 		gc.setForeground( getDisplay().getSystemColor( colorCode ));
@@ -178,12 +178,20 @@ public class PondPresentation extends Canvas implements IInputWidget<IReferenceE
 	}
 
 	protected void drawOval( GC gc, IVessel vessel, Point point ){
-		double crit = !vessel.hasCollisionAvoidance()? 0: vessel.getSituationalAwareness().getCriticalDistance();
+		if( !vessel.hasCollisionAvoidance())
+			return;
 		ScalingUtils su = new ScalingUtils( this, this.environment.getField());
-		int radius = su.scaleXToDisplay((int)crit); 
+		
+		int radius = su.scaleXToDisplay((int)vessel.getCriticalDistance()); 
 		int transform = (int)( radius/2);
+		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_RED ));
+		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
+
+		radius = (int)(2*su.scaleXToDisplay((int)vessel.getSituationalAwareness().getRange())); 
+		transform = (int)( radius/2);
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_GRAY ));
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
+
 	}
 
 	protected Image drawImage( GC gc, Point point, MIIPImages.Images image ){

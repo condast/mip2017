@@ -82,7 +82,6 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 		env.clear(refAngle, otherAngle, 100);
 		StringBuffer buffer = new StringBuffer();
 		env.addListener(listener);
-		env.setActive(true);
 		while(!completed ) {
 			boolean active = env.execute(1000);
 			if(!completed && !active)

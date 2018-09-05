@@ -1,4 +1,4 @@
-package org.miip.waterway.rest.service;
+package org.miip.waterway.rest.core;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class Dispatcher {
 		return this.environments.get(id);
 	}
 
-	public void addEnvironment( IDesignFactory<IPhysical> factory ){
+	public void addfactory( IDesignFactory<IPhysical> factory ){
 		this.environments.put( factory.getId(), factory.createEnvironment() );
 	}
 

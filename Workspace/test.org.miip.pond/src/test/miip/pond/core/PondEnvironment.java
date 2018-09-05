@@ -12,6 +12,7 @@ import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
@@ -56,16 +57,20 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		double bearing = Math.toRadians(( refAngle + 180  )%360);
 		LatLng latlng = LatLngUtils.extrapolate(field.getCentre(), angle, distance);
 		reference = new Vessel( "Reference", latlng, bearing, 10);//bearing east, 10 km/h
-		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
-		reference.init(ca);
+		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		sa.setInput(this);
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
+		reference.init(sa, ca);
 		
 		this.others.clear();
 		angle = Math.toRadians( otherAngle);
 		bearing = Math.toRadians(( otherAngle + 180  )%360);
 		latlng = LatLngUtils.extrapolate( field.getCentre(), angle, distance);
 		IVessel other = new Vessel( "Other", latlng, bearing, 10 );//bearing south, 10 km/h
-		ca = new DefaultCollisionAvoidance( other); 
-		other.init(ca);
+		sa = new PondSituationalAwareness( other, field );
+		sa.setInput(this);
+		ca = new DefaultCollisionAvoidance( other, sa); 
+		other.init(sa, ca);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this,  EventTypes.INITIALSED,  this.reference));
 	}
@@ -83,8 +88,10 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
-		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
-		reference.init(ca);
+		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		sa.setInput(this);
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa ); 
+		reference.init(sa, ca);
 
 		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
 		bearing = (180+angle)%360;
@@ -93,8 +100,10 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h
-		ca = new DefaultCollisionAvoidance( other); 
-		other.init(ca);
+		sa = new PondSituationalAwareness( other, field );
+		sa.setInput(this);
+		ca = new DefaultCollisionAvoidance( other, sa); 
+		other.init(sa, ca);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}
@@ -111,11 +120,6 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 	@Override
 	public boolean isActive() {
 		return active;
-	}
-
-	@Override
-	public void setActive(boolean choice) {
-		this.active = choice;
 	}
 
 	public Collection<IPhysical> getOthers() {
@@ -152,12 +156,20 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
 
-		public DefaultCollisionAvoidance( IVessel vessel ) {
-			super( new PondSituationalAwareness( vessel ), true);
-			PondSituationalAwareness psa = (PondSituationalAwareness) super.getSituationalAwareness();
-			psa.setInput( pe);
+		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ) {
+			super( sa, true);
 			setActive(!( vessel.getName().toLowerCase().equals("other")));
 		}		
+
+		/**
+		 * Get the critical distance for passage 
+		 */
+		@Override
+		public double getCriticalDistance() {
+			IVessel vessel = (IVessel) getReference(); 
+			return vessel.getMinTurnDistance();
+		}
+		
 	}
 
 	public boolean execute( int time ) {
@@ -168,7 +180,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		for(IPhysical other: others ) {
 			IVessel vessel = (IVessel) other;
 			vessel.move(time);
-			if( reference.getSituationalAwareness().isInCriticalDistance(vessel.getLocation()))
+			if( reference.isInCriticalDistance(vessel))
 				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
 			if( !pe.getField().isInField(vessel.getLocation(), 1)) {
 				proceed();

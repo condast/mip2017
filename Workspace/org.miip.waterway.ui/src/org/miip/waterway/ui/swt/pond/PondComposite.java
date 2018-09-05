@@ -42,7 +42,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 	private SessionHandler handler;
 
-	private PondPresentation canvas;
+	private PondCanvas canvas;
 	private Text text_name;
 	private Label lblSpeedLabel;
 	private Text text_speed;
@@ -77,7 +77,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		setLayout(new GridLayout(2, false));
 
 		banner = new Banner( this, SWT.FULL_SELECTION);
-		canvas = new PondPresentation(this, SWT.BORDER );
+		canvas = new PondCanvas(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 
 		Composite composite = new Composite(this, SWT.NONE);

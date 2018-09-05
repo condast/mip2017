@@ -41,7 +41,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 
 	private enum TabItems{
 		MAIN,
-		TEST,
+		COLLISION_AVOIDANCE_DEMO,
 		DEBUG,
 		LOG;
 	}
@@ -83,18 +83,12 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
 							TabItem item = (TabItem) e.item;
-							String str = item.getText();
+							String str = (String) item.getData();
 							if( StringUtils.isEmpty(str))
 								return;
-							TabItems ti = TabItems.valueOf( StringStyler.styleToEnum( item.getText()));
-							Dispatcher dispatcher = Dispatcher.getInstance();
+							TabItems ti = TabItems.valueOf( StringStyler.styleToEnum( (String) item.getData()));
+							//Dispatcher dispatcher = Dispatcher.getInstance();
 							switch( ti ) {
-							case MAIN:
-								dispatcher.activateEnvironment(Dispatcher.S_MIIP);
-								break;
-							case TEST:
-								dispatcher.activateEnvironment( Dispatcher.S_POND);
-								break;
 							default:
 								break;
 							}

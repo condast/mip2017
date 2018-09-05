@@ -23,6 +23,8 @@ public class Banner extends AbstractBanner {
 	public static final String S_KC_DHS_URL = "https://www.hogeschoolrotterdam.nl/onderzoek/kenniscentra/duurzame-havenstad/over-het-kenniscentrum/";
 	public static final String S_RDM_COE_URL = "http://www.rdmcoe.nl//";
 	public static final String S_CONDAST_URL = "http://www.condast.com/";
+	public static final String S_SMASH_URL = "https://smashnederland.nl/";
+	public static final String S_DIRKSEN_URL = "http://www.dirksen.nl/";
 	public static final String S_JUROD_URL = "https://www.jurod.nl/";
 
 	private Collection<ICompositeFactory> factories;
@@ -42,6 +44,10 @@ public class Banner extends AbstractBanner {
 		button.setData( S_RDM_COE_URL );
 		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.KC_DHS ), SWT.FLAT );
 		button.setData( S_KC_DHS_URL );
+		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.DIRKSEN ), SWT.FLAT );
+		button.setData( S_DIRKSEN_URL);
+		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.SMASH ), SWT.FLAT );
+		button.setData( S_SMASH_URL  );
 		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.CONDAST ), SWT.FLAT );
 		button.setData( S_CONDAST_URL );
 		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.JUROD ), SWT.FLAT );

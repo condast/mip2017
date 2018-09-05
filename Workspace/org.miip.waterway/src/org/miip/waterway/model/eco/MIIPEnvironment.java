@@ -14,6 +14,7 @@ import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
@@ -54,8 +55,6 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private int bankWidth;
 	private boolean initialsed;
 	private boolean manual;
-	private boolean active;
-	private MIIPEnvironment environment; 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public MIIPEnvironment() {
@@ -65,12 +64,10 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
 		this.field = new Field( new LatLng( NAME, LATITUDE, LONGITUDE), length, width);
 		this.bankWidth = bankWidth;
-		this.active = false;
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
 		lock = new ReentrantLock();
 		this.listeners = new ArrayList<IEnvironmentListener<IVessel>>();
-		this.environment = this;
 	}
 
 	@Override
@@ -80,15 +77,9 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	@Override
 	public boolean isActive() {
-		return active;
+		return super.isRunning();
 	}
 
-	@Override
-	public void setActive(boolean choice) {
-		this.active = choice;
-	}
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean onInitialise() {
 		currentTime = Calendar.getInstance().getTime();
@@ -105,10 +96,12 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		
 		//Position of the ship
 		latlng = this.field.getCentre();
+		//This vessel consists of situational awareness and collision avoidance 
 		reference = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
-		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference); 
-		reference.init(ca);
-		sa = new SituationalAwareness(reference);
+		sa = new SituationalAwareness(reference, field);
+		sa.setInput(this);
+		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
+		reference.init(new SituationalAwareness( reference, field ), ca);
 		
 		//The bank at the bottom
 		latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
@@ -273,22 +266,26 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		logger.fine("Creating location for " + model.getLocation() + " = \n\t [" + x + ",  " + y  );
 		return new Location( x, y );	
 	}
-	
-	@SuppressWarnings("rawtypes")
-	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance{
-
-		@SuppressWarnings("unchecked")
-		public DefaultCollisionAvoidance( IVessel vessel ) {
-			super( new SituationalAwareness( vessel ),false);
-			SituationalAwareness psa = (SituationalAwareness) super.getSituationalAwareness();
-			psa.setInput( environment);
-		}
-		
-	}
 
 	@Override
 	public Collection<IPhysical> getOthers() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
+
+		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ) {
+			super( sa ,false);
+		}
+		
+		/**
+		 * Get the critical distance for passage 
+		 */
+		@Override
+		public double getCriticalDistance() {
+			IVessel vessel = (IVessel) getReference(); 
+			return vessel.getMinTurnDistance();
+		}
 	}
 }

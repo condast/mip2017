@@ -26,6 +26,8 @@ public class BannerImages extends AbstractImages{
 	public enum Images{
 		MIIP,
 		NMT,
+		DIRKSEN,
+		SMASH,
 		CONDAST,
 		JUROD,
 		KC_DHS,
@@ -54,6 +56,12 @@ public class BannerImages extends AbstractImages{
 				break;
 			case CONDAST:
 				str = "condast.png";
+				break;
+			case DIRKSEN:
+				str = "dirksen.jpg";
+				break;
+			case SMASH:
+				str = "smash.jpg";
 				break;
 			case JUROD:
 				str = "jurod.png";

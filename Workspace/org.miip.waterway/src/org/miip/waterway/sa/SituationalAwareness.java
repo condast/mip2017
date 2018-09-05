@@ -12,6 +12,7 @@ import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
 import org.condast.commons.autonomy.sa.RadarData;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.data.latlng.Field;
+import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Point;
@@ -47,17 +48,8 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		}
 	};
 	
-	public SituationalAwareness( IVessel vessel ) {
-		super( vessel );
-	}
-
-	/**
-	 * Get the critical distance for passage 
-	 */
-	@Override
-	public double getCriticalDistance() {
-		IVessel vessel = (IVessel) getReference(); 
-		return vessel.getMinTurnDistance();
+	public SituationalAwareness( IVessel vessel, IField field ) {
+		super( vessel, (int)( field.getDiameter()/2 ));
 	}
 
 	@Override
