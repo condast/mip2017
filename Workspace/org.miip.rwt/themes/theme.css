@@ -41,7 +41,7 @@ Composite.wizard-container{
 }
 
 Composite.miip{
-	background-color: #97CBFF;
+	background-color: #008000;
 }
 
 Composite.highlight{
@@ -84,11 +84,11 @@ Composite.wizard{
 }
 
 Group.miip{
-  background-color: #97CBFF;
+  background-color: #008000;
 }
 
 TabFolder{
-  background-color: #97CBFF;
+  background-color: #008000;
 }
 
 TabItem{

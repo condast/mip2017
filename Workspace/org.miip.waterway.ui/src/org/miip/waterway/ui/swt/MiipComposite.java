@@ -22,6 +22,7 @@ import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -45,9 +46,9 @@ import org.eclipse.swt.widgets.Button;
 public class MiipComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
 	private static final long serialVersionUID = 1L;
 
-	public static enum Tools{
-		SETTINGS
-	}
+	//Themes
+	public static final String S_MIIP = "miip";
+	public static final String S_MIIP_ITEM = "miipitem";
 
 	public static final String S_MIIP_URL = "http://www.maritiemland.nl/news/startbijeenkomst-maritieme-innovatie-impuls-projecten-2017/";
 	public static final String S_NMT_URL = "http://www.maritiemland.nl/innovatie/projecten/maritieme-innovatie-impuls-projecten/";
@@ -135,6 +136,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	protected void createComposite( Composite parent, int style ){
 		setLayout(new GridLayout(2, false));
+		this.setData( RWT.CUSTOM_VARIANT, S_MIIP);
 
 		banner = new Banner(this, SWT.FULL_SELECTION);
 		banner.setLayoutData( new GridData(SWT.TOP,  SWT.FILL, false, true ));

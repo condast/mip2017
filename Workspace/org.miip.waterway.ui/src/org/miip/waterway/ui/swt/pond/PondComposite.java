@@ -19,6 +19,7 @@ import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.widgets.AbstractButtonBar;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,6 +36,10 @@ import org.eclipse.swt.widgets.Button;
 
 public class PondComposite extends Composite implements IInputWidget<IReferenceEnvironment<IVessel,IPhysical>> {
 	private static final long serialVersionUID = 1L;
+
+	//Themes
+	public static final String S_MIIP = "miip";
+	public static final String S_MIIP_ITEM = "miipitem";
 
 	public static enum Tools{
 		SETTINGS
@@ -75,8 +80,10 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 	protected void createComposite( Composite parent, int style ){
 		setLayout(new GridLayout(2, false));
+		this.setData( RWT.CUSTOM_VARIANT, S_MIIP);
 
 		banner = new Banner( this, SWT.FULL_SELECTION);
+		banner.setLayoutData( new GridData(SWT.TOP,  SWT.FILL, false, true ));
 		canvas = new PondCanvas(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 
