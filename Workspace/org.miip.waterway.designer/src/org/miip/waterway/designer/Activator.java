@@ -5,6 +5,8 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
+	public static final String BUNDLE_ID = "org.miip.waterway.designer";
+
 	private static BundleContext context;
 
 	static BundleContext getContext() {

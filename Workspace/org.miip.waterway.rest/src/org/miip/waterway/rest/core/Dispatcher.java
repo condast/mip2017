@@ -1,11 +1,14 @@
 package org.miip.waterway.rest.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.env.IEnvironment;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.preferences.IPreferenceStore;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.rest.store.RadarOptions;
 
@@ -18,13 +21,13 @@ public class Dispatcher {
 	
 	private static Dispatcher dispatcher = new Dispatcher();
 
-	private RadarOptions options;
-	
 	private Map<String, IEnvironment<IPhysical>> environments;
 	
+	private Collection<IDesignFactory<IPhysical>> factories;
+	
 	private Dispatcher() {
+		factories = new ArrayList<>();
 		environments = new HashMap<String, IEnvironment<IPhysical>>();
-		this.options = new RadarOptions( S_VESSEL_NAME );
 	}
 
 	public static Dispatcher getInstance(){
@@ -32,7 +35,13 @@ public class Dispatcher {
 	}
 
 	public RadarOptions getOptions() {
-		return options;
+		IEnvironment<IPhysical> env = (IEnvironment<IPhysical>) getActiveEnvironment();
+		for( IDesignFactory<IPhysical> factory: factories ) {
+			IPreferenceStore<String, String> store = factory.createPreferenceStore(env);
+			if( store != null)
+				return new RadarOptions(store, env.getName());
+		}
+		return null;
 	}
 
 	public IEnvironment<? extends IPhysical> getActiveEnvironment() {
@@ -52,6 +61,7 @@ public class Dispatcher {
 	}
 
 	public void addfactory( IDesignFactory<IPhysical> factory ){
+		this.factories.add(factory);
 		this.environments.put( factory.getId(), factory.createEnvironment() );
 	}
 

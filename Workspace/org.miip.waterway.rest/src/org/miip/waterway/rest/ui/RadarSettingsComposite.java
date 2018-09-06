@@ -149,6 +149,7 @@ public class RadarSettingsComposite extends Composite {
 		this.rangeSpinner.setSelection( settings.getRange());
 		this.senseSpinner.setSelection( settings.getSensitivity());
 		this.transparencySpinner.setSelection( settings.getTransparency());
+		this.enableButton.setSelection(settings.isEnabled());
 	}
 	
 	@Override

@@ -12,6 +12,7 @@ Import-Package: org.condast.commons.autonomy.ca,
  org.condast.commons.data.binary,
  org.condast.commons.data.latlng,
  org.condast.commons.data.operations,
+ org.condast.commons.preferences,
  org.condast.commons.strings,
  org.condast.commons.thread
 Export-Package: org.miip.waterway.model,

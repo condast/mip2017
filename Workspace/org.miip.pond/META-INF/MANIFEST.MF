@@ -10,12 +10,15 @@ Import-Package: org.condast.commons.autonomy.ca,
  org.condast.commons.autonomy.model,
  org.condast.commons.autonomy.sa,
  org.condast.commons.data.latlng,
+ org.condast.commons.preferences,
  org.condast.commons.thread,
+ org.eclipse.core.runtime;version="3.4.0",
  org.miip.waterway.model,
  org.miip.waterway.model.def,
  org.miip.waterway.model.eco,
  org.osgi.framework;version="1.7.0",
- org.osgi.service.component.annotations;version="1.2.0"
+ org.osgi.service.component.annotations;version="1.2.0",
+ org.osgi.service.prefs;version="1.1.1"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.miip.pond.Activator
 Service-Component: OSGI-INF/org.miip.pond.design.factory.xml
