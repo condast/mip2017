@@ -15,9 +15,19 @@ const char* MIIP_CONTEXT = "/miip2017/sa/";
 //const int PORT = 8080;
 
 //De Stadstuin
-IPAddress server(10, 30, 8, 74);
-IPAddress ip(10, 30, 8, 74);
+//IPAddress server(10, 30, 8, 74);
+//IPAddress ip(10, 30, 8, 74);
+//const int PORT = 10081;
+
+//Camping de Worp
+IPAddress server(172,16,2,144);
+IPAddress ip(172,16,2,144);
 const int PORT = 10081;
+
+//Huawei
+//IPAddress server(192,168,8,100);
+//IPAddress ip(192,168,8,100);
+//const int PORT = 10081;
 
 //RH Marine Werkplaats
 //IPAddress server(192, 168, 10, 100);
