@@ -40,6 +40,43 @@ void NeoPixel::setup() {
 }
 
 /**
+   Update the radar
+*/
+boolean NeoPixel::update( ) {
+  webClient.connect();
+  
+  //Serial.println( "REQUEST SETUP" );
+  bool result = webClient.sendHttp( WebClient::SETUP, false, "" );
+  PixelData data;
+  if ( !result ) {
+    webClient.disconnect();
+    return false;
+  }
+  //Serial.println( "SETUP RECEIVED: TRUE" );
+  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
+  DynamicJsonBuffer jsonBuffer(capacity);
+
+  // Parse JSON object
+  JsonObject& root = jsonBuffer.parseObject(webClient.client);
+  if (!root.success()) {
+    Serial.println(F("Parsing failed!"));
+    jsonBuffer.clear();
+    webClient.disconnect();
+    return false;
+  }
+
+  enable = root[F("enb")];
+  data.index = root[F("i")];
+  data.end = root[F("end")];
+  data.choice = root[F("ch")];
+  data.options = root[F("o")];
+  Serial.print( "PIXEL DATA " ); Serial.println(data.options);
+  jsonBuffer.clear();
+  webClient.disconnect();
+  choice = static_cast<Choices>(data.choice );
+  Serial.print( "NEOPIXEL SETUP " ); Serial.println(choice);
+}
+/**
     Send a request for radar data
 */
 NeoPixel::RadarData NeoPixel::requestRadar( int leds ) {
@@ -292,42 +329,4 @@ uint32_t NeoPixel::Wheel(byte WheelPos) {
   }
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-}
-
-/**
-   Update the radar
-*/
-boolean NeoPixel::update( ) {
-  webClient.connect();
-  
-  //Serial.println( "REQUEST SETUP" );
-  bool result = webClient.sendHttp( WebClient::SETUP, false, "" );
-  PixelData data;
-  if ( !result ) {
-    webClient.disconnect();
-    return false;
-  }
-  //Serial.println( "SETUP RECEIVED: TRUE" );
-  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
-  DynamicJsonBuffer jsonBuffer(capacity);
-
-  // Parse JSON object
-  JsonObject& root = jsonBuffer.parseObject(webClient.client);
-  if (!root.success()) {
-    Serial.println(F("Parsing failed!"));
-    jsonBuffer.clear();
-    webClient.disconnect();
-    return false;
-  }
-
-  enable = root[F("enb")];
-  data.index = root[F("i")];
-  data.end = root[F("end")];
-  data.choice = root[F("ch")];
-  data.options = root[F("o")];
-  Serial.print( "PIXEL DATA " ); Serial.println(data.options);
-  jsonBuffer.clear();
-  webClient.disconnect();
-  choice = static_cast<Choices>(data.choice );
-  Serial.print( "NEOPIXEL SETUP " ); Serial.println(choice);
 }
