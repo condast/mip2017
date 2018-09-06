@@ -156,7 +156,7 @@ public class RadarOptions extends AbstractPreferenceStore{
 	}
 
 	public IRadarData toRadarData() {
-		IRadarData data = new RadarData( getChoice(), getRange(), getSensitivity(), getOptions() ); 
+		IRadarData data = new RadarData( getChoice(), getRange(), getSensitivity(), getOptions() );
 		return data;
 	}
 	

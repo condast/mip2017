@@ -11,6 +11,7 @@ import org.miip.waterway.rest.core.Dispatcher;
 import org.miip.waterway.rest.store.RadarOptions;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Spinner;
@@ -23,6 +24,7 @@ public class RadarSettingsComposite extends Composite {
 	private Spinner rangeSpinner;
 	private Spinner senseSpinner;
 	private Spinner transparencySpinner;
+	private Button enableButton;
 	private Dispatcher dispatcher = Dispatcher.getInstance();
 	private RadarOptions settings;
 
@@ -122,6 +124,19 @@ public class RadarSettingsComposite extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				Spinner spinner = (Spinner) e.widget;
 				settings.setTransparency( spinner.getSelection() );
+				super.widgetSelected(e);
+			}
+		});
+		
+		this.enableButton = new Button( this, SWT.CHECK );
+		this.enableButton.setText("Enable");
+		this.enableButton.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
+		this.enableButton.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				settings.setEnable( enableButton.getSelection());
 				super.widgetSelected(e);
 			}
 		});

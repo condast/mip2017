@@ -52,7 +52,7 @@ public class SettingsDialog extends TitleAreaDialog {
 	
 	@Override
 	protected Point getInitialSize() {
-		return new Point( 600, 400 );
+		return new Point( 600, 600 );
 	}
 
 

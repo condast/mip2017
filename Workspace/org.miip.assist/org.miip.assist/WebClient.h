@@ -5,68 +5,77 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
+const char* MIIP_CONTEXT = "/miip2017/sa/";
 #define CONDAST_URL "www.condast.com"
-//#define CONDAST_PORT 8080
 
-//#define LOCAL_HOST "localhost"
-#define CONDAST_PORT 10080
+//SERVER
+// Set the static IP address to use if the DHCP fails to assign
+//IPAddress server(79, 170, 90, 5);
+//IPAddress ip(79, 170, 90, 5);
+//const int PORT = 8080;
 
-#define MAC { 0x90, 0xA2, 0xDA, 0x11, 0x04, 0x17 }
-#define CONTEXT "/miip2017/sa/"
+//De Stadstuin
+IPAddress server(10, 30, 8, 74);
+IPAddress ip(10, 30, 8, 74);
+const int PORT = 10081;
 
+//RH Marine Werkplaats
+//IPAddress server(192, 168, 10, 100);
+//IPAddress ip(192, 168, 10, 100);
+
+// Enter a MAC address for your controller below.
+// Newer Ethernet shields have a MAC address printed on a sticker on the shield
+byte mac[] = { 0x90, 0xA2, 0xDA, 0x11, 0x12, 0x3A };
+
+const unsigned long HTTP_TIMEOUT = 5000;// max respone time from server
 
 class WebClient {
-    enum request {
-      REQ_SETUP = 0,
-      REQ_LOG = 1,
-      REQ_RADAR = 2
-    };
 
   public: WebClient( String id, int token );
-    /**
-       Pixel Data object
-    */
-    struct PixelData {
-      int index;
-      boolean end;
-      int choice;
-      int options;
+    enum request {
+      SETUP = 0,
+      LOG = 1,
+      OPTIONS = 2,
+      RADAR = 3
     };
 
-    /**
-       Radar Data object
-    */
-    struct RadarData {
-      byte red;
-      byte green;
-      byte blue;
-      byte index;
-      byte transparency;
-    };
+    EthernetClient client;
+    void setup();
+    bool connect();
+    void disconnect();
+    bool requestLog();
+    bool logMessage( String message );
+    bool getWaypoint();
+    bool sendUpdate( String url );
+    bool sendHttp( int request, String msg );
+    bool sendHttp( int request, boolean post, String attrs );
+    String urlencode(String str);
+    String printResponse( int request );
+    void logRequest( int request, boolean post, String attrs );//for debugging
+    void logRequestStr( int request ); //dito
+    void loop();
 
-    PixelData requestSetup();
-    boolean requestLog();
-    RadarData requestRadar( int leds );
-    boolean logMessage( String message );
-    void setup_Web();
-    void loop_Web();
-  private: char id[30];
-    char token[6] = {'\0'};
-    char send_str[40] = {'\0'};
-    boolean update( JsonObject& root );
+  private:
+    //IPAddress server;
+    //IPAddress ip;
+    String host;
+    int port;
+    bool connected;
+    String context;
+    String id;
+    int token;
+
+    // Enter a MAC address for your controller below.
+    // Newer Ethernet shields have a MAC address printed on a sticker on the shield
+    byte mac[6] = {0};
 
     // Initialize the Ethernet client library
     // with the IP address and port of the server
     // that you want to connect to (port 80 is default for HTTP):
-    EthernetClient client;
-    boolean connecting();
-    void disconnecting();
-    boolean sendHttp( int request, boolean post, String msg );
-    String requeststr( int request );
-    void printResponse();
-    PixelData getPixelData();
+    void requestService( int request );
+    bool processResponse( int request );
+    boolean update( JsonObject& root );
     String urldecode(String str);
-    String urlencode(String str);
     unsigned char h2int(char c);
 };
 

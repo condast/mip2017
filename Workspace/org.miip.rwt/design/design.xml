@@ -20,7 +20,7 @@
 				</composite>
 			</item>
 			<item id="CollisionAvoidanceDemo" name="Collision Avoidance Demo">
-				<composite class="org.miip.waterway.ui.swt.pond.PondComposite">
+				<composite name="pond-composite" class="org.miip.waterway.ui.swt.pond.PondComposite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />
 						<vertical spacing="fill"/>

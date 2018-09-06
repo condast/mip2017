@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
 import org.miip.waterway.ui.swt.MiipComposite;
+import org.miip.waterway.ui.swt.pond.PondComposite;
 
 public class BasicEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;
@@ -36,6 +37,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	
 	private enum CompositeNames{
 		MIIP_COMPOSITE,
+		POND_COMPOSITE,
 		LOG_COMPOSITE;
 	}
 
@@ -102,6 +104,10 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 						break;
 					CompositeNames cmp = CompositeNames.valueOf( StringStyler.styleToEnum( name_str));
 					switch( cmp ) {
+					case POND_COMPOSITE:
+						PondComposite pondcomp = (PondComposite) event.getData();
+						pondcomp.setInput( dispatcher.getFactories().values());
+						break;
 					case MIIP_COMPOSITE:
 						MiipComposite miipcomp = (MiipComposite) event.getData();
 						miipcomp.setFactories( dispatcher.getFactories().values());

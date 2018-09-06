@@ -23,6 +23,7 @@ import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.rest.core.Dispatcher;
+import org.miip.waterway.rest.model.RadarData;
 import org.miip.waterway.rest.model.RestRadar;
 import org.miip.waterway.rest.store.RadarOptions;
 
@@ -49,8 +50,8 @@ public class RadarResource{
 		try {
 			logger.info("Query for Radar " + id );
 			IRadarData data = settings.toRadarData();
-			Gson gson = new Gson();
-			String result = gson.toJson(data);
+				Gson gson = new Gson();
+			String result = gson.toJson(data, RadarData.class);
 			return Response.ok( result ).build();
 		}
 		catch( Exception ex ) {
@@ -69,7 +70,7 @@ public class RadarResource{
 			logger.log( restLevel, message );
 			OptionsData data = new OptionsData( settings.isLogging());
 			Gson gson = new Gson();
-			String result = gson.toJson(data);
+			String result = gson.toJson(data, OptionsData.class);
 			return Response.ok( result ).build();
 		}
 		catch( Exception ex ) {

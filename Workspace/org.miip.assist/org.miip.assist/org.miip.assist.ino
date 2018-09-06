@@ -6,10 +6,8 @@
 
 #define REFRESH 3
 
-<<<<<<< HEAD
 const char NAME[]  = "Miip";
 const int TOKEN = 1025;
-const char* MIIP_CONTEXT = "miip2017/sa/";
 
     /**
        Pixel Data object
@@ -23,8 +21,6 @@ const char* MIIP_CONTEXT = "miip2017/sa/";
     };
 
 
-=======
->>>>>>> branch 'master' of https://github.com/condast/mip2017.git
 int load;
 
 WebClient webClient( NAME, TOKEN );
@@ -34,11 +30,11 @@ NeoPixel neoPixel;
 void setup() {
   Serial.begin(9600);
   Serial.println( "Setup MIIP Human Assist Radar");
-  webClient.setup_Web();
-  neoPixel.setup_Pixel();
+  webClient.setup();
+  neoPixel.setup();
   setup_Interrupt();
   Serial.println( "Setup Complete, Setting up Pixels");
-  neoPixel.update_Pixel();
+  neoPixel.update();
   Serial.println( "Pixel Data Received");
   load = 0;
 }
@@ -51,17 +47,17 @@ void loop() {
     //Serial.println( balance );
     switch ( balance ) {
       case 0:
-        neoPixel.update_Pixel();
+        neoPixel.update();
         break;
       case 1:
         //logger.setup();
         //Serial.println( "LOGGER SETUP COMPLETE" );
         break;
       default:
-        //Serial.println( "READING RADAR" );
-        //neoPixel.loop_Pixel();
+        Serial.println( "READING RADAR" );
+        neoPixel.loop();
         //logger.logPrintln( "LOOPED PIXELS" );
-        //Serial.println( "LOOP RADAR COMPLETE" );
+        Serial.println( "LOOP RADAR COMPLETE" );
         break;
     }
   }
