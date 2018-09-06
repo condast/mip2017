@@ -59,25 +59,6 @@ public class RadarResource{
 		}
 	}
 
-	// This method is called if TEXT_PLAIN is request
-	@GET
-	@Path("/log")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response log( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("msg") String message ) {
-		try {
-			Level restLevel = LogFactory.createLogLevel(id, Level.SEVERE.intValue() - 1); 
-			logger.log( restLevel, message );
-			OptionsData data = new OptionsData( settings.isLogging());
-			Gson gson = new Gson();
-			String result = gson.toJson(data);
-			return Response.ok( result ).build();
-		}
-		catch( Exception ex ) {
-			ex.printStackTrace();
-			return Response.serverError().build();
-		}
-	}
-
 	@POST
 	@Path("/log")
 	@Produces(MediaType.APPLICATION_JSON)

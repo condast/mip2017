@@ -356,6 +356,9 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 		@Override
 		public void notifyEnvironmentChanged( final EnvironmentEvent<IVessel> event) {
+			if(( getDisplay()== null ) || getDisplay().isDisposed() )
+				return;
+
 			getDisplay().asyncExec( new Runnable() {
 
 				@Override

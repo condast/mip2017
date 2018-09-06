@@ -114,6 +114,8 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 
 	@Override
 	protected void onDrawEnd(GC gc) {
+		if(( getDisplay() == null ) || ( getDisplay().isDisposed()))
+			return;
 		double centrex = super.getCentre().x;
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;

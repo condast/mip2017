@@ -8,6 +8,7 @@ import java.util.Map;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Motion;
+import org.condast.commons.ui.radar.IRadarColours;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.LedRadar;
@@ -47,15 +48,16 @@ public class RestRadar{
 		if( sa == null )
 			return colours;
 		radar.setRange( options.getRange());
-		radar.setSensitivity( options.getSensitivity());
+		double sensitivity = ( options.getSensitivity() <= 0)?sa.getRange(): options.getSensitivity();
+		radar.setSensitivity( (int) sensitivity);
 		radar.setSteps( this.leds );
 		LedRadar<IVessel, IPhysical> lr = new LedRadar<IVessel, IPhysical>( radar );
 		lr.refresh();
 		for( int i=0; i< radar.getSteps(); i++ ) {
-			byte[] colour = getBackgroundColour();
+			int[] colour = getBackgroundColour();
 			Motion motion = lr.getRadarData(i);
 			if( motion != null )
-				colour = getColour( motion.getDistance());
+				colour = getColour( radar.getSensitivity(), (int) sa.getReference().getCriticalDistance(), motion.getDistance());
 			colours.add( new RadarData( i, colour , options.getTransparency()));
 		}
 		return colours;
@@ -65,16 +67,16 @@ public class RestRadar{
 		return colours;
 	}
 
-	protected byte[] getBackgroundColour(){
-		byte[] colour = new byte[3];
+	protected int[] getBackgroundColour(){
+		int[] colour = new int[3];
 		colour[0] = 0;
 		colour[1] = 1;
 		colour[2] = 0;
 		return colour;
 	}
 
-	protected byte[] getColour( double distance ){
-		byte[] colour = new byte[3];
+	protected int[] getColour( int sensitivity, int critical, double distance ){
+		int[] colour = new int[3];
 		colour[0] = 0;
 		colour[1] = 0;
 		colour[2] = 0;
@@ -87,8 +89,9 @@ public class RestRadar{
 			return colour;
 		}
 		if( distance > radar.getRange() )
-			return colour;
-		return getLinearColour( colour, (int) distance, radar.getRange(), radar. getSensitivity() );
+			colour = IRadarColours.RadarColours.getColour(sensitivity, critical, distance);
+		return colour;
+		//return getLinearColour( colour, (int) distance, radar.getRange(), radar. getSensitivity() );
 	}
 	
 	protected byte[] getIntColour( Map<Colour, Byte> colour ){
@@ -121,6 +124,16 @@ public class RestRadar{
 		private byte g;
 		private byte b;
 		private byte t;
+
+		protected RadarData(int angle, int[] rgb, int transparency) {
+			super();
+			this.a = angle;
+			this.r = (byte) rgb[0];
+			this.g = (byte) rgb[1];
+			this.b = (byte) rgb[2];
+			this.t = (byte)transparency;
+		}
+
 		protected RadarData(int angle, byte[] rgb, int transparency) {
 			super();
 			this.a = angle;
