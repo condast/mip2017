@@ -35,6 +35,8 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 
 	@Override
 	public IPreferenceStore<String, String> createPreferenceStore(IEnvironment<IVessel> environment) {
+		if( !environment.equals( environment ))
+			return null;
 		if( store == null )
 			store = new PreferenceStore();
 		return store;

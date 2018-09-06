@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.env.IEnvironment;
-import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.preferences.IPreferenceStore;
+import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.rest.store.RadarOptions;
 
@@ -21,13 +21,13 @@ public class Dispatcher {
 	
 	private static Dispatcher dispatcher = new Dispatcher();
 
-	private Map<String, IEnvironment<IPhysical>> environments;
+	private Map<String, IEnvironment<IVessel>> environments;
 	
-	private Collection<IDesignFactory<IPhysical>> factories;
+	private Collection<IDesignFactory<IVessel>> factories;
 	
 	private Dispatcher() {
 		factories = new ArrayList<>();
-		environments = new HashMap<String, IEnvironment<IPhysical>>();
+		environments = new HashMap<>();
 	}
 
 	public static Dispatcher getInstance(){
@@ -35,8 +35,8 @@ public class Dispatcher {
 	}
 
 	public RadarOptions getOptions() {
-		IEnvironment<IPhysical> env = (IEnvironment<IPhysical>) getActiveEnvironment();
-		for( IDesignFactory<IPhysical> factory: factories ) {
+		IEnvironment<IVessel> env = getActiveEnvironment();
+		for( IDesignFactory<IVessel> factory: factories ) {
 			IPreferenceStore<String, String> store = factory.createPreferenceStore(env);
 			if( store != null)
 				return new RadarOptions(store, env.getName());
@@ -44,32 +44,39 @@ public class Dispatcher {
 		return null;
 	}
 
-	public IEnvironment<? extends IPhysical> getActiveEnvironment() {
+	public IEnvironment<IVessel> getActiveEnvironment() {
 		if(( this.environments == null ) ||( this.environments.isEmpty() ))
 			return null;
-		for( IEnvironment<IPhysical> env: this.environments.values() ){
+		for( IEnvironment<IVessel> env: this.environments.values() ){
 			if( env.isActive() )
 				return env;
 		}
 		return getEnvironment( S_MIIP);
 	}
 
-	public IEnvironment<IPhysical> getEnvironment( String id ) {
+	public IEnvironment<IVessel> getEnvironment( String id ) {
 		if( Utils.assertNull(this.environments))
 			return null;
 		return this.environments.get(id);
 	}
 
-	public void addfactory( IDesignFactory<IPhysical> factory ){
+	public void addfactory( IDesignFactory<IVessel> factory ){
 		this.factories.add(factory);
 		this.environments.put( factory.getId(), factory.createEnvironment() );
 	}
 
-	public void addEnvironment( String id, IEnvironment<IPhysical> cenv ){
+	public void removefactory( IDesignFactory<IVessel> factory ){
+		this.factories.remove(factory);
+		this.environments.remove( factory.getId());
+	}
+
+	public void addEnvironment( String id, IEnvironment<IVessel> cenv ){
 		this.environments.put( id, cenv );
 	}
 
 	public void removeEnvironment( String id ){
 		this.environments.remove( id );
 	}
+
+
 }
