@@ -9,18 +9,6 @@
 const char NAME[]  = "Miip";
 const int TOKEN = 1025;
 
-    /**
-       Pixel Data object
-    */
-    struct PixelData {
-      char* remarks;
-      int index;
-      boolean end;
-      int choice;
-      int options;
-    };
-
-
 int load;
 
 WebClient webClient( NAME, TOKEN );
@@ -29,13 +17,13 @@ NeoPixel neoPixel;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println( "Setup MIIP Human Assist Radar");
+  Serial.println(F("Setup MIIP Human Assist Radar"));
   webClient.setup();
   neoPixel.setup();
   setup_Interrupt();
-  Serial.println( "Setup Complete, Setting up Pixels");
+  Serial.println(F("Setup Complete, Setting up Pixels"));
   neoPixel.update();
-  Serial.println( "Pixel Data Received");
+  Serial.println(F("Pixel Data Received"));
   load = 0;
 }
 
@@ -54,10 +42,10 @@ void loop() {
         //Serial.println( "LOGGER SETUP COMPLETE" );
         break;
       default:
-        Serial.println( "READING RADAR" );
+        Serial.println(F("READING RADAR"));
         neoPixel.loop();
         //logger.logPrintln( "LOOPED PIXELS" );
-        Serial.println( "LOOP RADAR COMPLETE" );
+        Serial.println(F("LOOP RADAR COMPLETE"));
         break;
     }
   }

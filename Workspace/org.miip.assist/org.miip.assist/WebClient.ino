@@ -16,6 +16,8 @@
   by Tom Igoe, based on work by Adrian McEwen
 */
 
+IPAddress myDns(192, 168, 0, 1);
+
 WebClient::WebClient( String nme, int tkn ) {
   id = nme;
   token = tkn;
@@ -28,17 +30,16 @@ void WebClient::setup() {
   context = MIIP_CONTEXT;
 
   // start the Ethernet connection:
-  Serial.println( "SETUP WEB CLIENT ");
+  Serial.println( F("SETUP WEB CLIENT "));
   if (Ethernet.begin(mac) == 0) {
-    Serial.println("Failed to configure Ethernet using DHCP");
+    Serial.println(F("Failed to configure Ethernet using DHCP"));
     // try to congifure using IP address instead of DHCP:
-    Ethernet.begin(mac, ip);
+    Ethernet.begin(mac, ip, myDns);
   }
   // give the Ethernet shield a second to initialize:
-  Serial.println("WEB CLIENT...");
+  Serial.print(F("connecting to ")); Serial.print( server ); Serial.print( F(":")); 
+  Serial.print( port ); Serial.print( context ); Serial.println( F(" ..."));
   delay(1000);
-  Serial.println("connecting...");
-  connect();
 }
 
 bool WebClient::connect() {
