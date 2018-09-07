@@ -10,9 +10,9 @@ const char* MIIP_CONTEXT = "/miip2017/sa/";
 
 //SERVER
 // Set the static IP address to use if the DHCP fails to assign
-//IPAddress server(79, 170, 90, 5);
-//IPAddress ip(79, 170, 90, 5);
-//const int PORT = 8080;
+IPAddress server(79, 170, 90, 5);
+IPAddress ip(79, 170, 90, 5);
+const int PORT = 8080;
 
 //De Stadstuin
 //IPAddress server(10, 30, 8, 74);
@@ -20,9 +20,9 @@ const char* MIIP_CONTEXT = "/miip2017/sa/";
 //const int PORT = 10081;
 
 //Camping de Worp
-IPAddress server(172,16,2,144);
-IPAddress ip(172,16,2,144);
-const int PORT = 10081;
+//IPAddress server(172,16,2,144);
+//IPAddress ip(172,16,2,144);
+//const int PORT = 10081;
 
 //Huawei
 //IPAddress server(192,168,8,100);

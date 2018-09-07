@@ -66,6 +66,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private IReferenceEnvironment<IVessel, IPhysical> environment;
 
 	private int hits;
+	private boolean disposed;
 
 	/**
 	 * Create the composite.
@@ -75,6 +76,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	public PondComposite(Composite parent, int style) {
 		super(parent, style);
 		this.createComposite(parent, style);
+		this.disposed = false;
 		this.handler = new SessionHandler(getDisplay());
 	}
 
@@ -225,6 +227,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	}
 
 	public void dispose(){
+		this.disposed = true;
 		if( this.environment != null ){
 			this.environment.removeListener(handler);
 			IExecuteThread thread = (IExecuteThread) environment;
@@ -356,7 +359,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 		@Override
 		public void notifyEnvironmentChanged( final EnvironmentEvent<IVessel> event) {
-			if(( getDisplay()== null ) || getDisplay().isDisposed() )
+			if( disposed || ( getDisplay()== null ) || getDisplay().isDisposed() )
 				return;
 
 			getDisplay().asyncExec( new Runnable() {
