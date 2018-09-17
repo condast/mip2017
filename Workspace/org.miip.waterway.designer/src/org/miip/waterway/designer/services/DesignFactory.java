@@ -8,6 +8,7 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.eco.MIIPEnvironment;
+import org.miip.waterway.radar.RadarOptions;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.prefs.Preferences;
 
@@ -46,6 +47,8 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 		
 		private PreferenceStore() {
 			super( Activator.BUNDLE_ID);
+			RadarOptions options = new RadarOptions( this, environment.getInhabitant().getId() );
+			options.setEnable(true);
 		}
 		
 		protected PreferenceStore(Preferences preferences) {

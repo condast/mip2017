@@ -10,9 +10,9 @@ const char* MIIP_CONTEXT = "/miip2017/sa/";
 
 //SERVER
 // Set the static IP address to use if the DHCP fails to assign
-IPAddress server(79, 170, 90, 5);
-IPAddress ip(79, 170, 90, 5);
-const int PORT = 8080;
+//IPAddress server(79, 170, 90, 5);
+//IPAddress ip(79, 170, 90, 5);
+//const int PORT = 8080;
 
 //De Stadstuin
 //IPAddress server(10, 30, 8, 74);
@@ -32,6 +32,12 @@ const int PORT = 8080;
 //RH Marine Werkplaats
 //IPAddress server(192, 168, 10, 100);
 //IPAddress ip(192, 168, 10, 100);
+
+//SERVER
+// Set the static IP address to use if the DHCP fails to assign
+IPAddress server(192, 168, 8, 102);
+IPAddress ip(1192, 168, 8, 102);
+const int PORT = 10081;
 
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield

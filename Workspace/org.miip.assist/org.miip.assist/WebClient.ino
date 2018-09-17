@@ -43,8 +43,8 @@ void WebClient::setup() {
 }
 
 bool WebClient::connect() {
-  //Serial.print(F("Connecting to: ")); Serial.print( server ); Serial.print(F(":")); Serial.println( port );
-  client.setTimeout(3000);
+  Serial.print(F("Connecting to: ")); Serial.print( server ); Serial.print(F(":")); Serial.println( port );
+  client.setTimeout(5000);
   bool result = client.connect(server, port);
   //Serial.print(F("Connected: ")); Serial.println( result );
   if ( result) {
@@ -52,7 +52,7 @@ bool WebClient::connect() {
     return result;
   }
   //if ( connected )
-  //  Serial.print(F("Connection failed: ")); Serial.println( result );
+  Serial.print(F("Connection failed: ")); Serial.println( result );
   client.stop();
 }
 

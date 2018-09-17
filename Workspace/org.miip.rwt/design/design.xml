@@ -19,6 +19,7 @@
 					<input use="org.miip.waterway.model.eco.MIIPEnvironment"/>
 				</composite>
 			</item>
+
 			<item id="CollisionAvoidanceDemo" name="Collision Avoidance Demo">
 				<composite name="pond-composite" class="org.miip.waterway.ui.swt.pond.PondComposite">
 					<layout-data type="grid-data">
@@ -30,6 +31,7 @@
 			</item>
 			<item name="Debug" >
 			</item>
+
 			<item name="Log">
 				<composite class="org.condast.commons.ui.logger.LogComposite" name="log-composite">
 					<layout-data type="grid-data">

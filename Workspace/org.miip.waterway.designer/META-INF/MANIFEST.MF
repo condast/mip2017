@@ -13,6 +13,7 @@ Import-Package: org.condast.commons.autonomy.env,
  org.miip.waterway.model,
  org.miip.waterway.model.def,
  org.miip.waterway.model.eco,
+ org.miip.waterway.radar,
  org.osgi.framework;version="1.3.0",
  org.osgi.service.component.annotations;version="1.2.0",
  org.osgi.service.prefs;version="1.1.1"

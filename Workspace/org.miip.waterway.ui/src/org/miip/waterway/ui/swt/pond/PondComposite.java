@@ -75,7 +75,12 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	 */
 	public PondComposite(Composite parent, int style) {
 		super(parent, style);
+		try {
 		this.createComposite(parent, style);
+		}
+		catch( Exception ex ) {
+			ex.printStackTrace();
+		}
 		this.disposed = false;
 		this.handler = new SessionHandler(getDisplay());
 	}
