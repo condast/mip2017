@@ -123,6 +123,7 @@ boolean WebClient::sendHttp( int request, boolean post, String attrs ) {
     client.print(F("&token="));
     client.print( token );
     if ( !post && ( attrs.length() > 0 )) {
+      //Serial.print(F("ATTRS: "));Serial.println(attrs); 
       client.print( attrs );
     }
     client.println(F(" HTTP/1.1" ));
@@ -236,7 +237,7 @@ void WebClient::loop() {
   https://github.com/zenmanenergy/ESP8266-Arduino-Examples/tree/master/helloworld_serial
 */
 String WebClient::urldecode(String str) {
-  String encodedString = "";
+  String encodedString = F("");
   char c;
   char code0;
   char code1;
@@ -263,7 +264,7 @@ String WebClient::urldecode(String str) {
 
 String WebClient::urlencode(String str)
 {
-  String encodedString = "";
+  String encodedString = F("");
   char c;
   char code0;
   char code1;

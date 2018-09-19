@@ -40,19 +40,19 @@ void NeoPixel::setup() {
 }
 
 /**
-   Update the radar
+   Update the radar. This call returns the options of the radar
 */
-boolean NeoPixel::update( ) {
+bool NeoPixel::update( ) {
   webClient.connect();
-  
-  //Serial.println( "REQUEST SETUP" );
-  bool result = webClient.sendHttp( WebClient::SETUP, false, "" );
+
+  //Serial.println(F("REQUEST SETUP"));
+  bool result = webClient.sendHttp( WebClient::SETUP, false, F(""));
   PixelData data;
   if ( !result ) {
     webClient.disconnect();
     return false;
   }
-  //Serial.println( "SETUP RECEIVED: TRUE" );
+  //Serial.println(F("SETUP RECEIVED: TRUE"));
   size_t capacity = JSON_OBJECT_SIZE(5) + 40;
   DynamicJsonBuffer jsonBuffer(capacity);
 
@@ -71,24 +71,28 @@ boolean NeoPixel::update( ) {
   data.choice = root[F("ch")];
   data.options = root[F("o")];
   //data.transparancy = root[F("t")];
-  Serial.print(F("PIXEL DATA ")); Serial.println(data.options);
+  //Serial.print(F("PIXEL DATA ")); Serial.println(data.options);
+  //Serial.print(F("ENABLE ")); Serial.println( enable);
   jsonBuffer.clear();
   webClient.disconnect();
   choice = static_cast<Choices>(data.choice );
-  Serial.print(F("NEOPIXEL SETUP ")); Serial.println(choice);
+  //Serial.print(F("NEOPIXEL SETUP ")); Serial.println(choice);
 }
 /**
-    Send a request for radar data
+    Send a request for radar data of a single LED in the ring
 */
-NeoPixel::RadarData NeoPixel::requestRadar( int leds ) {
+bool NeoPixel::requestRadar() {
   //Serial.print("TOKEN: " ); Serial.println( token );
+  //Serial.println( "SHOW RADAR: ");
   webClient.connect();
-  //Serial.print( "LEDS:" ); Serial.println( leds );
-  boolean result = webClient.sendHttp( RADAR, false, String( leds ));
-  RadarData data;
-  if ( !result ){
+  int leds = ( strip.numPixels() == 0 ) ? LEDS : strip.numPixels();
+  String str = F("&leds=");
+  str += String( leds );
+  //Serial.print( F("LEDS:")); Serial.println( str );
+  boolean result = webClient.sendHttp( WebClient::RADAR, false, str);
+  if ( !result ) {
     webClient.disconnect();
-    return data;
+    return false;
   }
   size_t capacity = JSON_OBJECT_SIZE(6) + 40;
   DynamicJsonBuffer jsonBuffer(capacity);
@@ -99,58 +103,15 @@ NeoPixel::RadarData NeoPixel::requestRadar( int leds ) {
     Serial.println(F("Parsing failed!"));
     jsonBuffer.clear();
     webClient.disconnect();
-    return data;
+    return false;
   }
-  data.index = root["a"];
-  data.red = root["r"];
-  data.green = root["g"];
-  data.blue = root["b"];
-  //data.transparency = root["t"];
-  //Serial.print( "RADAR DATA Available for index " ); Serial.println( data.index );
+  colorPixel( root["a"],
+              root["r"],
+              root["g"],
+              root["b"], 
+              root["t"] );
   jsonBuffer.clear();
   webClient.disconnect();
-  return data;
-}
-void NeoPixel::show_Radar() {
-  //Serial.println( "SHOW RADAR: ");
-  int leds = ( strip.numPixels() == 0 ) ? LEDS : strip.numPixels();
-
-  NeoPixel::RadarData root = requestRadar( leds );
-  //Serial.print( "SHOW RADAR IMAGE: ");Serial.println( root.index );
-
-  colorPixel( root.index,
-              root.red,
-              root.green,
-              root.blue,
-              root.transparency);
-  //Serial.println( "RADAR DATA RECEIVED " );
-  if ( !webClient.connect()) {
-    webClient.disconnect();
-    return false;
-  }
-  Serial.print( F("REQUEST RADAR ")); Serial.print(F("LEDS:")); Serial.println( leds );
-  bool result = webClient.sendHttp( WebClient::RADAR, false, String( leds ));
-  if ( !result ) {
-    webClient.disconnect();
-    return false;
-  }
-
-  size_t capacity = JSON_OBJECT_SIZE(5) + 30;
-  DynamicJsonBuffer jsonBuffer(capacity);
-
-  // Parse JSON object
-  JsonObject& jo = jsonBuffer.parseObject( webClient.client);
-  if (!jo.success()) {
-    Serial.println(F("Parsing failed!"));
-    jsonBuffer.clear();
-    webClient.disconnect();
-    return false;
-  }
-  colorPixel( jo[F("a")], jo[F("r")], jo[F("g")], jo[F("b")], jo[F("t")]);
-  Serial.print(F("RADAR DATA Available for index ")); Serial.println( jo.size() );
-  jsonBuffer.clear();
-  webClient.disconnect();
-  Serial.println(F("RADAR DATA RECEIVED "));
   return true;
 }
 
@@ -160,13 +121,13 @@ void NeoPixel::loop() {
     return;
   }
 
-  Serial.print(F("NEO PIXEL: Selecting ")); Serial.println( choice );
+  //Serial.print(F("NEO PIXEL: Selecting ")); Serial.println( choice );
   double divide = 50;//data.transparancy/100;
-  int cmax = 255*divide;
-  int cmin = 255*divide;
+  int cmax = 255 * divide;
+  int cmin = 255 * divide;
   switch ( choice ) {
     case RADAR:
-      show_Radar();
+      requestRadar();
       break;
     case COLOUR_WIPE_RED:
       colorWipe(strip.Color(cmax, 0, 0), cmin); // Red
@@ -243,9 +204,9 @@ void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte tra
   byte rd = (trn > red) ? 0 : red - trn;
   byte gn = (trn > green) ? 0 : green - trn;
   byte be = (trn > blue) ? 0 : blue - trn;
-  //Serial.print( index ); Serial.print(": {"); Serial.print( rd ); Serial.print(", ");
-  //Serial.print( gn ); Serial.print(", ");Serial.print( be );
-  //Serial.print(", ");Serial.print(( byte)trn ); Serial.println("}");
+  //Serial.print( index ); Serial.print(F(": {")); Serial.print( rd ); Serial.print(F(", "));
+  //Serial.print( gn ); Serial.print(F(", "));Serial.print( be );
+  //Serial.print(F(", "));Serial.print(( byte)trn ); Serial.println(F("}"));
   strip.setPixelColor(index, strip.Color(rd, gn, be ));
   strip.show();
 }

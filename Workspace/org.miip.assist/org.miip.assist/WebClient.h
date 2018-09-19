@@ -5,19 +5,19 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
-const char* MIIP_CONTEXT = "/miip2017/sa/";
-#define CONDAST_URL "www.condast.com"
+#define MIIP_CONTEXT F("/miip2017/sa/")
+#define CONDAST_URL F("www.condast.com")
 
 //SERVER
 // Set the static IP address to use if the DHCP fails to assign
-IPAddress server(79, 170, 90, 5);
-IPAddress ip(79, 170, 90, 5);
-const int PORT = 8080;
+//IPAddress server(79, 170, 90, 5);
+//IPAddress ip(79, 170, 90, 5);
+//const int PORT = 8080;
 
 //De Stadstuin
-//IPAddress server(10, 30, 8, 74);
-//IPAddress ip(10, 30, 8, 74);
-//const int PORT = 10081;
+IPAddress server(10, 30, 8, 74);
+IPAddress ip(10, 30, 8, 74);
+const int PORT = 10081;
 
 //Camping de Worp
 //IPAddress server(172,16,2,144);

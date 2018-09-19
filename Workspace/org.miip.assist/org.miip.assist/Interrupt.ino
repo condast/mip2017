@@ -1,17 +1,20 @@
+#define TENTH_SECONDS 1
 #define SECONDS 10
 
 //Create a sempahore
-boolean lock = false;
+bool lock = false;
 
 int int_counter = 0;
-boolean flank;
+bool flank;
+bool sec_flank;
 
 /**
- *  Set timer0 to increment with steps of 10 Hz
+    Set timer0 to increment with steps of 10 Hz
 */
 void setup_Interrupt() {
   lock = false;
   flank = false;
+  sec_flank = false;
   cli();//stop interrupts
 
   //set timer2 interrupt at 2kHz
@@ -26,7 +29,6 @@ void setup_Interrupt() {
   TCCR2B |= (1 << CS20) | (1 << CS21) | (1 << CS22);
   // enable timer compare interrupt
   TIMSK2 |= (1 << OCIE2A);
-
   sei();
 }
 
@@ -46,15 +48,24 @@ boolean getFlank() {
   return flank;
 }
 
-void clearFlank(){
+boolean getSecFlank() {
+  return sec_flank;
+}
+
+void clearSecFlank() {
+  sec_flank = false;
+}
+
+void clearFlank() {
   flank = false;
 }
 
 //Activate interrupt Timer2
 ISR(TIMER2_COMPA_vect) {
+  flank = true;
   int_counter++;
   int_counter %= SECONDS;
   if ( int_counter > 0 )
     return;
-  flank = true;
+  sec_flank = true;
 }

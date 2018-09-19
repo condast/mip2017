@@ -144,7 +144,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 	}
 
 	@Override
-	public boolean isInitialsed() {
+	public boolean isInitialised() {
 		return true;
 	}
 

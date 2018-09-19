@@ -40,8 +40,10 @@ void setup() {
 }
 
 void loop() {
-  if ( getFlank()) {
-    clearFlank();
+  neoPixel.loop();
+  
+  if ( getSecFlank()) {
+    clearSecFlank();
     load = ( load + 1 ) % 120;
     int balance = load % REFRESH;
     //Serial.println( balance );
@@ -54,11 +56,7 @@ void loop() {
         //Serial.println( "LOGGER SETUP COMPLETE" );
         break;
       default:
-        Serial.println(F("READING RADAR"));
-        neoPixel.loop();
-        //logger.logPrintln( "LOOPED PIXELS" );
-        Serial.println(F("LOOP RADAR COMPLETE"));
-        break;
+         break;
     }
   }
 }

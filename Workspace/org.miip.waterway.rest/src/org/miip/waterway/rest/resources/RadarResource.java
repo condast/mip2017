@@ -19,7 +19,6 @@ import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.log.LogFactory;
 import org.condast.commons.messaging.rest.ResponseCode;
-import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.radar.RadarData;
@@ -88,8 +87,7 @@ public class RadarResource{
 	@GET
 	@Path("/radar")
 	@Produces(MediaType.APPLICATION_JSON)
-	//@Consumes("application/x-www-form-urlencoded") 
-	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("msg") String leds ) {
+	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("leds") String leds ) {
 		try {
 			logger.info("Query for Radar " + id );
 			IReferenceEnvironment<IVessel, IPhysical> env = (IReferenceEnvironment<IVessel, IPhysical>) Dispatcher.getInstance().getActiveEnvironment(); 
@@ -102,7 +100,7 @@ public class RadarResource{
 			ISituationalAwareness<IVessel,IPhysical> sa = reference.getSituationalAwareness();
 			if( sa == null )
 				return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
-			int nrOfLeds = StringUtils.isEmpty(leds)?0: Integer.parseInt(leds);
+			int nrOfLeds = Integer.parseInt( leds );
 			RadarOptions options = dispatcher.getOptions();
 			RestRadar radar = new RestRadar( options, nrOfLeds, sa );
 			List<RestRadar.RadarData> rgbs = radar.drawField();

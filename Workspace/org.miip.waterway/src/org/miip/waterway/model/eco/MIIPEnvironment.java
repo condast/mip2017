@@ -53,7 +53,6 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	private int counter;
 	private int bankWidth;
-	private boolean initialsed;
 	private boolean manual;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -108,14 +107,9 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		section = new Field( latlng, field.getLength(), this.bankWidth );
 		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
 		
-		this.initialsed = true;
 		notifyChangeEvent( new EnvironmentEvent<IVessel>( this, EventTypes.INITIALSED, null ));
 		counter = 0;
 		return true;
-	}
-
-	public boolean isInitialsed() {
-		return initialsed;
 	}
 	
 	/* (non-Javadoc)
