@@ -1,12 +1,10 @@
-package org.miip.waterway.rest.store;
+package org.miip.waterway.radar;
 
 import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.def.IRadar;
-import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.radar.IRadarData.Choices;
-import org.miip.waterway.rest.model.RadarData;
 
 public class RadarOptions{
 

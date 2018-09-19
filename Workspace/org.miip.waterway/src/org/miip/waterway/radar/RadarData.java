@@ -1,7 +1,6 @@
-package org.miip.waterway.rest.model;
+package org.miip.waterway.radar;
 
 import org.condast.commons.data.latlng.BaseData;
-import org.miip.waterway.radar.IRadarData;
 
 public class RadarData extends BaseData implements IRadarData {
 

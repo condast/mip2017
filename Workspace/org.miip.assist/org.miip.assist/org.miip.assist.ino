@@ -9,6 +9,18 @@
 const char NAME[]  = "Miip";
 const int TOKEN = 1025;
 
+    /**
+       Pixel Data object
+    */
+    struct PixelData {
+      char* remarks;
+      int index;
+      boolean end;
+      int choice;
+      int options;
+    };
+
+
 int load;
 
 WebClient webClient( NAME, TOKEN );

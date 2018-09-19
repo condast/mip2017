@@ -70,11 +70,12 @@ boolean NeoPixel::update( ) {
   data.end = root[F("end")];
   data.choice = root[F("ch")];
   data.options = root[F("o")];
-  Serial.print( "PIXEL DATA " ); Serial.println(data.options);
+  //data.transparancy = root[F("t")];
+  Serial.print(F("PIXEL DATA ")); Serial.println(data.options);
   jsonBuffer.clear();
   webClient.disconnect();
   choice = static_cast<Choices>(data.choice );
-  Serial.print( "NEOPIXEL SETUP " ); Serial.println(choice);
+  Serial.print(F("NEOPIXEL SETUP ")); Serial.println(choice);
 }
 /**
     Send a request for radar data
@@ -89,7 +90,7 @@ NeoPixel::RadarData NeoPixel::requestRadar( int leds ) {
     webClient.disconnect();
     return data;
   }
-  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
+  size_t capacity = JSON_OBJECT_SIZE(6) + 40;
   DynamicJsonBuffer jsonBuffer(capacity);
 
   // Parse JSON object
@@ -104,7 +105,7 @@ NeoPixel::RadarData NeoPixel::requestRadar( int leds ) {
   data.red = root["r"];
   data.green = root["g"];
   data.blue = root["b"];
-  data.transparency = root["t"];
+  //data.transparency = root["t"];
   //Serial.print( "RADAR DATA Available for index " ); Serial.println( data.index );
   jsonBuffer.clear();
   webClient.disconnect();
@@ -159,28 +160,31 @@ void NeoPixel::loop() {
     return;
   }
 
-  Serial.print("NEO PIXEL: Selecting " ); Serial.println( choice );
+  Serial.print(F("NEO PIXEL: Selecting ")); Serial.println( choice );
+  double divide = 50;//data.transparancy/100;
+  int cmax = 255*divide;
+  int cmin = 255*divide;
   switch ( choice ) {
     case RADAR:
       show_Radar();
       break;
     case COLOUR_WIPE_RED:
-      colorWipe(strip.Color(255, 0, 0), 50); // Red
+      colorWipe(strip.Color(cmax, 0, 0), cmin); // Red
       break;
     case COLOUR_WIPE_GREEN:
-      colorWipe(strip.Color(0, 255, 0), 50); // Green
+      colorWipe(strip.Color(0, cmax, 0), cmin); // Green
       break;
     case COLOUR_WIPE_BLUE:
-      colorWipe(strip.Color(0, 0, 255), 50); // Blue
+      colorWipe(strip.Color(0, 0, cmax), cmin); // Blue
       break;
     case THEATER_CHASE_RED:
-      theaterChase(strip.Color(127, 0, 0), 50); // White
+      theaterChase(strip.Color(127, 0, 0), cmin); // White
       break;
     case THEATER_CHASE_WHITE:
-      theaterChase(strip.Color(127, 127, 127), 50); // White
+      theaterChase(strip.Color(127, 127, 127), cmin); // White
       break;
     case THEATER_CHASE_BLUE:
-      theaterChase(strip.Color(0, 0, 127), 50); // Blue
+      theaterChase(strip.Color(0, 0, 127), cmin); // Blue
       break;
     case RAINBOW:
       rainbow(20);
@@ -189,7 +193,7 @@ void NeoPixel::loop() {
       rainbowCycle(20);
       break;
     case RAINBOW_THEATRE_CHASE:
-      theaterChaseRainbow(50);
+      theaterChaseRainbow(cmin);
       break;
     default:
       switch ( counter ) {

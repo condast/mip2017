@@ -10,7 +10,7 @@ import org.condast.commons.autonomy.env.IEnvironment;
 import org.condast.commons.preferences.IPreferenceStore;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IDesignFactory;
-import org.miip.waterway.rest.store.RadarOptions;
+import org.miip.waterway.radar.RadarOptions;
 
 public class Dispatcher {
 

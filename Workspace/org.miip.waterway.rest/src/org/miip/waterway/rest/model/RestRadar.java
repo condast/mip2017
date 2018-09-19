@@ -13,7 +13,7 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.radar.LedRadar;
 import org.miip.waterway.radar.Radar;
-import org.miip.waterway.rest.store.RadarOptions;
+import org.miip.waterway.radar.RadarOptions;
 
 public class RestRadar{
 

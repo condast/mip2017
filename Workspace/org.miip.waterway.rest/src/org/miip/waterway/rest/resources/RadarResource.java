@@ -22,10 +22,10 @@ import org.condast.commons.messaging.rest.ResponseCode;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.IRadarData;
+import org.miip.waterway.radar.RadarData;
+import org.miip.waterway.radar.RadarOptions;
 import org.miip.waterway.rest.core.Dispatcher;
-import org.miip.waterway.rest.model.RadarData;
 import org.miip.waterway.rest.model.RestRadar;
-import org.miip.waterway.rest.store.RadarOptions;
 
 import com.google.gson.Gson;
 
@@ -35,11 +35,9 @@ public class RadarResource{
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
-	private RadarOptions settings;
 		
 	public RadarResource() {
 		super();
-		settings = dispatcher.getOptions();
 	}
 
 	// This method is called if TEXT_PLAIN is request
@@ -49,8 +47,11 @@ public class RadarResource{
 	public Response setupRadar( @QueryParam("id") String id, @QueryParam("token") String token ) {
 		try {
 			logger.info("Query for Radar " + id );
+			RadarOptions settings = dispatcher.getOptions();
+			if( settings == null )
+				return Response.noContent().build();
 			IRadarData data = settings.toRadarData();
-				Gson gson = new Gson();
+			Gson gson = new Gson();
 			String result = gson.toJson(data, RadarData.class);
 			return Response.ok( result ).build();
 		}
@@ -67,10 +68,13 @@ public class RadarResource{
 	public Response logPost( @QueryParam("id") String id, @QueryParam("token") String token, @FormParam("msg") String message ) {
 		try {
 			Level restLevel = LogFactory.createLogLevel(id, Level.SEVERE.intValue() - 1); 
+			RadarOptions settings = dispatcher.getOptions();
+			if( settings == null )
+				return Response.noContent().build();
 			logger.log( restLevel, message );
-			OptionsData data = new OptionsData( settings.isLogging());
+			OptionsData options = new OptionsData( settings.isLogging());
 			Gson gson = new Gson();
-			String result = gson.toJson(data, OptionsData.class);
+			String result = gson.toJson( options, OptionsData.class);
 			return Response.ok( result ).build();
 		}
 		catch( Exception ex ) {
