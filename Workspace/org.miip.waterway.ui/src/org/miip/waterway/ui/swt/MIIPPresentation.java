@@ -111,7 +111,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 			scaleToCanvas(cship.getLocation());
 		drawImage( gc, point, MIIPImages.Images.SHIP);
 
-		if(!environment.isInitialsed() )
+		if(!environment.isInitialised() )
 			return;
 
 		//The raster

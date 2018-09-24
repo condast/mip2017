@@ -9,6 +9,18 @@
 const char NAME[]  = "Miip";
 const int TOKEN = 1025;
 
+    /**
+       Pixel Data object
+    */
+    struct PixelData {
+      char* remarks;
+      int index;
+      boolean end;
+      int choice;
+      int options;
+    };
+
+
 int load;
 
 WebClient webClient( NAME, TOKEN );
@@ -28,8 +40,10 @@ void setup() {
 }
 
 void loop() {
-  if ( getFlank()) {
-    clearFlank();
+  neoPixel.loop();
+  
+  if ( getSecFlank()) {
+    clearSecFlank();
     load = ( load + 1 ) % 120;
     int balance = load % REFRESH;
     //Serial.println( balance );
@@ -42,11 +56,7 @@ void loop() {
         //Serial.println( "LOGGER SETUP COMPLETE" );
         break;
       default:
-        Serial.println(F("READING RADAR"));
-        neoPixel.loop();
-        //logger.logPrintln( "LOOPED PIXELS" );
-        Serial.println(F("LOOP RADAR COMPLETE"));
-        break;
+         break;
     }
   }
 }

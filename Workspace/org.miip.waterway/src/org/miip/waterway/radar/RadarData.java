@@ -9,9 +9,11 @@ public class RadarData extends BaseData implements IRadarData {
 	private int s;//sensitivity
 	
 	private int o;//(boolean)options: bit 0: log 
+	private boolean enb;
 
-	public RadarData( Choices choice, int range, int sensitivity, int options) {
+	public RadarData( Choices choice, boolean enable, int range, int sensitivity, int options) {
 		ch = choice.ordinal();
+		this.enb = enable;
 		this.r = range;
 		this.s = sensitivity;
 		this.o = options;
@@ -22,6 +24,10 @@ public class RadarData extends BaseData implements IRadarData {
 		ch = choice.ordinal();
 	}
 	
+	public boolean isEnbaled() {
+		return enb;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.rest.model.IRadarData#getIndex()
 	 */

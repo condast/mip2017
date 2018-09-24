@@ -133,7 +133,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 			drawOval(gc, vessel, point);
 			drawImage( gc, point, MIIPImages.Images.SHIP);
 
-			if(!environment.isInitialsed() )
+			if(!environment.isInitialised() )
 				return;
 
 			for( IPhysical phobj: this.environment.getOthers() ){

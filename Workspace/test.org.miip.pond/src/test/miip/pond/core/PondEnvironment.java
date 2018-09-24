@@ -113,7 +113,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 	}
 	
 	@Override
-	public boolean isInitialsed() {
+	public boolean isInitialised() {
 		return true;
 	}
 

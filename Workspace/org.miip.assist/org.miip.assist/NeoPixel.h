@@ -24,18 +24,6 @@ class NeoPixel {
       int options;
     };
 
-    /**
-       Radar Data object
-    */
-    struct RadarData {
-      byte red;
-      byte green;
-      byte blue;
-      byte index;
-      byte transparency;
-    };
-
-
     enum Choices {
       RADAR,
       COLOUR_WIPE_RED,
@@ -54,6 +42,7 @@ class NeoPixel {
     int counter;
     bool enable;
     PixelData data;
+    bool requestRadar();
     void colorPixel( byte index, byte red, byte green, byte blue, byte transparency );
     void show_Radar();
     void colorWipe(uint32_t c, uint8_t wait);
@@ -65,8 +54,7 @@ class NeoPixel {
 
   public: NeoPixel(void);
     void setup();
-    RadarData requestRadar( int leds );
-    boolean update();
+    bool update();
     void loop();
 };
 

@@ -162,7 +162,7 @@ public class RadarOptions{
 	}
 
 	public IRadarData toRadarData() {
-		IRadarData data = new RadarData( getChoice(), getRange(), getSensitivity(), getOptions() );
+		IRadarData data = new RadarData( getChoice(), isEnabled(), getRange(), getSensitivity(), getOptions() );
 		return data;
 	}
 }
