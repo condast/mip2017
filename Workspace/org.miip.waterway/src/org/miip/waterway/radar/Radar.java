@@ -8,7 +8,6 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 	
 	private ISituationalAwareness<V,O> sa;
 	
-	private long range;
 	private int sensitivity; //part of the range
 	private int steps;
 
@@ -18,7 +17,6 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 	
 	public Radar( int steps ) {
 		this.sensitivity = DEFAULT_SENSITIVITY;
-		this.range = DEFAULT_RANGE;
 		this.steps = steps;
 	}
 
@@ -34,12 +32,13 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 
 	@Override
 	public long getRange() {
-		return range;
+		return ( this.sa == null )?0: (long) this.sa.getRange();
 	}
 
 	@Override
 	public void setRange(int range) {
-		this.range = range;
+		if( this.sa != null )
+			this.sa.setRange( range );
 	}
 
 	@Override
@@ -75,9 +74,6 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 				return;
 		}
 		this.sa = sa;
-		if( sa != null ) {
-			this.range = (long) sa.getField().getLength();
-		}
 		refresh();
 	}
 

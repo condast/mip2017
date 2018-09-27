@@ -51,7 +51,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 
 	private IReferenceEnvironment<IVessel, IPhysical> environment;
 	
-	private Map<IVessel, List<Point>> points;
+	private Map<IVessel, List<LatLng>> tajectory;
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
@@ -62,7 +62,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 	 */
 	public PondCanvas(Composite parent, Integer style) {
 		super(parent, style);
-		points = new HashMap<>();
+		tajectory = new HashMap<>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener(listener);
 	}
@@ -129,7 +129,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 			IVessel vessel = (IVessel) this.environment.getInhabitant();
 			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
 				su.scaleToCanvas(vessel.getLocation());
-			drawLine(gc, vessel, point, this.environment.getOthers());
+			drawLine(gc, vessel, this.environment.getOthers());
 			drawOval(gc, vessel, point);
 			drawImage( gc, point, MIIPImages.Images.SHIP);
 
@@ -143,7 +143,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 				logger.fine("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
 				MIIPImages.Images img = ( other.getBearing() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
 				Point otherPoint = su.scaleToCanvas( phobj.getLocation() );
-				drawLine(gc, other, otherPoint, null);
+				drawLine(gc, other, null);
 				drawOval(gc, other, otherPoint);
 				drawImage(gc, otherPoint, img );
 			}
@@ -154,7 +154,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 		gc.dispose();
 	}
 
-	protected void drawLine( GC gc, IVessel vessel, Point point, Collection<? extends IPhysical> others ){
+	protected void drawLine( GC gc, IVessel vessel, Collection<? extends IPhysical> others ){
 		int colorCode = vessel.hasCollisionAvoidance()?SWT.COLOR_GREEN: SWT.COLOR_GRAY;
 		if( vessel.hasCollisionAvoidance()) {
 			double minDistance = getMinDistance(vessel, others);
@@ -162,18 +162,23 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 				colorCode = SWT.COLOR_DARK_RED;
 		}
 		gc.setForeground( getDisplay().getSystemColor( colorCode ));
-		List<Point> list = points.get( vessel );
+		List<LatLng> list = tajectory.get( vessel );
 		if( Utils.assertNull( list )) {
 			list = new ArrayList<>();
-			points.put(vessel, list);
+			tajectory.put(vessel, list);
 		}
-		list.add(point);
+		list.add( vessel.getLocation());
 		if( list.size() == 1)
 			return;
+		Rectangle clientArea = getClientArea();
+		ScalingUtils su = new ScalingUtils( this, this.environment.getField());
+		Point defpoint = new Point( (int)( clientArea.width/2), (int)(clientArea.height/2));
 		for( int i = 1; i< list.size(); i++ ) {
-			Point previous = list.get(i-1);
-			Point next = list.get(i); 
-			gc.drawLine(previous.x, previous.y, next.x, next.y);
+			LatLng previous = list.get(i-1);
+			Point ppoint = ( previous == null )? defpoint: su.scaleToCanvas(previous);
+			LatLng next = list.get(i); 
+			Point npoint = ( next == null )? defpoint:su.scaleToCanvas(next);
+			gc.drawLine(ppoint.x, ppoint.y, npoint.x, npoint.y);
 		}
 	}
 
@@ -187,7 +192,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_RED ));
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
 
-		radius = (int)(2*su.scaleXToDisplay((int)vessel.getSituationalAwareness().getRange())); 
+		radius = (int)(su.scaleXToDisplay((int)vessel.getSituationalAwareness().getRange())); 
 		transform = (int)( radius/2);
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_GRAY ));
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
