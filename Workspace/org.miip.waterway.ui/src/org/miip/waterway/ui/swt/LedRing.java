@@ -84,31 +84,9 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	}
 	
 	protected Color getColour( int key, double distance) {
-		IRadarColours.RadarColours colour = IRadarColours.RadarColours.GREEN;
 		if( super.getInput() == null)
 			return super.getColour(distance);
 		ISituationalAwareness<IVessel, IPhysical> sa = super.getInput();
-		//int sensitivity = (int)(distance/sa.getCriticalDistance());
-		//logger.fine("Comparing distance: " + distance + " with sensitivity: " + sensitivity);
-		/*
-		switch( sensitivity) {
-		case 6:
-			colour = IRadarColours.RadarColours.getColour( IRadarColours.RadarColours.DARK_ORANGE.getIndex() );
-			break;
-		case 5:
-		case 4:
-		case 3:
-			colour = IRadarColours.RadarColours.getColour( IRadarColours.RadarColours.ORANGE.getIndex() );
-			break;
-		case 2:
-		case 1:
-		case 0:
-			colour = IRadarColours.RadarColours.getColour( IRadarColours.RadarColours.RED.getIndex());
-			break;
-		default:
-			break;
-		}
-		*/
 		return IRadarColours.RadarColours.getColour(getDisplay(), getSensitivity(), sa.getReference().getCriticalDistance(), distance);
 	}
 

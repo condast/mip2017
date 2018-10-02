@@ -86,7 +86,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 			return getColour( device, colour);
 		}
 
-		public static Color getLinearColour( Device device, int distance, long range, int sensitivity ){
+		public static Color getLinearColour( Device device, int distance, double range, int sensitivity ){
 			boolean far = ( distance > ( range - sensitivity ));
 			int red = far? 50: (int)( 255 * ( 1 - distance/range ));
 			int green = far? 255: (int)( 255 * distance/range );
@@ -142,12 +142,12 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 	}
 
 	@Override
-	public long getRange() {
+	public double getRange() {
 		return radar.getRange();
 	}
 
 	@Override
-	public void setRange(int range) {
+	public void setRange(double range) {
 		radar.setRange(range);
 	}
 
@@ -220,22 +220,25 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 	}
 
 	@Override
-	public void setInput( ISituationalAwareness<V,O> sa ){
+	public void setInput( ISituationalAwareness<V,O> sa, boolean setRange ){
 		if( this.sa != null ) {
 			if( this.sa.equals(sa))
 				return;
 			this.sa.removelistener(slistener);
 		}
 		this.sa = sa;
+		radar.setInput(sa);
 		if( sa != null ) {
 			this.sa.addlistener(slistener);
-			radar.setSensitivity((int)(sa.getRange()));
-			if( sa.getField() != null )
-				radar.setRange( (int) sa.getField().getLength());
 		}
 		refresh();
 	}
 
+	@Override
+	public void setInput( ISituationalAwareness<V,O> sa ){
+		setInput( sa, false );
+	}
+	
 	public void refresh(){
 		if(( getDisplay() == null ) || getDisplay().isDisposed() )
 			return;

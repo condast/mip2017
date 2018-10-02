@@ -155,11 +155,10 @@ public class RadarGroup extends Group {
 		GridData gd_slider_range = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_slider_range.widthHint = 139;
 		slider_range.setLayoutData(gd_slider_range);
-		slider_range.setSize(254, 17);
 		slider_range.setMinimum(1);
 		slider_range.setMaximum(3000);
 		slider_range.setSelection( IRadar.DEFAULT_RANGE );
-		slider_range.setIncrement(20);
+		slider_range.setIncrement(5);
 		slider_range.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 

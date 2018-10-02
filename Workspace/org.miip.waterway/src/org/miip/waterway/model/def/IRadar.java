@@ -6,7 +6,7 @@ import org.condast.commons.strings.StringStyler;
 public interface IRadar<V, O extends Object> {
 
 	public static final int DEFAULT_SENSITIVITY = 210;//0-1000
-	public static final int DEFAULT_RANGE = 1200;//max 3000 meters
+	public static final int DEFAULT_RANGE = 30;//max 30 meters
 	public static final int DEFAULT_STEPS = 360;//max 3000 meters
 
 	public enum RadarSelect{
@@ -37,10 +37,13 @@ public interface IRadar<V, O extends Object> {
 	ISituationalAwareness<V, O> getInput();
 
 	/**
-	 * set the input for this radar by adding the SA and the range (m)
+	 * Set the input for this radar by adding the SA and the range (m)
+	 * If setRange is true, then the range of the radar overwrites te
+	 * range of situational awareness
 	 * @param sa
 	 */
-	void setInput( ISituationalAwareness<V,O> sa);
+	void setInput( ISituationalAwareness<V,O> sa, boolean setRange );
+	void setInput( ISituationalAwareness<V,O> sa );
 
 	/**
 	 * Get the sensitivity of the radar
@@ -52,16 +55,16 @@ public interface IRadar<V, O extends Object> {
 	 * get the range of the radar
 	 * @return
 	 */
-	public long getRange();
-	
+	public double getRange();
+
+	void setRange(double range);
+
 	/**
 	 * redraw the canvas
 	 */
 	public void refresh();
 
 	void setSensitivity(int sensitivity);
-
-	void setRange(int range);
 
 	int getSteps();
 

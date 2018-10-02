@@ -53,7 +53,6 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,
 		
 	};
 
-
 	public AveragingRadar(Composite parent, int style) {
 		super(parent, style);
 	}
