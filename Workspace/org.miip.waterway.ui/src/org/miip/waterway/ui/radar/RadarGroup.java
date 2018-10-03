@@ -184,12 +184,18 @@ public class RadarGroup extends Group {
 		radar = new LedRing<IVessel>( comp_radar, SWT.BORDER );
 	}
 
-	public void setInput( ISituationalAwareness<IVessel,IPhysical> sa ) {
+	public void setInput( ISituationalAwareness<IVessel,IPhysical> sa, boolean overwriteRange ) {
 		this.sa = sa;
 		this.radar.setInput( sa );
-		if(( sa != null ) && ( sa.getField() != null )) {
-			this.slider_range.setMaximum( (int) (sa.getField().getLength()));
-			radar.setRange((int) sa.getField().getWidth());
+		if( sa != null ) {
+			if( overwriteRange ) {
+				if( sa.getField() != null ){
+					this.slider_range.setMaximum( (int) (sa.getField().getLength()));
+					radar.setRange((int) sa.getField().getWidth());
+				}
+			}else {
+				sa.setRange(radar.getRange());
+			}
 		}
 		this.slider_sense.setSelection( radar.getSensitivity() );
 		this.slider_range.setSelection( (int)radar.getRange() );

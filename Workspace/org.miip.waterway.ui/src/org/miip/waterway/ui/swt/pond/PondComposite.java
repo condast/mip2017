@@ -76,7 +76,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	public PondComposite(Composite parent, int style) {
 		super(parent, style);
 		try {
-		this.createComposite(parent, style);
+			this.createComposite(parent, style);
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
@@ -209,7 +209,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 			return;
 		this.canvas.setInput( this.environment);
 		IVessel reference = (IVessel) this.environment.getInhabitant();
-		this.radarGroup.setInput( reference.getSituationalAwareness() );
+		this.radarGroup.setInput( reference.getSituationalAwareness(), true );
 		if( this.environment != null )
 			this.environment.addListener(handler);
 		this.playerbar.getButton(PlayerImages.Images.START).setEnabled( this.environment != null );
@@ -374,9 +374,8 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 					try{
 						switch( event.getType() ){
 						case INITIALSED:
-							radarGroup.setInput(event.getData().getSituationalAwareness());
-							break;
 						case PROCEED:
+							radarGroup.setInput(event.getData().getSituationalAwareness(), false);
 							break;
 						case COLLISION_DETECT:
 						case OUT_OF_BOUNDS:

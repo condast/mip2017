@@ -328,7 +328,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	public void setInput( IMIIPEnvironment environment ){
 		this.environment = environment;
 		if( this.environment != null )
-			this.radarGroup.setInput( environment.getSituationalAwareness());
+			this.radarGroup.setInput( environment.getSituationalAwareness(), true);
 		this.canvas.setInput(environment);
 	}
 
@@ -405,7 +405,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 							environment.addListener(handler);
 							thread.start();
 							environment.getSituationalAwareness().addlistener(shlistener);
-							radarGroup.setInput( environment.getSituationalAwareness());
+							radarGroup.setInput( environment.getSituationalAwareness(), true);
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
 							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
