@@ -68,7 +68,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private RadarGroup radarGroup;
 	private IMIIPEnvironment environment;
 	private Collection<ICompositeFactory> factories;
-	//private Composite frontend;
 	private Banner banner;
 
 	private PlayerComposite<MIIPEnvironment> playerbar;
