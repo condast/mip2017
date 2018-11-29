@@ -105,12 +105,11 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 					CompositeNames cmp = CompositeNames.valueOf( StringStyler.styleToEnum( name_str));
 					switch( cmp ) {
 					case POND_COMPOSITE:
-						PondComposite pondcomp = (PondComposite) event.getData();
-						pondcomp.setInput( dispatcher.getFactories().values());
+						//PondComposite pondcomp = (PondComposite) event.getData();
 						break;
 					case MIIP_COMPOSITE:
 						MiipComposite miipcomp = (MiipComposite) event.getData();
-						miipcomp.setFactories( dispatcher.getFactories().values());
+						dispatcher.setMiipComposite( miipcomp );
 						break;
 					case LOG_COMPOSITE:
 						logComposite = (LogComposite) event.getData();

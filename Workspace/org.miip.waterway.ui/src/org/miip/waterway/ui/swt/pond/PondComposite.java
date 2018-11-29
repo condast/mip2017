@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
 
-import java.util.Collection;
 import java.util.EnumSet;
 
 import org.condast.commons.autonomy.env.EnvironmentEvent;
@@ -29,8 +28,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.eco.MIIPEnvironment;
-import org.miip.waterway.ui.banner.Banner;
-import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
@@ -55,7 +52,6 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private Text text_lng;
 	private Text text_lat;
 	private Label lblHits;
-	private Banner banner;
 	
 	private PlayerComposite<MIIPEnvironment> playerbar;
 
@@ -89,8 +85,6 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		setLayout(new GridLayout(2, false));
 		this.setData( RWT.CUSTOM_VARIANT, S_MIIP);
 
-		banner = new Banner( this, SWT.FULL_SELECTION);
-		banner.setLayoutData( new GridData(SWT.TOP,  SWT.FILL, false, true ));
 		canvas = new PondCanvas(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 
@@ -189,10 +183,6 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 		radarGroup = new RadarGroup(composite, SWT.NONE); 
 		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	}
-
-	public void setInput( Collection<ICompositeFactory> factories ){
-		banner.setFactories(factories);
 	}
 
 	@Override

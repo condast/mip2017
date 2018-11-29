@@ -8,6 +8,7 @@ import org.condast.commons.autonomy.env.IEnvironment;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.miip.waterway.model.def.IDesignFactory;
 import org.miip.waterway.ui.factory.ICompositeFactory;
+import org.miip.waterway.ui.swt.MiipComposite;
 
 public class Dispatcher {
 
@@ -19,6 +20,7 @@ public class Dispatcher {
 	private Map<String, IEnvironment<IPhysical>> environments;
 	private Map<String, ICompositeFactory> factories;
 	
+	private MiipComposite miipComposite;
 	
 	private Dispatcher() {
 		environments = new HashMap<String, IEnvironment<IPhysical>>();
@@ -27,6 +29,14 @@ public class Dispatcher {
 
 	public static Dispatcher getInstance(){
 		return dispatcher;
+	}
+
+	public MiipComposite getMiipComposite() {
+		return miipComposite;
+	}
+
+	public void setMiipComposite(MiipComposite miipComposite) {
+		this.miipComposite = miipComposite;
 	}
 
 	public IEnvironment<IPhysical> getActiveEnvironment() {

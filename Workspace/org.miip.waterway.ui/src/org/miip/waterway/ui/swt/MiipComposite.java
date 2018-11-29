@@ -6,8 +6,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.GridLayout;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.logging.Logger;
 
@@ -38,8 +36,6 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.eco.MIIPEnvironment;
-import org.miip.waterway.ui.banner.Banner;
-import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
@@ -67,8 +63,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Label lblHits;
 	private RadarGroup radarGroup;
 	private IMIIPEnvironment environment;
-	private Collection<ICompositeFactory> factories;
-	private Banner banner;
 
 	private PlayerComposite<MIIPEnvironment> playerbar;
 
@@ -128,8 +122,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	public MiipComposite(Composite parent, int style) {
 		super(parent, style);
 		this.createComposite(parent, style);
-		//this.frontend = this;
-		this.factories = new ArrayList<ICompositeFactory>();
 		this.handler = new SessionHandler( getDisplay());
 	}
 
@@ -137,8 +129,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		setLayout(new GridLayout(2, false));
 		this.setData( RWT.CUSTOM_VARIANT, S_MIIP);
 
-		banner = new Banner(this, SWT.FULL_SELECTION);
-		banner.setLayoutData( new GridData(SWT.TOP,  SWT.FILL, false, true ));
 		canvas = new MIIPPresentation(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
 
@@ -311,11 +301,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				}
 			}
 		});
-	}
-
-	public void setFactories( Collection<ICompositeFactory> factories ){
-		this.factories = factories;
-		banner.setFactories( this.factories);
 	}
 
 	@Override
