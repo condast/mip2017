@@ -36,7 +36,7 @@ public class LedRadar<V,O extends IPhysical>{
 		if( sa == null )
 			return;
 		IVessel reference = (IVessel) radar.getInput().getReference(); 
-		for( O obj: sa.getRadar() ){
+		for( O obj: sa.getScan() ){
 			double angle = LatLngUtils.getBearing(reference.getLocation(), obj.getLocation());
 			int key = ( int )( radar.getSteps() * angle /( 2*Math.PI ));
 			Motion waypoint = calculate(key, obj );

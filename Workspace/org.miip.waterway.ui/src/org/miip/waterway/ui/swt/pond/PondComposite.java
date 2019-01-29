@@ -197,6 +197,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		this.environment = environment;
 		if( this.environment == null )
 			return;
+		this.environment.setEnabled(true);
 		this.canvas.setInput( this.environment);
 		IVessel reference = (IVessel) this.environment.getInhabitant();
 		this.radarGroup.setInput( reference.getSituationalAwareness(), true );
@@ -219,6 +220,13 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 
 		this.canvas.redraw();
 		layout(false);
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+		if( this.environment != null )
+			this.environment.setEnabled(visible);
+		super.setVisible(visible);
 	}
 
 	public void dispose(){

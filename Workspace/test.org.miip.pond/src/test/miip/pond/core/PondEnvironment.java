@@ -44,7 +44,12 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		pe = this; 
 		this.clear();
 	}
-	
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		/* NOTHING */
+	}
+
 	@Override
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
@@ -115,6 +120,11 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 	@Override
 	public boolean isInitialised() {
 		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return active;
 	}
 
 	@Override

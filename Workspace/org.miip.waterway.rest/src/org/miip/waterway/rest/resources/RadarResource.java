@@ -23,8 +23,8 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.radar.RadarData;
 import org.miip.waterway.radar.RadarOptions;
+import org.miip.waterway.radar.RestRadar;
 import org.miip.waterway.rest.core.Dispatcher;
-import org.miip.waterway.rest.model.RestRadar;
 
 import com.google.gson.Gson;
 
@@ -87,9 +87,9 @@ public class RadarResource{
 	@GET
 	@Path("/radar")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("leds") String leds ) {
+	public Response getRadar( @QueryParam("id") String id, @QueryParam("token") String token, @QueryParam("leds") String leds, @QueryParam("range") String range, @QueryParam("sense") String sensitivity ) {
 		try {
-			logger.info("Query for Radar " + id );
+			logger.info("Query for Radar " + id + ", nr of leds: " + leds );
 			IReferenceEnvironment<IVessel, IPhysical> env = (IReferenceEnvironment<IVessel, IPhysical>) Dispatcher.getInstance().getActiveEnvironment(); 
 			Response response = null;
 			if( env == null )
@@ -102,6 +102,8 @@ public class RadarResource{
 				return Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 			int nrOfLeds = Integer.parseInt( leds );
 			RadarOptions options = dispatcher.getOptions();
+			options.setSensitivity((int)Double.parseDouble(sensitivity));
+			options.setRange((int)Double.parseDouble(range));
 			RestRadar radar = new RestRadar( options, nrOfLeds, sa );
 			List<RestRadar.RadarData> rgbs = radar.drawField();
 			Gson gson = new Gson();

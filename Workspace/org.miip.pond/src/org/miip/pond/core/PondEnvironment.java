@@ -50,6 +50,12 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 	}
 
 	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+	}
+
+
+	@Override
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
 		LatLng latlng = field.transform(0, field.getWidth()/2);

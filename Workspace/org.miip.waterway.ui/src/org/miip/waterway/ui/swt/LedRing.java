@@ -23,19 +23,19 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	
 	private int leds;
 	
-	private Map<Integer, Double> radar;
+	private Map<Integer, Double> scan;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public LedRing(Composite parent, int style ) {
 		super(parent, style);
 		this.leds = NR_OF_LEDS;
-		radar = new TreeMap<>( );
+		scan = new TreeMap<>( );
 	}
 	
 	@Override
 	protected void onDrawStart(GC gc) {
-		this.radar.clear();
+		this.scan.clear();
 		super.onDrawStart(gc);
 	}
 
@@ -46,10 +46,10 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	}
 	
 	protected void setKey( int key, double distance ) {
-		Double dist = this.radar.get(key);
+		Double dist = this.scan.get(key);
 		if(( dist != null ) && ( dist < distance ))
 			distance = dist;
-		this.radar.put(key, distance);		
+		this.scan.put(key, distance);		
 	}
 	
 	@Override
@@ -101,7 +101,7 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		Color background = gc.getBackground();
 		double distance = super.getRange() + 10;
 		for( int i=0; i< this.leds; i++ ) {
-			Double value = radar.get( i );
+			Double value = scan.get( i );
 			distance = ( value == null )?Double.MAX_VALUE: value;
 			double phi = i * 2 * Math.PI/this.leds;
 			double x = length * Math.sin( phi );

@@ -189,7 +189,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 		if( sa == null )
 			return;
 		this.onDrawStart(gc);
-		for( O obj: sa.getRadar() ){
+		for( O obj: sa.getScan() ){
 			drawObject(gc, obj );
 		}
 		this.onDrawEnd(gc);

@@ -63,7 +63,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,
 		IVessel reference = sa.getReference(); 
 		
 		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
-		Collection<IPhysical> radar = sa.getRadar();
+		Collection<IPhysical> radar = sa.getScan();
 		IField field = sa.getField();
 		for( IPhysical vessel: radar ){
 			if( vessel.equals( reference ))

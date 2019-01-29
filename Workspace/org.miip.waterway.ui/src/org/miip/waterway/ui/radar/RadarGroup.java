@@ -19,6 +19,7 @@ import org.miip.waterway.model.def.IRadar;
 import org.miip.waterway.ui.swt.AveragingRadar;
 import org.miip.waterway.ui.swt.HumanAssist;
 import org.miip.waterway.ui.swt.LedRing;
+import org.miip.waterway.ui.swt.LedRingRest;
 import org.miip.waterway.ui.swt.DirectRadar;
 import org.miip.waterway.ui.swt.pond.PredictiveRadar;
 
@@ -87,6 +88,11 @@ public class RadarGroup extends Group {
 								//avr.setExpand( 1);
 								radar = ledring;
 								break;
+							case LED_RING_REST:
+								LedRingRest<IPhysical> ledringrest = new LedRingRest<IPhysical>(comp_radar, SWT.BORDER);
+								//avr.setExpand( 1);
+								radar = ledringrest;
+								break;
 							case POND:
 								PredictiveRadar<IVessel> pondr = new PredictiveRadar<IVessel>(comp_radar, SWT.BORDER);
 								//avr.setExpand( 1);
@@ -118,9 +124,7 @@ public class RadarGroup extends Group {
 
 		slider_sense = new Slider( composite, SWT.BORDER );
 		GridData gd_slider_sense = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_slider_sense.widthHint = 132;
 		slider_sense.setLayoutData(gd_slider_sense);
-		slider_sense.setSize(254, 17);
 		slider_sense.setMinimum(1);
 		slider_sense.setMaximum(900);
 		slider_sense.setSelection( IRadar.DEFAULT_SENSITIVITY );
@@ -144,7 +148,6 @@ public class RadarGroup extends Group {
 
 		lbl_sense = new Label( composite, SWT.BORDER );
 		GridData gd_lbl_sense = new GridData( SWT.FILL, SWT.FILL, true, false );
-		gd_lbl_sense.widthHint = 43;
 		lbl_sense.setLayoutData( gd_lbl_sense);
 
 		lblRange = new Label(composite, SWT.NONE);
@@ -153,7 +156,6 @@ public class RadarGroup extends Group {
 
 		slider_range = new Slider(composite, SWT.BORDER );
 		GridData gd_slider_range = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-		gd_slider_range.widthHint = 139;
 		slider_range.setLayoutData(gd_slider_range);
 		slider_range.setMinimum(1);
 		slider_range.setMaximum(3000);
@@ -177,7 +179,6 @@ public class RadarGroup extends Group {
 		});
 		lbl_range = new Label( composite, SWT.BORDER );
 		lbl_range.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		lbl_range.setSize(153, 17);
 		comp_radar = new Composite( this, SWT.NONE); 
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

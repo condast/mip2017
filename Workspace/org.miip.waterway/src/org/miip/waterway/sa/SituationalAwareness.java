@@ -53,7 +53,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	}
 
 	@Override
-	public Collection<IPhysical> getRadar() {
+	public Collection<IPhysical> getScan() {
 		Collection<IPhysical> results = new ArrayList<IPhysical>();
 		if( super.getInput() == null )
 			return results;

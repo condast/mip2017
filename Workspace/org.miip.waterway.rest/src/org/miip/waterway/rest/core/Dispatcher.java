@@ -48,7 +48,7 @@ public class Dispatcher {
 		if(( this.environments == null ) ||( this.environments.isEmpty() ))
 			return null;
 		for( IEnvironment<IVessel> env: this.environments.values() ){
-			if( env.isActive() )
+			if( env.isEnabled() )
 				return env;
 		}
 		return getEnvironment( S_MIIP);

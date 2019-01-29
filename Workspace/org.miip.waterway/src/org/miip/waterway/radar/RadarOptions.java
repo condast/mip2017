@@ -135,8 +135,7 @@ public class RadarOptions{
 		String str = this.store.getSettings( name);
 		int options = StringUtils.isEmpty(str)?0: Integer.parseInt(str);
 		int mask = 1<<position;
-		return ((options&mask) > 0);
-		
+		return ((options&mask) > 0);	
 	}
 
 	protected int getOptions() {
@@ -165,4 +164,15 @@ public class RadarOptions{
 		IRadarData data = new RadarData( getChoice(), isEnabled(), getRange(), getSensitivity(), getOptions() );
 		return data;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for( Options option: Options.values()) {
+			builder.append( option.name() + "," + getSettings(option) + ";");
+		}
+		return builder.toString();
+	}
+	
+	
 }
