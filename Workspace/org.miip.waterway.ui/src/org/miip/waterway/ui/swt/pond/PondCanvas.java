@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
+import org.condast.commons.autonomy.sa.ISituationListener;
+import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
@@ -49,9 +51,29 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 		}
 	};
 
+	private ISituationListener<IPhysical> slistener = new ISituationListener<IPhysical>() {
+
+		@Override
+		public void notifySituationChanged(SituationEvent<IPhysical> event) {
+			if( disposed || getDisplay().isDisposed() || ( event.getVessel() == null ))
+				return;
+			getDisplay().asyncExec( new Runnable() {
+
+				@Override
+				public void run() {
+					redraw();
+				}			
+			});
+			
+		}
+		
+	};
+	
 	private IReferenceEnvironment<IVessel, IPhysical> environment;
 	
 	private Map<IVessel, List<LatLng>> tajectory;
+	
+	private boolean disposed;
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
@@ -62,6 +84,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 	 */
 	public PondCanvas(Composite parent, Integer style) {
 		super(parent, style);
+		this.disposed = false;
 		tajectory = new HashMap<>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener(listener);
@@ -79,22 +102,14 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 
 	@Override
 	public void setInput( IReferenceEnvironment<IVessel, IPhysical> environment){
+		if( this.environment != null )
+			this.environment.getInhabitant().getSituationalAwareness().removeListener(slistener);
+		
 		this.environment = environment;
+		if( this.environment != null ) {
+			this.environment.getInhabitant().getSituationalAwareness().addListener(slistener);
+		}
 	}
-	
-/*	
-	protected Point drawOffset( CentreShip ship, Point centre ){
-		if( ship == null )
-			return centre;
-		Vector<Integer> vector = ship.getOffset();
-		if( vector == null )
-			return centre;
-		//double angle = Math.sin( Math.toRadians( vector.getKey()));
-		int xoffset = (int) vector.getValue().doubleValue();//(int)((float)20 * vector.getValue() *  angle );
-		int yoffset = vector.getKey();//(int)((float)20 * vector.getValue() *  Math.cos( Math.toRadians( vector.getKey())));
-		return new Point( centre.x + xoffset, centre.y + yoffset );
-	}
- */
 
 	protected void drawField( GC gc ){
 		if( environment == null )
@@ -221,6 +236,13 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 		// Disable the check that prevents subclassing of SWT components
 	}
 	
+	
+	@Override
+	public void dispose() {
+		this.disposed = true;
+		super.dispose();
+	}
+
 	protected static double getMinDistance( IPhysical reference, Collection<?extends IPhysical> others ) {
 		double minDistance = Double.MAX_VALUE; 
 		for( IPhysical phys: others ) {

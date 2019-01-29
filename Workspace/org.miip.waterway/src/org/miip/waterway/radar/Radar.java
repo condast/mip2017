@@ -9,7 +9,7 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 	private ISituationalAwareness<V,O> sa;
 	
 	private double range;
-	private int sensitivity; //part of the range
+	private double sensitivity; //part of the range
 	private int steps;
 
 	public Radar() {
@@ -27,12 +27,12 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 	}
 
 	@Override
-	public int getSensitivity() {
+	public double getSensitivity() {
 		return sensitivity;
 	}
 
 	@Override
-	public void setSensitivity( int sensitivity) {
+	public void setSensitivity( double sensitivity) {
 		this.sensitivity = sensitivity;
 	}
 

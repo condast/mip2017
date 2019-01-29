@@ -333,7 +333,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	public void dispose(){
 		if( this.environment != null ){
 			if( this.environment.getSituationalAwareness() != null )
-				this.environment.getSituationalAwareness().removelistener(shlistener);
+				this.environment.getSituationalAwareness().removeListener(shlistener);
 			this.environment.removeListener(handler);
 			IExecuteThread thread = (IExecuteThread) environment;
 			thread.stop();
@@ -388,7 +388,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 						case START:
 							environment.addListener(handler);
 							thread.start();
-							environment.getSituationalAwareness().addlistener(shlistener);
+							environment.getSituationalAwareness().addListener(shlistener);
 							radarGroup.setInput( environment.getSituationalAwareness(), true);
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);

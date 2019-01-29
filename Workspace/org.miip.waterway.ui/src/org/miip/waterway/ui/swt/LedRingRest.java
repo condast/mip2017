@@ -128,7 +128,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 			Gson gson = new Gson();
 			RestRadar.RadarData data = gson.fromJson(result, RestRadar.RadarData.class);
 			scan.put(data.getAngle(), data);
-			logger.info(result);
+			logger.fine(result);
 			return result;
 		}	
 	}

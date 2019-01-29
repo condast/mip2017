@@ -8,6 +8,7 @@ import org.condast.commons.autonomy.sa.ISituationListener;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.data.latlng.Vector;
+import org.condast.commons.range.DoubleRange;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -109,6 +110,8 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 		
 		@Override
 		public void notifySituationChanged(SituationEvent<O> event) {
+			if( event.getVessel() == null )
+				return;
 			onPrepare( event );
 			getDisplay().asyncExec( new Runnable() {
 
@@ -132,13 +135,14 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 	}
 
 	@Override
-	public int getSensitivity() {
+	public double getSensitivity() {
 		return radar.getSensitivity();
 	}
 
 	@Override
-	public void setSensitivity( int sensitivity) {
-		radar.setSensitivity(sensitivity);
+	public void setSensitivity( double sensitivity) {
+		DoubleRange range = new DoubleRange(0, 100);
+		radar.setSensitivity( range.clip(sensitivity));
 	}
 
 	@Override
@@ -224,12 +228,12 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 		if( this.sa != null ) {
 			if( this.sa.equals(sa))
 				return;
-			this.sa.removelistener(slistener);
+			this.sa.removeListener(slistener);
 		}
 		this.sa = sa;
 		radar.setInput(sa);
 		if( sa != null ) {
-			this.sa.addlistener(slistener);
+			this.sa.addListener(slistener);
 		}
 		refresh();
 	}
@@ -256,7 +260,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 		
 	public void dispose() {
 		if( this.sa != null )
-			this.sa.removelistener(slistener);
+			this.sa.removeListener(slistener);
 		super.dispose();
 	}
 

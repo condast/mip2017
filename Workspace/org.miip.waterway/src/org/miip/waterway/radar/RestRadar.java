@@ -42,6 +42,10 @@ public class RestRadar{
 		this.scan = new HashMap<>();
 		this.radar = new Radar<IVessel, IPhysical>();
 		this.radar.setInput(sa);
+		radar.setRange( options.getRange());
+		double sensitivity = ( options.getSensitivity() <= 0)?sa.getRange(): options.getSensitivity();
+		radar.setSensitivity( (int) sensitivity);
+		radar.setSteps( this.leds );
 	}
 
 	public IRadar.RadarSelect getRadarType() {
@@ -53,10 +57,6 @@ public class RestRadar{
 		ISituationalAwareness<IVessel, IPhysical> sa = radar.getInput();
 		if( sa == null )
 			return colours;
-		radar.setRange( options.getRange());
-		double sensitivity = ( options.getSensitivity() <= 0)?sa.getRange(): options.getSensitivity();
-		radar.setSensitivity( (int) sensitivity);
-		radar.setSteps( this.leds );
 		for( IPhysical obj: sa.getScan() ){
 			drawObject( sa.getReference(), obj );
 		}
@@ -84,7 +84,6 @@ public class RestRadar{
 		return range.compareTo(angle);
 	}
 	
-
 	public void drawObject( IVessel reference, IPhysical ship ){
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
@@ -92,19 +91,21 @@ public class RestRadar{
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		int key = getKey( angle );
 		setKey(key, distance);
-		logger.fine("Key:" + key + "; Angle of vessel: " + angle + ", distance = " + distance);
-		if( distance < reference.getCriticalDistance() *3) {
-			int lowkey = (this.leds + key - 1)%this.leds;
-			setKey(lowkey, 1.2*distance);
-			int highkey = (this.leds + key + 1)%this.leds;
-			setKey(highkey, 1.2*distance);
-			if( distance < reference.getCriticalDistance() *2) {
-				lowkey = (this.leds + key - 2)%this.leds;
-				setKey(lowkey, 1.5*distance);
-				highkey = (this.leds + key + 2)%this.leds;
-				setKey(highkey, 1.5*distance);
-			}
-		}
+		logger.info("Key:" + key + "; Angle of vessel: " + angle + ", distance = " + distance);
+		if( distance >= reference.getCriticalDistance() *3)
+			return;
+
+		int lowkey = (this.leds + key - 1)%this.leds;
+		setKey(lowkey, 1.2*distance);
+		int highkey = (this.leds + key + 1)%this.leds;
+		setKey(highkey, 1.2*distance);
+		if( distance >= reference.getCriticalDistance() *2)
+			return;
+
+		lowkey = (this.leds + key - 2)%this.leds;
+		setKey(lowkey, 1.5*distance);
+		highkey = (this.leds + key + 2)%this.leds;
+		setKey(highkey, 1.5*distance);
 	}
 
 	protected void onDrawEnd() {
@@ -114,8 +115,7 @@ public class RestRadar{
 		for( int i=0; i< this.leds; i++ ) {
 			Double value = scan.get( i );
 			distance = ( value == null )?Double.MAX_VALUE: value;
-			logger.info("Distance: " + distance);
-			colour = getColour( radar.getSensitivity(), (int) sa.getReference().getCriticalDistance(), distance);
+			colour = IRadarColours.RadarColours.getColour( radar.getRange(), radar.getSensitivity(), (int) sa.getReference().getCriticalDistance(), distance);
 			colours.add( new RadarData( i, colour , options.getTransparency()));
 		}
 	}
@@ -129,49 +129,6 @@ public class RestRadar{
 		colour[0] = 0;
 		colour[1] = 1;
 		colour[2] = 0;
-		return colour;
-	}
-
-	protected int[] getColour( int sensitivity, int critical, double distance ){
-		int[] colour = new int[3];
-		colour[0] = 0;
-		colour[1] = 0;
-		colour[2] = 0;
-		if( radar.getInput() == null){
-			return colour;
-		}
-		
-		if( distance <= radar.getSensitivity() ){
-			colour[0] = 255;
-			return colour;
-		}
-		if( distance > radar.getRange() )
-			colour = IRadarColours.RadarColours.getColour(sensitivity, critical, distance);
-		return colour;
-		//return getLinearColour( colour, (int) distance, radar.getRange(), radar. getSensitivity() );
-	}
-	
-	protected byte[] getIntColour( Map<Colour, Byte> colour ){
-		byte[] values = new byte[3];
-		values[0] = colour.get(Colour.RED);
-		values[1] = colour.get(Colour.GREEN);
-		values[2] = colour.get(Colour.BLUE);
-		return values;
-	}
-
-	public byte[]  getLinearColour( byte[] colour, int distance, long range, int sensitivity ){
-		byte red = 0;
-		byte green = 0;
-		byte blue = 0;
-		boolean far = ( distance > ( range - sensitivity ));
-		if( radar.getInput() != null) {
-			red = (far? (byte) 50: (byte)( 255 * ( 1 - distance/range )));
-			green = (far? (byte) 255: (byte)( 255 * distance/range ));
-			blue = 50;
-		}
-		colour[0] = red;
-		colour[1] = green;
-		colour[2] = blue;
 		return colour;
 	}
 

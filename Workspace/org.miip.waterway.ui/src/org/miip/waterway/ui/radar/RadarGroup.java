@@ -126,9 +126,9 @@ public class RadarGroup extends Group {
 		GridData gd_slider_sense = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		slider_sense.setLayoutData(gd_slider_sense);
 		slider_sense.setMinimum(1);
-		slider_sense.setMaximum(900);
+		slider_sense.setMaximum(100);
 		slider_sense.setSelection( IRadar.DEFAULT_SENSITIVITY );
-		slider_sense.setIncrement(2);
+		slider_sense.setIncrement(1);
 		slider_sense.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
@@ -198,7 +198,7 @@ public class RadarGroup extends Group {
 				sa.setRange(radar.getRange());
 			}
 		}
-		this.slider_sense.setSelection( radar.getSensitivity() );
+		this.slider_sense.setSelection( (int) radar.getSensitivity() );
 		this.slider_range.setSelection( (int)radar.getRange() );
 		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
 		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));

@@ -47,10 +47,12 @@ public interface IRadar<V, O extends Object> {
 	void setInput( ISituationalAwareness<V,O> sa );
 
 	/**
-	 * Get the sensitivity of the radar
+	 * Get the sensitivity of the radar (0-100%)
 	 * @return
 	 */
-	public int getSensitivity();
+	public double getSensitivity();
+
+	void setSensitivity( double sensitivity);
 
 	/**
 	 * get the range of the radar
@@ -64,8 +66,6 @@ public interface IRadar<V, O extends Object> {
 	 * redraw the canvas
 	 */
 	public void refresh();
-
-	void setSensitivity(int sensitivity);
 
 	int getSteps();
 
