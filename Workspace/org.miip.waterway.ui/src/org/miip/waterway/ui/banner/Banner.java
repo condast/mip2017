@@ -6,14 +6,12 @@ import org.condast.commons.ui.banner.AbstractBanner;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.UrlLauncher;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.miip.waterway.ui.dialog.SettingsDialog;
 import org.miip.waterway.ui.factory.ICompositeFactory;
-import org.miip.waterway.ui.images.BannerImages;
 
 public class Banner extends AbstractBanner {
 	private static final long serialVersionUID = 1L;

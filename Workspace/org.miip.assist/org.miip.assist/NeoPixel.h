@@ -25,6 +25,7 @@ class NeoPixel {
     };
 
     enum Choices {
+      DISABLED,
       RADAR,
       COLOUR_WIPE_RED,
       COLOUR_WIPE_GREEN,
@@ -40,7 +41,6 @@ class NeoPixel {
 
   private: enum Choices choice = ALL;
     int counter;
-    bool enable;
     PixelData data;
     bool requestRadar();
     void colorPixel( byte index, byte red, byte green, byte blue, byte transparency );

@@ -8,21 +8,11 @@
 #define MIIP_CONTEXT F("/miip2017/sa/")
 #define CONDAST_URL F("www.condast.com")
 
-//SERVER
+//Condast SERVER
 // Set the static IP address to use if the DHCP fails to assign
-//IPAddress server(79, 170, 90, 5);
+//char server[] = "www.condast.com";
 //IPAddress ip(79, 170, 90, 5);
 //const int PORT = 8080;
-
-//De Stadstuin
-IPAddress server(10, 30, 8, 74);
-IPAddress ip(10, 30, 8, 74);
-const int PORT = 10081;
-
-//Camping de Worp
-//IPAddress server(172,16,2,144);
-//IPAddress ip(172,16,2,144);
-//const int PORT = 10081;
 
 //Huawei
 //IPAddress server(192,168,8,100);
@@ -33,15 +23,15 @@ const int PORT = 10081;
 //IPAddress server(192, 168, 10, 100);
 //IPAddress ip(192, 168, 10, 100);
 
-//SERVER
+//LOCALHOST
 // Set the static IP address to use if the DHCP fails to assign
-IPAddress server(192, 168, 8, 102);
-IPAddress ip(1192, 168, 8, 102);
+IPAddress server(192, 168, 0, 100);
+IPAddress ip(192, 168, 0, 100);
 const int PORT = 10081;
 
 // Enter a MAC address for your controller below.
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
-byte mac[] = { 0x90, 0xA2, 0xDA, 0x11, 0x12, 0x3A };
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 
 const unsigned long HTTP_TIMEOUT = 5000;// max respone time from server
 
@@ -80,10 +70,6 @@ class WebClient {
     String context;
     String id;
     int token;
-
-    // Enter a MAC address for your controller below.
-    // Newer Ethernet shields have a MAC address printed on a sticker on the shield
-    byte mac[6] = {0};
 
     // Initialize the Ethernet client library
     // with the IP address and port of the server

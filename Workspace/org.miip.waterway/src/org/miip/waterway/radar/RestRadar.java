@@ -17,12 +17,6 @@ import org.miip.waterway.model.def.IRadar;
 
 public class RestRadar{
 
-	public enum Colour{
-		RED,
-		GREEN,
-		BLUE;
-	}
-	
 	private IRadar<IVessel, IPhysical> radar;
 
 	private Map<Integer, Double> scan;

@@ -72,21 +72,21 @@ public class RadarOptions{
 		putSettings(Options.TYPE, type.name());
 	}
 
-	public int getSensitivity() {
+	public double getSensitivity() {
 		String str = getSettings( Options.SENSITIVITY);
-		return StringUtils.isEmpty(str)?0: Integer.parseInt(str);
+		return StringUtils.isEmpty(str)?0: Double.parseDouble(str);
 	}
 
-	public void setSensitivity( int sensitivity ) {
+	public void setSensitivity( double sensitivity ) {
 		putSettings(Options.SENSITIVITY, String.valueOf( sensitivity));
 	}
 
-	public int getRange() {
+	public double getRange() {
 		String str = getSettings( Options.RANGE);
-		return StringUtils.isEmpty(str)?0: Integer.parseInt(str);
+		return StringUtils.isEmpty(str)?0: Double.parseDouble(str);
 	}
 
-	public void setRange( int range ) {
+	public void setRange( double range ) {
 		putSettings(Options.RANGE, String.valueOf( range ));
 	}
 
@@ -161,7 +161,7 @@ public class RadarOptions{
 	}
 
 	public IRadarData toRadarData() {
-		IRadarData data = new RadarData( getChoice(), isEnabled(), getRange(), getSensitivity(), getOptions() );
+		IRadarData data = new RadarData( getChoice(), isEnabled(),(int) getRange(), (int) getSensitivity(), getOptions() );
 		return data;
 	}
 

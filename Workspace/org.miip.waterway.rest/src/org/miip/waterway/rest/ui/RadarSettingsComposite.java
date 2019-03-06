@@ -146,8 +146,8 @@ public class RadarSettingsComposite extends Composite {
 	private void setInput( RadarOptions settings ){
 		this.radarCombo.select( settings.getChoice().ordinal());
 		this.typeCombo.select( settings.getRadarType().ordinal());
-		this.rangeSpinner.setSelection( settings.getRange());
-		this.senseSpinner.setSelection( settings.getSensitivity());
+		this.rangeSpinner.setSelection( (int) settings.getRange());
+		this.senseSpinner.setSelection( (int) settings.getSensitivity());
 		this.transparencySpinner.setSelection( settings.getTransparency());
 		this.enableButton.setSelection(settings.isEnabled());
 	}

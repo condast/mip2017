@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-
 /*
   Web client
 
@@ -21,50 +18,52 @@ WebClient::WebClient( String nme, int tkn ) {
   token = tkn;
 }
 
-void WebClient::setup() {
+void WebClient::setup( ) {
 
   host = CONDAST_URL;
   port = PORT;
   context = MIIP_CONTEXT;
 
   // start the Ethernet connection:
-  Serial.println(F("SETUP WEB CLIENT "));
+  Serial.print(F("SETUP WEB CLIENT: ")); Serial.println( ip );
   if (Ethernet.begin(mac) == 0) {
     Serial.println(F("Failed to configure Ethernet using DHCP"));
     // try to congifure using IP address instead of DHCP:
     Ethernet.begin(mac, ip);
   }
   // give the Ethernet shield a second to initialize:
-  Serial.println(F("WEB CLIENT..."));
-  delay(1000);
+  Serial.print(F("WEB CLIENT..."));
+  delay(2000);
+  Serial.println(Ethernet.localIP());
   Serial.println(F("connecting..."));
   connect();
 }
 
 bool WebClient::connect() {
-  Serial.print(F("Connecting to: ")); Serial.print( server ); Serial.print(F(":")); Serial.println( port );
-  client.setTimeout(5000);
-  bool result = client.connect(server, port);
+  //Serial.print(F("Connecting to: ")); Serial.print( server ); Serial.print(F(":")); Serial.print( port ); Serial.print(F(" ..."));
+  //client.setTimeout(5000);
+  int result = client.connect(server, port);
   //Serial.print(F("Connected: ")); Serial.println( result );
   if ( result) {
+    //Serial.print(F("success! "));
+    //Serial.println(Ethernet.localIP());
+    //Serial.println(Ethernet.gatewayIP());   
     connected = result;
     return result;
+  }else{
+    Serial.println(F("failed. "));
+    client.stop();
   }
-  //if ( connected )
-  Serial.print(F("Connection failed: ")); Serial.println( result );
-  client.stop();
 }
 
 void WebClient::disconnect() {
   client.stop();
-  //if ( connected )
-  //  Serial.println(F("Disconnecting: Complete "));
   connected = false;
 }
 
 void WebClient::requestService( int request ) {
   switch ( request ) {
-     case SETUP:
+    case SETUP:
       client.print(F("setup"));
       break;
     case OPTIONS:
@@ -87,7 +86,7 @@ void WebClient::requestService( int request ) {
 */
 void WebClient::logRequestStr( int request ) {
   switch ( request ) {
-     case SETUP:
+    case SETUP:
       Serial.print(F("setup"));
       break;
     case LOG:
@@ -96,7 +95,7 @@ void WebClient::logRequestStr( int request ) {
     case RADAR:
       Serial.print(F("radar"));
       break;
-     default:
+    default:
       Serial.print(F("unknown (")); Serial.print( request ); Serial.print(F(")"));
       break;
   }
@@ -112,34 +111,36 @@ boolean WebClient::sendHttp( int request, String message ) {
 }
 
 boolean WebClient::sendHttp( int request, boolean post, String attrs ) {
+  //logRequest( request, post, attrs );
   if ( client.connected()) {
 
     // Make a HTTP request:
     client.print( post ? F("POST ") : F("GET ") );
     client.print( context );
     requestService( request );
+   
     client.print(F("?id=" ));
     client.print( id );
     client.print(F("&token="));
     client.print( token );
     if ( !post && ( attrs.length() > 0 )) {
-      //Serial.print(F("ATTRS: "));Serial.println(attrs); 
+      //Serial.print(F("ATTRS: "));Serial.println(attrs);
       client.print( attrs );
     }
     client.println(F(" HTTP/1.1" ));
 
     client.print(F("Host: "));
     client.println( host );
-    client.println(F("\r\nConnection: close\r\n"));
+    //client.println(F("\r\nConnection: close\r\n"));//can lead to HTTP 404 error 
+    client.println( F("Accept: */*"));
     if ( post && ( attrs.length() > 0 )) {
-      client.println( F("Accept: */*"));
       client.println( F("Content-Type: application/x-www-form-urlencoded; charset=UTF-8" ));
       client.print( F("Content-Length: "));
       client.println( attrs.length() );
       client.println();
       client.println( urlencode( attrs ));
-    }else{
-      client.println( F("Content-Type: application/json; charset=UTF-8" ));      
+    } else {
+      client.println( F("Content-Type: application/json; charset=UTF-8" ));
     }
     client.println();
     return processResponse( request );
@@ -175,6 +176,9 @@ bool WebClient::processResponse( int request ) {
 void WebClient::logRequest( int request, boolean post, String attrs ) {
   // Make a HTTP request:
   Serial.print( post ? F("POST ") : F("GET "));
+  Serial.print( server );
+  Serial.print(F(":"));
+  Serial.print(port);
   Serial.print( context );
   logRequestStr( request );
   Serial.print(F( "?id=" ));

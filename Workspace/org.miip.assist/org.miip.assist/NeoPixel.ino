@@ -36,7 +36,6 @@ void NeoPixel::setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
   counter = 0;
-  enable = true;
 }
 
 /**
@@ -53,29 +52,26 @@ bool NeoPixel::update( ) {
     return false;
   }
   //Serial.println(F("SETUP RECEIVED: TRUE"));
-  size_t capacity = JSON_OBJECT_SIZE(5) + 40;
-  DynamicJsonBuffer jsonBuffer(capacity);
-
-  // Parse JSON object
-  JsonObject& root = jsonBuffer.parseObject(webClient.client);
-  if (!root.success()) {
-    Serial.println(F("Parsing failed!"));
-    jsonBuffer.clear();
+  size_t capacity = JSON_OBJECT_SIZE(5) + 50;
+  DynamicJsonDocument root(capacity);
+  DeserializationError error = deserializeJson(root, webClient.client);
+  if (error) {
+    Serial.print(F("Parsing failed! "));
+    Serial.print( error.c_str());
+    Serial.print(F(": "));
+    Serial.println( capacity );
     webClient.disconnect();
     return false;
   }
-
-  enable = root[F("enb")];
+  webClient.disconnect();
+  bool enable = root[F("enb")];
   data.index = root[F("i")];
-  data.end = root[F("end")];
   data.choice = root[F("ch")];
   data.options = root[F("o")];
   //data.transparancy = root[F("t")];
-  //Serial.print(F("PIXEL DATA ")); Serial.println(data.options);
+  //Serial.print(F("PIXEL DATA ")); Serial.println(root);
   //Serial.print(F("ENABLE ")); Serial.println( enable);
-  jsonBuffer.clear();
-  webClient.disconnect();
-  choice = static_cast<Choices>(data.choice );
+  choice = enable?DISABLED: static_cast<Choices>(data.choice );
   //Serial.print(F("NEOPIXEL SETUP ")); Serial.println(choice);
 }
 /**
@@ -83,7 +79,7 @@ bool NeoPixel::update( ) {
 */
 bool NeoPixel::requestRadar() {
   //Serial.print("TOKEN: " ); Serial.println( token );
-  //Serial.println( "SHOW RADAR: ");
+  //Serial.println( "SHOW RADAR ");
   webClient.connect();
   int leds = ( strip.numPixels() == 0 ) ? LEDS : strip.numPixels();
   String str = F("&leds=");
@@ -94,38 +90,40 @@ bool NeoPixel::requestRadar() {
     webClient.disconnect();
     return false;
   }
-  size_t capacity = JSON_OBJECT_SIZE(6) + 40;
-  DynamicJsonBuffer jsonBuffer(capacity);
-
-  // Parse JSON object
-  JsonObject& root = jsonBuffer.parseObject( webClient.client);
-  if (!root.success()) {
+  size_t capacity = JSON_OBJECT_SIZE(6) + 100;
+  DynamicJsonDocument doc(capacity);
+  DeserializationError error = deserializeJson(doc, webClient.client);
+  if (error) {
     Serial.println(F("Parsing failed!"));
-    jsonBuffer.clear();
     webClient.disconnect();
     return false;
   }
-  colorPixel( root["a"],
-              root["r"],
-              root["g"],
-              root["b"], 
-              root["t"] );
-  jsonBuffer.clear();
+  JsonObject root = doc.as<JsonObject>();
+  int angle = root["a"];
+  Serial.print("\t"); Serial.print(F("a:")); Serial.print( angle ); 
+  int red = root["r"];
+  Serial.print("\t");Serial.print(F("r:")); Serial.print( red ); 
+  int green = root["g"];
+  Serial.print("\t");Serial.print(F("g:")); Serial.print( green ); 
+  int blue = root["b"];
+  Serial.print("\t");Serial.print(F("b:")); Serial.print( blue );
+  int trp = root["t"];
+  Serial.print("\t");Serial.print(F("t:")); Serial.print( trp );
+  colorPixel( angle, red, green, blue, trp );
   webClient.disconnect();
   return true;
 }
 
 void NeoPixel::loop() {
-  if (!enable ) {
-    strip.show();
-    return;
-  }
 
   //Serial.print(F("NEO PIXEL: Selecting ")); Serial.println( choice );
   double divide = 50;//data.transparancy/100;
   int cmax = 255 * divide;
   int cmin = 255 * divide;
   switch ( choice ) {
+    case DISABLED:
+       colorWipe(strip.Color(0, 0, 0), cmin); // off
+       break;
     case RADAR:
       requestRadar();
       break;
@@ -200,10 +198,11 @@ void NeoPixel::loop() {
 
 // Fill the dots at the index with the given RGB values
 void NeoPixel::colorPixel( byte index, byte red, byte green, byte blue, byte transparancy ) {
-  double trn = transparancy * 2.55;
-  byte rd = (trn > red) ? 0 : red - trn;
-  byte gn = (trn > green) ? 0 : green - trn;
-  byte be = (trn > blue) ? 0 : blue - trn;
+  double trn = ((double)100-transparancy)/100;
+  byte rd = (trn==0)?red: (byte)( trn*red );
+  byte gn = (trn==0)?green:(byte)( trn*green );
+  byte be = (trn==0)?blue:(byte)( trn*blue );
+  Serial.print(F("Transparancy: ")); Serial.print( trn); Serial.print(F(" Green: ")); Serial.println( gn);
   //Serial.print( index ); Serial.print(F(": {")); Serial.print( rd ); Serial.print(F(", "));
   //Serial.print( gn ); Serial.print(F(", "));Serial.print( be );
   //Serial.print(F(", "));Serial.print(( byte)trn ); Serial.println(F("}"));

@@ -8,6 +8,7 @@ import org.condast.commons.strings.StringStyler;
 public interface IRadarData {
 
 	public enum Choices {
+		DISABLED,
 		RADAR,  
 		COLOUR_WIPE_RED,
 		COLOUR_WIPE_GREEN,
