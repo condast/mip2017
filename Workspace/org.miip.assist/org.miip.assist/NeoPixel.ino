@@ -100,15 +100,15 @@ bool NeoPixel::requestRadar() {
   }
   JsonObject root = doc.as<JsonObject>();
   int angle = root["a"];
-  Serial.print("\t"); Serial.print(F("a:")); Serial.print( angle ); 
+  //Serial.print("\t"); Serial.print(F("a:")); Serial.print( angle ); 
   int red = root["r"];
-  Serial.print("\t");Serial.print(F("r:")); Serial.print( red ); 
+  //Serial.print("\t");Serial.print(F("r:")); Serial.print( red ); 
   int green = root["g"];
-  Serial.print("\t");Serial.print(F("g:")); Serial.print( green ); 
+  //Serial.print("\t");Serial.print(F("g:")); Serial.print( green ); 
   int blue = root["b"];
-  Serial.print("\t");Serial.print(F("b:")); Serial.print( blue );
+  //Serial.print("\t");Serial.print(F("b:")); Serial.print( blue );
   int trp = root["t"];
-  Serial.print("\t");Serial.print(F("t:")); Serial.print( trp );
+  //Serial.print("\t");Serial.print(F("t:")); Serial.print( trp );
   colorPixel( angle, red, green, blue, trp );
   webClient.disconnect();
   return true;
