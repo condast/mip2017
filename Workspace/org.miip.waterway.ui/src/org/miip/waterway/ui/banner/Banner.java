@@ -32,29 +32,6 @@ public class Banner extends AbstractBanner {
 	}
 
 	@Override
-	protected void createImageBar(Composite comp, int style) {
-		super.createImageBar(comp, style);
-/**		
-		Button button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.MIIP ), SWT.FLAT );
-		button.setData( S_MIIP_URL );
-		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.NMT ), SWT.FLAT );
-		button.setData( S_NMT_URL );
-		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.RDM_COE ), SWT.FLAT );
-		button.setData( S_RDM_COE_URL );
-		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.KC_DHS ), SWT.FLAT );
-		button.setData( S_KC_DHS_URL );
-		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.DIRKSEN ), SWT.FLAT );
-		button.setData( S_DIRKSEN_URL);
-		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.SMASH ), SWT.FLAT );
-		button.setData( S_SMASH_URL  );
-		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.CONDAST ), SWT.FLAT );
-		button.setData( S_CONDAST_URL );
-		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.JUROD ), SWT.FLAT );
-		button.setData( S_JUROD_URL );
-*/
-	}
-
-	@Override
 	protected Dialog createSettingsDialog(Shell shell) {
 		SettingsDialog dialog = new SettingsDialog( getParent(), factories.toArray( new ICompositeFactory[ factories.size()]) );
 		if( Dialog.OK == dialog.open()){

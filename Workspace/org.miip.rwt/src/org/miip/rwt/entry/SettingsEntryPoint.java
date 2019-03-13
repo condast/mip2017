@@ -8,9 +8,12 @@ import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.waterway.ui.dialog.SettingsDialog;
 import org.miip.waterway.ui.factory.ICompositeFactory;
@@ -24,8 +27,7 @@ public class SettingsEntryPoint extends AbstractEntryPoint {
 	@Override
     protected void createContents( Composite parent) {
 		parent.setLayout( new FillLayout());
- 		settingsButton = new Button(parent, SWT.ARROW);
-		settingsButton.setImage( DashboardImages.getImage( DashboardImages.Images.SETTINGSGREEN ));
+ 		settingsButton = new Button(parent, SWT.ARROW | SWT.DOWN);
 		settingsButton.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 

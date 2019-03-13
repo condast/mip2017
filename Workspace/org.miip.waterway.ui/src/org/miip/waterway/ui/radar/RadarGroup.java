@@ -201,8 +201,8 @@ public class RadarGroup extends Group {
 		}
 		this.slider_sense.setSelection( (int) radar.getSensitivity() );
 		this.slider_range.setSelection( (int)radar.getRange() );
-		this.lbl_sense.setText( String.valueOf( sa.getSensitivity()));
-		this.lbl_range.setText( String.valueOf( sa.getRange()));
+		this.lbl_sense.setText( String.valueOf( radar.getSensitivity()));
+		this.lbl_range.setText( String.valueOf( radar.getRange()));
 	}
 
 	@Override

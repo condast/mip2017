@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
 import org.miip.waterway.ui.swt.MiipComposite;
-import org.miip.waterway.ui.swt.pond.PondComposite;
 
 public class MIIPEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;
