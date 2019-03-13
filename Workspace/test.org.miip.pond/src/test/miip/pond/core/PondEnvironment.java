@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.ca.SimpleCollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
@@ -168,6 +169,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 
 		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ) {
 			super( sa, true);
+			super.addStrategy( new SimpleCollisionAvoidanceStrategy<IPhysical, IVessel>( vessel, this ));
 			setActive(!( vessel.getName().toLowerCase().equals("other")));
 		}		
 

@@ -71,7 +71,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 	
 	private IReferenceEnvironment<IVessel, IPhysical> environment;
 	
-	private Map<IVessel, List<LatLng>> tajectory;
+	private Map<IVessel, List<LatLng>> trajectory;
 	
 	private boolean disposed;
 	
@@ -85,7 +85,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 	public PondCanvas(Composite parent, Integer style) {
 		super(parent, style);
 		this.disposed = false;
-		tajectory = new HashMap<>();
+		trajectory = new HashMap<>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener(listener);
 	}
@@ -177,10 +177,10 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 				colorCode = SWT.COLOR_DARK_RED;
 		}
 		gc.setForeground( getDisplay().getSystemColor( colorCode ));
-		List<LatLng> list = tajectory.get( vessel );
+		List<LatLng> list = trajectory.get( vessel );
 		if( Utils.assertNull( list )) {
 			list = new ArrayList<>();
-			tajectory.put(vessel, list);
+			trajectory.put(vessel, list);
 		}
 		list.add( vessel.getLocation());
 		if( list.size() == 1)
@@ -208,6 +208,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
 
 		radius = (int)(su.scaleXToDisplay((int)vessel.getSituationalAwareness().getRange())); 
+		radius *= 1.5;
 		transform = (int)( radius/2);
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_GRAY ));
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );

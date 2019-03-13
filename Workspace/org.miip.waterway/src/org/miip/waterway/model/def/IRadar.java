@@ -5,7 +5,7 @@ import org.condast.commons.strings.StringStyler;
 
 public interface IRadar<V, O extends Object> {
 
-	public static final int DEFAULT_SENSITIVITY = 210;//0-1000
+	public static final int DEFAULT_SENSITIVITY = 100;//0-100
 	public static final int DEFAULT_RANGE = 30;//max 30 meters
 	public static final int DEFAULT_STEPS = 360;//max 3000 meters
 

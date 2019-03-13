@@ -34,6 +34,8 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 	@Override
 	public void setSensitivity( double sensitivity) {
 		this.sensitivity = sensitivity;
+		if( this.sa != null )
+			this.sa.setSensitivity(sensitivity);
 	}
 
 	@Override
@@ -81,8 +83,10 @@ public class Radar<V,O extends Object> implements IRadar<V,O>{
 				return;
 		}
 		this.sa = sa;
-		if( setRange)
+		if( setRange) {
 			setRange( range );
+			setSensitivity(sensitivity);
+		}
 		refresh();
 	}
 

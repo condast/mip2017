@@ -125,7 +125,7 @@ public class RadarGroup extends Group {
 		slider_sense = new Slider( composite, SWT.BORDER );
 		GridData gd_slider_sense = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		slider_sense.setLayoutData(gd_slider_sense);
-		slider_sense.setMinimum(1);
+		slider_sense.setMinimum(0);
 		slider_sense.setMaximum(100);
 		slider_sense.setSelection( IRadar.DEFAULT_SENSITIVITY );
 		slider_sense.setIncrement(1);
@@ -137,7 +137,7 @@ public class RadarGroup extends Group {
 				try{
 					if( radar != null )
 						radar.setSensitivity( slider_sense.getSelection());
-					lbl_sense.setText( String.valueOf( slider_sense.getSelection()));
+					lbl_sense.setText( String.valueOf( sa.getSensitivity()));
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
@@ -169,7 +169,7 @@ public class RadarGroup extends Group {
 				try{
 					if( radar != null )
 						radar.setRange( slider_range.getSelection());
-					lbl_range.setText( String.valueOf( slider_range.getSelection()));
+					lbl_range.setText( String.valueOf( sa.getRange() ));
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
@@ -196,12 +196,13 @@ public class RadarGroup extends Group {
 				}
 			}else {
 				sa.setRange(radar.getRange());
+				sa.setSensitivity(radar.getSensitivity());
 			}
 		}
 		this.slider_sense.setSelection( (int) radar.getSensitivity() );
 		this.slider_range.setSelection( (int)radar.getRange() );
-		this.lbl_sense.setText( String.valueOf( this.slider_sense.getSelection()));
-		this.lbl_range.setText( String.valueOf( this.slider_range.getSelection()));
+		this.lbl_sense.setText( String.valueOf( sa.getSensitivity()));
+		this.lbl_range.setText( String.valueOf( sa.getRange()));
 	}
 
 	@Override

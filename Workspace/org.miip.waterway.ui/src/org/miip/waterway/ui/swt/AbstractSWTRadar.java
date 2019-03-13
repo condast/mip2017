@@ -113,10 +113,14 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 			if( event.getVessel() == null )
 				return;
 			onPrepare( event );
+			if( dispose )
+				return;
 			getDisplay().asyncExec( new Runnable() {
 
 				@Override
 				public void run() {
+					if( dispose )
+						return;
 					redraw();
 				}
 			});
@@ -124,6 +128,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 	};
 	
 	private Radar<V,O> radar;
+	private boolean dispose;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
@@ -259,6 +264,7 @@ public abstract class AbstractSWTRadar<V,O extends IPhysical> extends Canvas imp
 	}
 		
 	public void dispose() {
+		this.dispose = true;
 		if( this.sa != null )
 			this.sa.removeListener(slistener);
 		super.dispose();
