@@ -192,10 +192,10 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				navcomp.setImage( image );
 				break;
 			case ITEM:
+				String select_str = getAttribute( attributes, AttributeNames.SELECT );
+				boolean select=  StringUtils.isEmpty( select_str )?false: Boolean.parseBoolean( select_str );
 				if( super.getCurrentData() instanceof NavigationComposite ){
 					navcomp = (NavigationComposite) parent;
-					String select_str = getAttribute( attributes, AttributeNames.SELECT );
-					boolean select=  StringUtils.isEmpty( select_str )?false: Boolean.parseBoolean( select_str );
 					String link = getAttribute( attributes, AttributeNames.LINK );
 					navcomp.addItem( name, link, select );
 				}else if( super.getCurrentData() instanceof TabFolder ){
@@ -203,6 +203,10 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 					TabItem item = new TabItem( tabcomp, style );
 					item.setText( name );
 					item.setData(id);
+					if( select ) {
+						int index = tabcomp.getItemCount()-1;
+						tabcomp.setSelection(index);
+					}
 					widget = item;
 				}
 				break;

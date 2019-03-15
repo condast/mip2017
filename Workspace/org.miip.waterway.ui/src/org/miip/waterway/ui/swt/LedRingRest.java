@@ -20,7 +20,8 @@ import org.miip.waterway.radar.RestRadar;
 public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	private static final long serialVersionUID = 1L;
 
-	private static final String REST_URL = "http://localhost:10081/miip2017/sa";
+//	private static final String REST_URL = "http://localhost:10081/miip2017/sa";
+	private static final String REST_URL = "http://www.condast.com:8080/miip2017/sa";
 
 	public enum Requests{
 		RADAR;

@@ -124,8 +124,6 @@ public class RadarResource{
 		catch( Exception ex ) {
 			ex.printStackTrace();
 			response = Response.serverError().build();
-		}finally {
-			
 		}
 		return response;
 	}	
