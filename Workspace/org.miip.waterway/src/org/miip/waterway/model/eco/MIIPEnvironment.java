@@ -77,6 +77,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	@Override
 	public void setEnabled(boolean enabled) {
+		if(!enabled )
+			this.stop();
 		super.setEnabled(enabled);
 	}
 

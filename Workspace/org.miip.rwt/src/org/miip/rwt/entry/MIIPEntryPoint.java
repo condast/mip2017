@@ -84,29 +84,37 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 
 						@Override
 						public void widgetSelected(SelectionEvent e) {
-							TabItem item = (TabItem) e.item;
-							String str = (String) item.getData();
-							if( StringUtils.isEmpty(str))
-								return;
-							TabItems ti = TabItems.valueOf( StringStyler.styleToEnum( (String) item.getData()));
-							switch( ti ) {
-							case MAIN:
-								dispatcher.getActiveEnvironment().setEnabled(false);
-								MiipComposite miip = (MiipComposite) item.getControl();
-								miip.getInput().setEnabled(true);
-								//miip.setInput(dispatcher.getActiveEnvironment());
-								break;
-							case COLLISION_AVOIDANCE_DEMO:
-								dispatcher.getActiveEnvironment().setEnabled(false);
-								PondComposite pc = (PondComposite) item.getControl();
-								pc.getInput().setEnabled(true);
-								//miip.setInput(dispatcher.getActiveEnvironment());
-								break;
-							default:
-								break;
+							try {
+								TabItem item = (TabItem) e.item;
+								String str = (String) item.getData();
+								if( StringUtils.isEmpty(str))
+									return;
+								TabItems ti = TabItems.valueOf( StringStyler.styleToEnum( (String) item.getData()));
+								IEnvironment<IPhysical> env = dispatcher.getActiveEnvironment();
+								switch( ti ) {
+								case MAIN:
+									if( env != null )
+										env.setEnabled(false);
+									MiipComposite miip = (MiipComposite) item.getControl();
+									miip.getInput().setEnabled(true);
+									//miip.setInput(dispatcher.getActiveEnvironment());
+									break;
+								case COLLISION_AVOIDANCE_DEMO:
+									if( env != null )
+										env.setEnabled(false);
+									PondComposite pc = (PondComposite) item.getControl();
+									pc.getInput().setEnabled(true);
+									//miip.setInput(dispatcher.getActiveEnvironment());
+									break;
+								default:
+									break;
+								}
+								super.widgetSelected(e);
 							}
-							super.widgetSelected(e);
-						}		
+							catch( Exception ex ) {
+								ex.printStackTrace();
+							}
+						}
 					});
 					break;
 				case COMPOSITE:

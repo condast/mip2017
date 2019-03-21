@@ -52,6 +52,8 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 
 	@Override
 	public void setEnabled(boolean enabled) {
+		if(!enabled )
+			this.stop();
 		super.setEnabled(enabled);
 	}
 
