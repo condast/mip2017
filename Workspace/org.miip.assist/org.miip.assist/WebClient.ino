@@ -40,12 +40,12 @@ void WebClient::setup( ) {
 }
 
 bool WebClient::connect() {
-  //Serial.print(F("Connecting to: ")); Serial.print( server ); Serial.print(F(":")); Serial.print( port ); Serial.print(F(" ..."));
+  Serial.print(F("Connecting to: ")); Serial.print( server ); Serial.print(F(":")); Serial.print( port ); Serial.print(F(" ..."));
   //client.setTimeout(5000);
   int result = client.connect(server, port);
   //Serial.print(F("Connected: ")); Serial.println( result );
   if ( result) {
-    //Serial.print(F("success! "));
+    Serial.print(F("success! "));
     //Serial.println(Ethernet.localIP());
     //Serial.println(Ethernet.gatewayIP());   
     connected = result;
