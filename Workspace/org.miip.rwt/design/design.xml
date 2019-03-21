@@ -10,7 +10,7 @@
 				<horizontal align="fill" grab-excess="true" />
 				<vertical align="fill" grab-excess="true" />
 			</layout-data>
-			<item name="Main">
+			<item id="Main" name="Main">
 				<composite name="miip-composite" class="org.miip.waterway.ui.swt.MiipComposite">
 					<layout-data type="grid-data">
 						<horizontal spacing="fill" grab-excess="true" columns="1" />

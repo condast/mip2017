@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
 import org.miip.waterway.ui.swt.MiipComposite;
+import org.miip.waterway.ui.swt.pond.PondComposite;
 
 public class MIIPEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;
@@ -73,7 +74,7 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 					String use_str = event.getAttribute(AbstractXMLBuilder.AttributeNames.USE);
 					if((!StringUtils.isEmpty(use_str) && ( event.getData() instanceof IInputWidget ))) {
 						IInputWidget<IEnvironment<IPhysical>> widget = (IInputWidget<IEnvironment<IPhysical>>) event.getData();
-						widget.setInput( Dispatcher.getInstance().getEnvironment( use_str ));
+						widget.setInput( dispatcher.getEnvironment( use_str ));
 					}
 					break;
 				case TABFOLDER:
@@ -88,8 +89,19 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 							if( StringUtils.isEmpty(str))
 								return;
 							TabItems ti = TabItems.valueOf( StringStyler.styleToEnum( (String) item.getData()));
-							//Dispatcher dispatcher = Dispatcher.getInstance();
 							switch( ti ) {
+							case MAIN:
+								dispatcher.getActiveEnvironment().setEnabled(false);
+								MiipComposite miip = (MiipComposite) item.getControl();
+								miip.getInput().setEnabled(true);
+								//miip.setInput(dispatcher.getActiveEnvironment());
+								break;
+							case COLLISION_AVOIDANCE_DEMO:
+								dispatcher.getActiveEnvironment().setEnabled(false);
+								PondComposite pc = (PondComposite) item.getControl();
+								pc.getInput().setEnabled(true);
+								//miip.setInput(dispatcher.getActiveEnvironment());
+								break;
 							default:
 								break;
 							}

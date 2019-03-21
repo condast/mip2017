@@ -188,7 +188,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					environment.getWaterway().setNrOfShips( spinner_ships.getSelection());
+					if(( environment != null ) && ( environment.getWaterway() != null ))
+						environment.getWaterway().setNrOfShips( spinner_ships.getSelection());
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
