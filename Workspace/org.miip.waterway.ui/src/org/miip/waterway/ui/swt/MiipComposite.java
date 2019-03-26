@@ -279,6 +279,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				try{
 					CentreShip ship = (CentreShip) environment.getInhabitant();
 					CentreShip.Controls control = null; 
+					if( ship == null )
+						return;
 					switch( e.keyCode ){
 					case SWT.ARROW_UP:
 						control = CentreShip.Controls.UP;
@@ -312,8 +314,9 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	@Override
 	public void setInput( IMIIPEnvironment environment ){
 		this.environment = environment;
-		if( this.environment != null )
+		if( this.environment != null ) {
 			this.radarGroup.setInput( environment.getSituationalAwareness(), true);
+		}
 		this.canvas.setInput(environment);
 	}
 

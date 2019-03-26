@@ -2,7 +2,6 @@ package org.miip.waterway.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.AbstractModel;
@@ -10,6 +9,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 
 public class Waterway extends AbstractModel{
 
@@ -23,7 +23,7 @@ public class Waterway extends AbstractModel{
 	
 	//The distance travelled since the start button was pressed
 	private long travelled;
-
+	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
 	public Waterway( LatLng latlng, Field field) {
@@ -82,21 +82,21 @@ public class Waterway extends AbstractModel{
 		}
 	}
 
-	public void update( Date time, double distance ){
+	public void update( long interval, double distance ){
 		this.travelled += distance;
 		Field newField = new Field( super.getLocation(), field.getLength(), field.getWidth() );
 		for( IVessel vessel: getShips() ){
 			Ship ship = (Ship) vessel;
-			LatLng ll = ship.sail( time );
+			LatLng ll = ship.move( interval );
 			if( !newField.isInField(ll, MARGIN_X ))
 				ships.remove( ship );
 			//logger.info( "New Position for spped:" + ship.getSpeed() + ",\n\t" + ship.getLnglat() );
 			//logger.info( "Diff " + (position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(position, ship.getLnglat() ));
 		}
-		createShips( 0, 20);//(int)(this.nrOfShips/2) );
-		createShips( this.getField().getLength() -100, 1 );//(int)(this.nrOfShips/2) );
-		super.setLnglat( LatLngUtils.extrapolate( super.getLocation(), LatLng.Compass.EAST.getAngle(), distance));
+		//createShips( 0, 20);//(int)(this.nrOfShips/2) );
+		//createShips( this.getField().getLength() -100, 1 );//(int)(this.nrOfShips/2) );
+		super.setLnglat( LatLngUtilsDegrees.extrapolate( super.getLocation(), LatLng.Compass.EAST.getAngle(), distance));
 		logger.fine( "Update Position " + super.getLocation() );
 	}
 }

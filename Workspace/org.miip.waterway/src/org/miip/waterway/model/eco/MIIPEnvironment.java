@@ -19,6 +19,7 @@ import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
@@ -50,7 +51,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private Bank bottomBank;
 	private Waterway waterway;
 	private SituationalAwareness sa;
-	
+
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	private int counter;
 	private int bankWidth;
@@ -63,6 +64,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
 		this.field = new Field( new LatLng( NAME, LATITUDE, LONGITUDE), length, width);
+		this.sa = new SituationalAwareness(reference, field);
 		this.bankWidth = bankWidth;
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
@@ -96,7 +98,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		topBank = new Bank( section );
 		
 		//The actual waterway
-		LatLng latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.bankWidth); 
+		LatLng latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.bankWidth); 
 		long width = this.field.getWidth() - 2 * this.bankWidth;
 		section = new Field( latlng, this.field.getLength(), width );
 		this.waterway = new Waterway( latlng, section, 100);
@@ -104,14 +106,14 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		//Position of the ship
 		latlng = this.field.getCentre();
 		//This vessel consists of situational awareness and collision avoidance 
-		reference = new CentreShip( NAME, Calendar.getInstance().getTime(), 20, latlng );
-		sa = new SituationalAwareness(reference, field);
+		logger.info(latlng.toLocation());
+		reference = new CentreShip( NAME, latlng, 20 );
 		sa.setInput(this);
 		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
-		reference.init(new SituationalAwareness( reference, field ), ca);
+		reference.init( sa, ca);
 		
 		//The bank at the bottom
-		latlng = LatLngUtils.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
+		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
 		section = new Field( latlng, field.getLength(), this.bankWidth );
 		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
 		
@@ -193,7 +195,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 */
 	@Override
 	public SituationalAwareness getSituationalAwareness() {
-		return sa;
+		return this.sa ;
 	}
 	
 	/* (non-Javadoc)
@@ -225,21 +227,24 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		lock.lock();
 		try{
 			logger.fine("\n\nEXECUTE:");
-			currentTime = Calendar.getInstance().getTime();
-			
-			Location traverse = reference.plotNext(currentTime);
+			Date newTime = Calendar.getInstance().getTime();
+			long interval = newTime.getTime() - currentTime.getTime();
+			this.currentTime = newTime;
+			LatLng location = reference.move( interval );
+			logger.info(location.toLocation());
+			Location traverse = getLocation( reference );
 			topBank.update( traverse.getX());
 			bottomBank.update( traverse.getX());
 			
-			LatLng course = LatLngUtils.extrapolateEast( field.getCoordinates(), traverse.getX() );
+			LatLng course = LatLngUtilsDegrees.extrapolateEast( field.getCoordinates(), traverse.getX() );
 			field = new Field( course, field.getLength(), field.getWidth() );
 			
-			reference.sail( currentTime );	
 			//logger.info( "New Position " + this.position + ",\n\t\t   " + ship.getLnglat() );
 			//logger.info( "Diff " + (this.position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
-			waterway.update( currentTime, traverse.getX());
+			//waterway.update( interval, traverse.getX());
 
+			SituationalAwareness sa = (SituationalAwareness) this.reference.getSituationalAwareness();
 			sa.setInput(this);//after updating waterway
 			float min_distance = manual?this.field.getLength(): 50;
 			sa.controlShip( min_distance, this.manual );

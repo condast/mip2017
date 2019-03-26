@@ -1,8 +1,7 @@
 package org.miip.waterway.model;
 
-import java.util.Date;
-
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.Vector;
 
 public class CentreShip extends Ship {
@@ -21,12 +20,12 @@ public class CentreShip extends Ship {
 		offset = new Vector<Integer>(Bearing.EAST.getAngle(), 0 );
 	}
 
-	public CentreShip(String id, Date currentTime, float speed, LatLng position) {
-		super(id, currentTime, speed, position);
+	public CentreShip(String id, LatLng position, float speed) {
+		super(id, speed, position);
 	}
 
-	public CentreShip(String id, Date currentTime, float speed, int length, LatLng position, Bearing bearing) {
-		super(id, currentTime, speed, length, position, bearing);
+	public CentreShip(String id, LatLng position, float speed, int length, Bearing bearing) {
+		super(id, speed, length, position, bearing);
 	}
 
 	
@@ -40,7 +39,7 @@ public class CentreShip extends Ship {
 			return super.getLocation();
 		if( offset.getKey() == 0 )
 			offset = null;
-		LatLng correction = super.getLocation();//LatLngUtils.extrapolate( super.getLatLng(), 0, 200);
+		LatLng correction = LatLngUtilsDegrees.extrapolate( super.getLocation(), offset.getKey(), offset.getValue());
 		//logger.fine( "New position: " + correction + " from [" + offset.getKey() + ", " + offset.getValue() + "]");
 		return correction;
 	}
@@ -80,9 +79,9 @@ public class CentreShip extends Ship {
 
 		offset = new Vector<Integer>(newBearing, newDistance);						
 	}
-	
+
 	@Override
-	public LatLng sail(Date newTime) {
+	public LatLng move( long interval) {
 		if( offset != null ){
 			int bearing = offset.getKey();
 			int angle = ( bearing < 0 )? offset.getKey()+1: ( bearing > 0 )? offset.getKey()-1: bearing; 
@@ -91,6 +90,6 @@ public class CentreShip extends Ship {
 			offset = new Vector<Integer>( angle, distance );
 		}
 		
-		return super.sail(newTime);
+		return super.move( interval);
 	}	
 }

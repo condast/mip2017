@@ -6,6 +6,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 
 public class Vessel extends AbstractModel implements IVessel {
 
@@ -106,7 +107,7 @@ public class Vessel extends AbstractModel implements IVessel {
 	@Override
 	public LatLng plotNext(long interval) {
 		double distance = ( this.speed * interval )/3600;// (msec * km/h) = m/3600
-		return LatLngUtils.extrapolate( super.getLocation(), this.bearing, distance);
+		return LatLngUtilsDegrees.extrapolate( super.getLocation(), this.bearing, distance);
 	}
 
 	@Override
