@@ -35,7 +35,6 @@ import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.model.eco.MIIPEnvironment;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
@@ -64,7 +63,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private RadarGroup radarGroup;
 	private IMIIPEnvironment environment;
 
-	private PlayerComposite<MIIPEnvironment> playerbar;
+	private PlayerComposite<IMIIPEnvironment> playerbar;
 
 	private Slider slider_speed;
 	private Spinner spinner_ships;
@@ -222,7 +221,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				}
 			}
 		});
-		playerbar = new PlayerComposite<MIIPEnvironment>( group_control, SWT.BORDER );
+		playerbar = new PlayerComposite<IMIIPEnvironment>( group_control, SWT.BORDER );
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 		Group group_ship = new Group( composite, SWT.NONE );
 		GridData gd_ship= new GridData( SWT.FILL, SWT.FILL, true, true );

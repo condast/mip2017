@@ -39,8 +39,8 @@ public class Waterway extends AbstractModel{
 	}
 
 	protected void initialise(){
-		//createShips( 20, (int)(this.nrOfShips/2) );
-		//createShips( field.getLength()-200, (int)( this.nrOfShips/2) );
+		createShips( 20, (int)(this.nrOfShips/2) );
+		createShips( field.getLength()-200, (int)( this.nrOfShips/2) );
 	}
 
 	public void clear(){
@@ -94,8 +94,8 @@ public class Waterway extends AbstractModel{
 			//logger.info( "Diff " + (position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(position, ship.getLnglat() ));
 		}
-		//createShips( 0, 20);//(int)(this.nrOfShips/2) );
-		//createShips( this.getField().getLength() -100, 1 );//(int)(this.nrOfShips/2) );
+		createShips( 0, 20);//(int)(this.nrOfShips/2) );
+		createShips( this.getField().getLength() -100, 1 );//(int)(this.nrOfShips/2) );
 		super.setLnglat( LatLngUtilsDegrees.extrapolate( super.getLocation(), LatLng.Compass.EAST.getAngle(), distance));
 		logger.fine( "Update Position " + super.getLocation() );
 	}

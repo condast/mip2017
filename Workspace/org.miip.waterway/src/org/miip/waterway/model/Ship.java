@@ -12,7 +12,7 @@ public class Ship extends AbstractModel implements IVessel{
 	
 	private static final int DEFAULT_LENGTH = 20;//m
 
-	private static final int TO_HOURS = 60*60;//3600 min.
+	public static final int TO_HOURS = 60*60;//3600 min.
 
 	public enum Bearing{
 		NORTH(0),
@@ -133,10 +133,10 @@ public class Ship extends AbstractModel implements IVessel{
 		}else {
 			location = ca.move( this, interval ).getLocation();
 		}
-		//super.setLnglat(location);
+		super.setLnglat(location);
 		return location;
 	}
-	
+
 	@Override
 	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
 		return sa;

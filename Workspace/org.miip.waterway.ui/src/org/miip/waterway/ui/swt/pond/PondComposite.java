@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.eco.MIIPEnvironment;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
@@ -53,7 +53,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private Text text_lat;
 	private Label lblHits;
 	
-	private PlayerComposite<MIIPEnvironment> playerbar;
+	private PlayerComposite<IMIIPEnvironment> playerbar;
 
 	private Slider slider_speed;
 	private Label lblActiveShips;
@@ -138,7 +138,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 		lblActiveShips = new Label(group_control, SWT.BORDER);
 		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		playerbar = new PlayerComposite<MIIPEnvironment>( group_control, SWT.BORDER );
+		playerbar = new PlayerComposite<IMIIPEnvironment>( group_control, SWT.BORDER );
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 
 		Group group_ship = new Group( composite, SWT.NONE );

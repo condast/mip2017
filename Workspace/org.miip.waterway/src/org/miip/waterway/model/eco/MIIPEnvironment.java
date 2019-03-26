@@ -232,7 +232,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			this.currentTime = newTime;
 			LatLng location = reference.move( interval );
 			logger.info(location.toLocation());
-			Location traverse = getLocation( reference );
+			
+			Location traverse = drawNext( reference, interval);
 			topBank.update( traverse.getX());
 			bottomBank.update( traverse.getX());
 			
@@ -242,7 +243,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			//logger.info( "New Position " + this.position + ",\n\t\t   " + ship.getLnglat() );
 			//logger.info( "Diff " + (this.position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
-			//waterway.update( interval, traverse.getX());
+			waterway.update( interval, traverse.getX());
 
 			SituationalAwareness sa = (SituationalAwareness) this.reference.getSituationalAwareness();
 			sa.setInput(this);//after updating waterway
@@ -278,6 +279,17 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public Collection<IPhysical> getOthers() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.miip.waterway.model.IVessel#plotNext(java.util.Date)
+	 */
+	public static Location drawNext( CentreShip ship, long interval ){
+		double distance = ship.getSpeed() * interval / CentreShip.TO_HOURS;
+		double radian = Math.toRadians( ship.getBearing() );
+		double x = distance * Math.sin( radian );
+		double y = distance * Math.cos( radian );
+		return new Location((float) x, (float)y );
 	}
 
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
