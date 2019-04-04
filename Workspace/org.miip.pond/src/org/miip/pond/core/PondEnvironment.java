@@ -16,7 +16,7 @@ import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
-import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
@@ -99,7 +99,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 		double angle = field.getAngle() + countRef;
 		double bearing = (180+angle)%360;
 		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
-		LatLng latlng = LatLngUtils.extrapolate( field.getCentre(), bearing, half );
+		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half );
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
@@ -111,7 +111,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
 		bearing = (180+angle)%360;
 		half = (int) (field.getWidth()/2);
-		latlng = LatLngUtils.extrapolate( field.getCentre(), bearing, half);
+		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half);
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h

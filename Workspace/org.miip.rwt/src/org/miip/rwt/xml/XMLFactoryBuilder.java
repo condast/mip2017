@@ -15,7 +15,7 @@ import org.condast.commons.preferences.AbstractPreferenceStore;
 import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.condast.commons.swt.IStyle;
+import org.condast.commons.ui.swt.IStyle;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.widgets.StatusBar;
 import org.condast.commons.xml.AbstractXMLBuilder;
