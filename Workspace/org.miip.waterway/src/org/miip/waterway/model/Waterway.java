@@ -77,7 +77,7 @@ public class Waterway extends AbstractModel{
 			LatLng lnglat = newfield.transform( xposition, yposition );
 			Ship ship = Ship.createShip( lnglat, "newShip" );
 			logger.fine("Adding ship: " + ship.getLocation() + " bearing " + ship.getBearing());
-			logger.fine( "Distance to centre: " + LatLngUtils.distance( newfield.getCentre(), ship.getLocation()));
+			logger.fine( "Distance to centre: " + LatLngUtils.getDistance( newfield.getCentre(), ship.getLocation()));
 			ships.add( ship );
 		}
 	}
