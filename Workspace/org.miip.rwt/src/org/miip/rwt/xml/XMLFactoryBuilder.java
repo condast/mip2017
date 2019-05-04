@@ -244,19 +244,14 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 
 		@Override
 		protected void completeNode(Enum<Selection> node) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		protected void addValue(Enum<Selection> node, String value) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public Composite getUnit(String id) {
-			// TODO Auto-generated method stub
 			return null;
 		}	
 	}

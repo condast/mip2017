@@ -17,6 +17,7 @@ import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
 import org.miip.waterway.model.def.MapLocation;
@@ -61,7 +62,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		this.clear();
 		double angle = Math.toRadians(refAngle);
 		double bearing = Math.toRadians(( refAngle + 180  )%360);
-		LatLng latlng = LatLngUtils.extrapolate(field.getCentre(), angle, distance);
+		LatLng latlng = LatLngUtilsDegrees.extrapolate(field.getCentre(), angle, distance);
 		reference = new Vessel( "Reference", latlng, bearing, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
@@ -71,7 +72,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		this.others.clear();
 		angle = Math.toRadians( otherAngle);
 		bearing = Math.toRadians(( otherAngle + 180  )%360);
-		latlng = LatLngUtils.extrapolate( field.getCentre(), angle, distance);
+		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), angle, distance);
 		IVessel other = new Vessel( "Other", latlng, bearing, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
@@ -90,7 +91,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		double angle = field.getAngle() + countRef;
 		double bearing = (180+angle)%360;
 		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
-		LatLng latlng = LatLngUtils.extrapolate( field.getCentre(), bearing, half );
+		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half );
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
@@ -102,7 +103,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
 		bearing = (180+angle)%360;
 		half = (int) (field.getWidth()/2);
-		latlng = LatLngUtils.extrapolate( field.getCentre(), bearing, half);
+		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half);
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h
@@ -197,7 +198,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 			if( !pe.getField().isInField(vessel.getLocation(), 1)) {
 				proceed();
 			}
-			double distance = LatLngUtils.distance(reference.getLocation(), other.getLocation());
+			double distance = LatLngUtils.getDistance(reference.getLocation(), other.getLocation());
 			logger.info( "Distance: " + distance);
 			if( distance < 5 ) {
 				logger.severe( "Distance: " + distance);
