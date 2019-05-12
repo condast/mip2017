@@ -2,6 +2,7 @@ package org.miip.waterway.ui.radar;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.IRadar;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,7 +16,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.model.def.IMIIPRadar;
 import org.miip.waterway.ui.swt.AveragingRadar;
 import org.miip.waterway.ui.swt.HumanAssist;
 import org.miip.waterway.ui.swt.LedRing;
@@ -59,8 +60,8 @@ public class RadarGroup extends Group {
 		combo_radar = new Combo( composite, SWT.BORDER );
 		combo_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
 		combo_radar.setSize(361, 23);
-		combo_radar.setItems( IRadar.RadarSelect.getItems() );
-		combo_radar.select( IRadar.RadarSelect.WARP.ordinal() );
+		combo_radar.setItems( IMIIPRadar.RadarSelect.getItems() );
+		combo_radar.select( IMIIPRadar.RadarSelect.WARP.ordinal() );
 
 		combo_radar.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
@@ -74,7 +75,7 @@ public class RadarGroup extends Group {
 					@Override
 					public void run() {
 						try{
-							switch( IRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
+							switch( IMIIPRadar.RadarSelect.getRadar( combo_radar.getSelectionIndex())){
 							case WARP:
 								radar = new DirectRadar(comp_radar, SWT.BORDER);
 								break;
@@ -116,7 +117,7 @@ public class RadarGroup extends Group {
 				super.widgetSelected(e);
 			}
 		});
-		combo_radar.select(IRadar.RadarSelect.LED_RING.ordinal());
+		combo_radar.select(IMIIPRadar.RadarSelect.LED_RING.ordinal());
 
 		lblNewLabel = new Label(composite, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -127,7 +128,7 @@ public class RadarGroup extends Group {
 		slider_sense.setLayoutData(gd_slider_sense);
 		slider_sense.setMinimum(0);
 		slider_sense.setMaximum(100);
-		slider_sense.setSelection( IRadar.DEFAULT_SENSITIVITY );
+		slider_sense.setSelection( IMIIPRadar.DEFAULT_SENSITIVITY );
 		slider_sense.setIncrement(1);
 		slider_sense.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
@@ -159,7 +160,7 @@ public class RadarGroup extends Group {
 		slider_range.setLayoutData(gd_slider_range);
 		slider_range.setMinimum(1);
 		slider_range.setMaximum(3000);
-		slider_range.setSelection( IRadar.DEFAULT_RANGE );
+		slider_range.setSelection( IMIIPRadar.DEFAULT_RANGE );
 		slider_range.setIncrement(5);
 		slider_range.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;

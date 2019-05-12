@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.range.DoubleRange;
 import org.condast.commons.ui.radar.IRadarColours;

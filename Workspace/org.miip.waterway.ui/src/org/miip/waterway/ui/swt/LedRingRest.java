@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;

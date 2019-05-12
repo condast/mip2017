@@ -5,11 +5,11 @@ import java.util.Iterator;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.RadarData;
+import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.ui.swt.AbstractSWTRadar;
 
 public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel,IPhysical>{
 	private static final long serialVersionUID = 1L;

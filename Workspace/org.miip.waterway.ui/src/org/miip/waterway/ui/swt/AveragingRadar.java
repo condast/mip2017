@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.IField;

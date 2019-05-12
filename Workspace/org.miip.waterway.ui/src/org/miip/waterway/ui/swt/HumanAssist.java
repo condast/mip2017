@@ -1,6 +1,7 @@
 package org.miip.waterway.ui.swt;
 
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;

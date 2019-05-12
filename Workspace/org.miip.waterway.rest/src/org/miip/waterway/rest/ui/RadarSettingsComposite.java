@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.model.def.IMIIPRadar;
 import org.miip.waterway.radar.IRadarData;
 import org.miip.waterway.radar.RadarOptions;
 import org.miip.waterway.radar.IRadarData.Choices;
@@ -61,7 +61,7 @@ public class RadarSettingsComposite extends Composite {
 		
 		typeCombo = new Combo(this, SWT.NONE);
 		typeCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		typeCombo.setItems( IRadar.RadarSelect.getItems());
+		typeCombo.setItems( IMIIPRadar.RadarSelect.getItems());
 		typeCombo.select(0);
 		typeCombo.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
@@ -69,7 +69,7 @@ public class RadarSettingsComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Combo combo = (Combo) e.widget;
-				settings.setRadarType( IRadar.RadarSelect.values()[ combo.getSelectionIndex()] );
+				settings.setRadarType( IMIIPRadar.RadarSelect.values()[ combo.getSelectionIndex()] );
 				super.widgetSelected(e);
 			}
 		});

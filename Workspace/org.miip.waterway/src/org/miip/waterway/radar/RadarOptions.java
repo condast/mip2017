@@ -3,7 +3,7 @@ package org.miip.waterway.radar;
 import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.model.def.IMIIPRadar;
 import org.miip.waterway.radar.IRadarData.Choices;
 
 public class RadarOptions{
@@ -61,14 +61,14 @@ public class RadarOptions{
 		putSettings(Options.CHOICE, choice.name());
 	}
 
-	public IRadar.RadarSelect getRadarType() {
+	public IMIIPRadar.RadarSelect getRadarType() {
 		String str = getSettings( Options.TYPE);
-		IRadar.RadarSelect type = StringUtils.isEmpty(str)? IRadar.RadarSelect.LED_RING: 
-			IRadar.RadarSelect.valueOf(str);
+		IMIIPRadar.RadarSelect type = StringUtils.isEmpty(str)? IMIIPRadar.RadarSelect.LED_RING: 
+			IMIIPRadar.RadarSelect.valueOf(str);
 		return type;
 	}
 
-	public void setRadarType( IRadar.RadarSelect type ) {
+	public void setRadarType( IMIIPRadar.RadarSelect type ) {
 		putSettings(Options.TYPE, type.name());
 	}
 

@@ -9,14 +9,14 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Motion;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.model.def.IMIIPRadar;
 
 public class LedRadar<V,O extends IPhysical>{
 	
 	private Map<Integer, Motion> radarData;
-	private IRadar<V,O> radar;
+	private IMIIPRadar<V,O> radar;
 	
-	public LedRadar( IRadar<V,O> radar ) {
+	public LedRadar( IMIIPRadar<V,O> radar ) {
 		super(); 
 		this.radar = radar;
 		radarData = new HashMap<Integer, Motion>();

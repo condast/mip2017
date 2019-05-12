@@ -9,11 +9,13 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.IRadar;
+import org.condast.commons.autonomy.sa.radar.Radar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.range.DoubleRange;
 import org.condast.commons.ui.radar.IRadarColours;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IRadar;
+import org.miip.waterway.model.def.IMIIPRadar;
 
 public class RestRadar{
 
@@ -24,7 +26,7 @@ public class RestRadar{
 	private RadarOptions options;
 	private List<RadarData> colours;
 	private int leds;
-	private IRadar.RadarSelect radarType;
+	private IMIIPRadar.RadarSelect radarType;
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -42,7 +44,7 @@ public class RestRadar{
 		radar.setSteps( this.leds );
 	}
 
-	public IRadar.RadarSelect getRadarType() {
+	public IMIIPRadar.RadarSelect getRadarType() {
 		return radarType;
 	}
 	
