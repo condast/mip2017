@@ -3,7 +3,6 @@ package org.miip.waterway.ui.swt;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
@@ -36,20 +35,18 @@ public class HumanAssist<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		double diff = Math.toRadians(1);
 		int xpos2 = (int) (centrex + length * Math.sin( angle+diff));
 		int ypos2 = (int) (centrey - length * Math.cos( angle+diff));
-		Color background = gc.getBackground();
 		gc.setBackground( getColour( distance ));
 		gc.fillPolygon(new int[]{centrex, centrey, xpos1, ypos1, (int)xpos2, (int)ypos2});
-		gc.setBackground(background);
 	}
 
 	@Override
-	protected void onDrawEnd(GC gc) {
+	protected boolean onDrawEnd(GC gc) {
 		double centrex = super.getCentre().x;
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 		double clip = (length + bar);
 		gc.fillOval((int)(centrex-clip/2), (int)(centrey-clip/2), (int)(clip), (int)clip);
-		super.onDrawEnd(gc);
+		return super.onDrawEnd(gc);
 	}
 	
 	

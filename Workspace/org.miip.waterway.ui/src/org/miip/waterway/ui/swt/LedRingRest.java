@@ -92,14 +92,13 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	}
 
 	@Override
-	protected void onDrawEnd(GC gc) {
+	protected boolean onDrawEnd(GC gc) {
 		if(( getDisplay() == null ) || ( getDisplay().isDisposed()))
-			return;
+			return true;
 		double centrex = super.getCentre().x;
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 		length = (( length - RADIUS ) < 0)? 0: length - RADIUS;
-		Color background = gc.getBackground();
 		RestRadar.RadarData data = null;
 		for( int i=0; i< this.leds; i++ ) {
 			data = scan.get( i );
@@ -109,8 +108,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 			gc.setBackground( getColour( i, data ));
 			gc.fillOval((int)(centrex + x), (int)(centrey-y), RADIUS, RADIUS );			
 		}
-		gc.setBackground(background);
-		super.onDrawEnd(gc);
+		return super.onDrawEnd(gc);
 	}
 
 	private class WebClient extends AbstractHttpRequest<LedRingRest.Requests>{

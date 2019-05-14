@@ -93,14 +93,13 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	}
 
 	@Override
-	protected void onDrawEnd(GC gc) {
+	protected boolean onDrawEnd(GC gc) {
 		if(( getDisplay() == null ) || ( getDisplay().isDisposed()))
-			return;
+			return true;
 		double centrex = super.getCentre().x;
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 		length = (( length - RADIUS ) < 0)? 0: length - RADIUS;
-		Color background = gc.getBackground();
 		double distance = super.getRange() + 10;
 		for( int i=0; i< this.leds; i++ ) {
 			Double value = scan.get( i );
@@ -111,7 +110,6 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 			gc.setBackground( getColour( i, distance ));
 			gc.fillOval((int)(centrex + x), (int)(centrey-y), RADIUS, RADIUS );			
 		}
-		gc.setBackground(background);
-		super.onDrawEnd(gc);
+		return super.onDrawEnd(gc);
 	}
 }
