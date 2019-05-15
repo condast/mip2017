@@ -56,7 +56,7 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 		}
 
 		@Override
-		protected IPreferenceStore<String, String> onAddChild(Preferences preferences) {
+		protected IPreferenceStore<String, String> onDecorate(Preferences preferences) {
 			return new PreferenceStore( preferences );
 		}
 	}

@@ -364,7 +364,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		}
 
 		@Override
-		protected IPreferenceStore<String, String> onAddChild(Preferences preferences) {
+		protected IPreferenceStore<String, String> onDecorate(Preferences preferences) {
 			return new Store( preferences );
 		}
 
