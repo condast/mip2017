@@ -47,7 +47,7 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 		
 		private PreferenceStore() {
 			super( Activator.BUNDLE_ID);
-			RadarOptions options = new RadarOptions( this, environment.getInhabitant().getId() );
+			RadarOptions options = new RadarOptions( this, environment.getInhabitant().getIdentifier() );
 			options.setEnable(true);
 		}
 		

@@ -325,7 +325,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.slider_speed.setSelection( thread.getTimer());
 		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					
 		canvas.redraw();
-		this.text_name.setText( ship.getId() );
+		this.text_name.setText( ship.getIdentifier() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
 		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
 		this.text_lng.setText( String.valueOf( ship.getLocation().getLongitude() ));

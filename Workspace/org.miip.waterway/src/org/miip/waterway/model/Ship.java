@@ -101,7 +101,7 @@ public class Ship extends AbstractModel implements IVessel{
 
 	@Override
 	public String getName() {
-		return super.getId();
+		return super.getIdentifier();
 	}
 
 	@Override
