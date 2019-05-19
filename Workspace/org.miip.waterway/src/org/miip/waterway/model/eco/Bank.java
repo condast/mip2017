@@ -3,9 +3,9 @@ package org.miip.waterway.model.eco;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.condast.commons.data.latlng.Field;
-import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.plane.Field;
+import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
 import org.miip.waterway.model.Location;
 

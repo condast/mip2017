@@ -14,8 +14,8 @@ import org.miip.waterway.ui.images.MIIPImages;
 
 import java.util.Map;
 
-import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.plane.IField;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;

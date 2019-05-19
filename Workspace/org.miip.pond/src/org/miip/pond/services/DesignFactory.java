@@ -42,7 +42,7 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 		return store;
 	}
 
-	private class PreferenceStore extends AbstractPreferenceStore {
+	private class PreferenceStore extends AbstractPreferenceStore<PreferenceStore> {
 		
 		private PreferenceStore() {
 			super( Activator.BUNDLE_ID);
@@ -53,7 +53,7 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 		}
 
 		@Override
-		protected IPreferenceStore<String, String> onDecorate(Preferences preferences) {
+		protected PreferenceStore onDecorate(Preferences preferences) {
 			return new PreferenceStore( preferences );
 		}
 	}

@@ -4,6 +4,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.images.MIIPImages;
 
 import java.util.ArrayList;
@@ -14,12 +15,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationListener;
 import org.condast.commons.autonomy.sa.SituationEvent;
-import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.plane.IField;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.utils.ScalingUtils;
 import org.eclipse.swt.SWT;
@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnvironment<IVessel, IPhysical>>{
+public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>{
 	private static final long serialVersionUID = 1L;
 
 	public static final int GRIDX = 100;//meters
@@ -69,7 +69,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 		
 	};
 	
-	private IReferenceEnvironment<IVessel, IPhysical> environment;
+	private IMIIPEnvironment environment;
 	
 	private Map<IVessel, List<LatLng>> trajectory;
 	
@@ -96,12 +96,12 @@ public class PondCanvas extends Canvas implements IInputWidget<IReferenceEnviron
 	}
 	
 	@Override
-	public IReferenceEnvironment<IVessel, IPhysical> getInput() {
+	public IMIIPEnvironment getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IReferenceEnvironment<IVessel, IPhysical> environment){
+	public void setInput( IMIIPEnvironment environment){
 		if( this.environment != null )
 			this.environment.getInhabitant().getSituationalAwareness().removeListener(slistener);
 		

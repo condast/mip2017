@@ -44,7 +44,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel,
 		
 		ISituationalAwareness<IVessel,IPhysical> psa = getInput();
 		psa.clear();
-		Collection<RadarData<IPhysical>> timemap = psa.predictFuture(this.totalTime, reference, (IVessel) physicalobj);
+		Collection<RadarData<IPhysical>> timemap = psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
 		if( timemap.isEmpty() )
 			return;
 		double offset = ((double)getClientArea().width)/getInput().getField().getLength();

@@ -6,10 +6,11 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.AbstractModel;
 import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
+import org.condast.commons.data.plane.Field;
+import org.condast.commons.data.plane.IField;
 
 public class Waterway extends AbstractModel<Object>{
 
@@ -19,7 +20,7 @@ public class Waterway extends AbstractModel<Object>{
 	private Collection<IVessel> ships;
 	private int nrOfShips;
 	
-	private Field field;
+	private IField field;
 	
 	//The distance travelled since the start button was pressed
 	private long travelled;
@@ -30,7 +31,7 @@ public class Waterway extends AbstractModel<Object>{
 		this( latlng, field, DEFAULT_NR_OF_SHIPS  );
 	}
 	
-	public Waterway( LatLng latlng, Field field, int nrOfShips) {
+	public Waterway( LatLng latlng, IField field, int nrOfShips) {
 		super( IPhysical.ModelTypes.WATERWAY, latlng );
 		this.field = field;
 		this.nrOfShips = nrOfShips;
@@ -48,7 +49,7 @@ public class Waterway extends AbstractModel<Object>{
 		this.travelled = 0;
 	}
 	
-	public Field getField() {
+	public IField getField() {
 		return field;
 	}
 

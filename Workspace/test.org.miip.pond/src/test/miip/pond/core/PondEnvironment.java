@@ -14,10 +14,10 @@ import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
+import org.condast.commons.data.plane.Field;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
 import org.miip.waterway.model.def.MapLocation;
@@ -169,7 +169,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
 
 		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ) {
-			super( sa, true);
+			super( field, sa, true);
 			super.addStrategy( new SimpleCollisionAvoidanceStrategy<IPhysical, IVessel>( vessel, this ));
 			setActive(!( vessel.getName().toLowerCase().equals("other")));
 		}		

@@ -11,9 +11,8 @@ import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.autonomy.sa.radar.RadarData;
-import org.condast.commons.data.latlng.Field;
-import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Point;
 import org.miip.waterway.model.Waterway;
@@ -39,6 +38,8 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 */
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
+	
+	private IField field;
 
 	private IEnvironmentListener<IVessel> listener = new IEnvironmentListener<IVessel>() {
 
@@ -50,8 +51,14 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	
 	public SituationalAwareness( IVessel vessel, IField field ) {
 		super( vessel, (int)( field.getDiameter()/2 ));
+		this.field = field;
 	}
 
+	@Override
+	public IField getField() {
+		return field;
+	}
+	
 	@Override
 	public Collection<IPhysical> getScan() {
 		Collection<IPhysical> results = new ArrayList<IPhysical>();
@@ -67,19 +74,19 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 
 	
 	@Override
-	public Collection<RadarData<IPhysical>> predictFuture(int time, IVessel reference, IPhysical other) {
+	public Collection<RadarData<IPhysical>> predictFuture(IField field, int time, IVessel reference, IPhysical other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void update() {
+	public void update( IField field ) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public RadarData<IPhysical> getFreePath(IPhysical phys, double distance) {
+	public RadarData<IPhysical> getFreePath(IField field, IPhysical phys, double distance) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -128,7 +135,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	}
 	
 	private Collection<Point> getBanks( Waterway waterway ){
-		Field field = waterway.getField();
+		IField field = waterway.getField();
 		LatLng location = null;
 		Collection<Point> results = new ArrayList<Point>();
 		double xstep = (double)field.getLength() /(field.getLength() + field.getWidth());

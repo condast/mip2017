@@ -16,10 +16,10 @@ import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.data.latlng.Field;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
+import org.condast.commons.data.plane.Field;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
@@ -295,7 +295,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
 
 		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ) {
-			super( sa ,false);
+			super( field, sa ,false);
 			super.addStrategy( new SimpleCollisionAvoidanceStrategy<IPhysical, IVessel>( vessel, this ));
 		}
 		

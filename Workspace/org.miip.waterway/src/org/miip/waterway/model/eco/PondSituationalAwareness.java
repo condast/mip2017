@@ -8,7 +8,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.AbstractAutonomousSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
-import org.condast.commons.data.latlng.IField;
+import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
 
 public class PondSituationalAwareness extends AbstractAutonomousSituationalAwareness<IPhysical,IVessel> {
@@ -47,5 +47,12 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 	public double getNearestDistance() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+
+	@Override
+	public IField getField() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

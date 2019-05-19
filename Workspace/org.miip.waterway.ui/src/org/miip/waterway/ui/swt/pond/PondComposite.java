@@ -10,8 +10,6 @@ import java.util.EnumSet;
 
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
-import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.AbstractSessionHandler;
@@ -31,7 +29,7 @@ import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
 
-public class PondComposite extends Composite implements IInputWidget<IReferenceEnvironment<IVessel,IPhysical>> {
+public class PondComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
 	private static final long serialVersionUID = 1L;
 
 	//Themes
@@ -59,7 +57,7 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	private Label lblActiveShips;
 
 	private RadarGroup radarGroup;
-	private IReferenceEnvironment<IVessel, IPhysical> environment;
+	private IMIIPEnvironment environment;
 
 	private int hits;
 	private boolean disposed;
@@ -186,12 +184,12 @@ public class PondComposite extends Composite implements IInputWidget<IReferenceE
 	}
 
 	@Override
-	public IReferenceEnvironment<IVessel, IPhysical> getInput() {
+	public IMIIPEnvironment getInput() {
 		return this.environment;
 	}
 
 	@Override
-	public void setInput( IReferenceEnvironment<IVessel, IPhysical> environment){
+	public void setInput( IMIIPEnvironment environment){
 		if(( this.environment != null ) && ( this.environment.equals( environment )))
 			return;
 		this.environment = environment;
