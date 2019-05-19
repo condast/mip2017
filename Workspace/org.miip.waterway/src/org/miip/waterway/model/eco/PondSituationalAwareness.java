@@ -29,7 +29,7 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 
 
 	@Override
-	public Collection<IPhysical> getScan() {
+	public Collection<? extends IPhysical> getScan() {
 		return super.getInput().getOthers();
 	}
 

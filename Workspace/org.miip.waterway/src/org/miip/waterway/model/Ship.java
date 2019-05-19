@@ -8,7 +8,7 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 
-public class Ship extends AbstractModel implements IVessel{
+public class Ship extends AbstractModel<Object> implements IVessel{
 	
 	private static final int DEFAULT_LENGTH = 20;//m
 
@@ -50,7 +50,7 @@ public class Ship extends AbstractModel implements IVessel{
 	}
 	
 	public Ship( String id, float speed, int length, LatLng position, Bearing bearing) {
-		super( id, IPhysical.ModelTypes.VESSEL, position );
+		super( id, IPhysical.ModelTypes.VESSEL, position, null );
 		this.speed = speed;
 		this.bearing = bearing.getAngle();
 		this.length = length;
@@ -133,7 +133,7 @@ public class Ship extends AbstractModel implements IVessel{
 		}else {
 			location = ca.move( this, interval ).getLocation();
 		}
-		super.setLnglat(location);
+		super.setLocation(location);
 		return location;
 	}
 

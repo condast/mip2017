@@ -11,7 +11,7 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 
-public class Waterway extends AbstractModel{
+public class Waterway extends AbstractModel<Object>{
 
 	private static final int DEFAULT_NR_OF_SHIPS = 1;
 	private static final int MARGIN_X = 20;//The margin with which ships can disappear behind the visible waterway
@@ -96,7 +96,7 @@ public class Waterway extends AbstractModel{
 		}
 		createShips( 0, 20);//(int)(this.nrOfShips/2) );
 		createShips( this.getField().getLength() -100, 1 );//(int)(this.nrOfShips/2) );
-		super.setLnglat( LatLngUtilsDegrees.extrapolate( super.getLocation(), LatLng.Compass.EAST.getAngle(), distance));
+		super.setLocation( LatLngUtilsDegrees.extrapolate( super.getLocation(), LatLng.Compass.EAST.getAngle(), distance));
 		logger.fine( "Update Position " + super.getLocation() );
 	}
 }

@@ -11,7 +11,7 @@ import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
 import org.condast.commons.data.latlng.IField;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.condast.commons.data.latlng.Vector;
+import org.condast.commons.data.latlng.LatLngVector;
 import org.condast.commons.data.operations.AbstractOperator;
 import org.condast.commons.data.operations.IOperator;
 import org.eclipse.swt.graphics.Color;
@@ -22,32 +22,32 @@ import org.miip.waterway.model.IVessel;
 public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,IPhysical>{
 	private static final long serialVersionUID = 1L;
 
-	private IBinaryTreeSet<Vector<Integer>> data;
+	private IBinaryTreeSet<LatLngVector<Integer>> data;
 
-	IOperator<Vector<Integer>, Vector<Integer>> average = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
+	IOperator<LatLngVector<Integer>, LatLngVector<Integer>> average = new AbstractOperator<LatLngVector<Integer>, LatLngVector<Integer>>(){
 
 		
 		@Override
-		public Vector<Integer> calculate(Vector<Integer>[] parents) {
+		public LatLngVector<Integer> calculate(LatLngVector<Integer>[] parents) {
 			Double avgdist = 0d;
 			int degree = 0;
 			for( int i=0; i< parents.length; i++ ){
-				Vector<Integer> value = parents[i];
+				LatLngVector<Integer> value = parents[i];
 				degree += value.getKey();
 				avgdist+=value.getValue();
 			}
 			degree = (int)((float)degree/parents.length);
-			return new Vector<Integer>( degree, new Double((double)avgdist/parents.length));
+			return new LatLngVector<Integer>( degree, new Double((double)avgdist/parents.length));
 		}
 
 		@Override
-		public boolean check(Vector<Integer> input) {
+		public boolean check(LatLngVector<Integer> input) {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		protected Vector<Integer> onNext() {
+		protected LatLngVector<Integer> onNext() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -63,8 +63,8 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,
 		ISituationalAwareness<IVessel,IPhysical> sa = super.getInput();
 		IVessel reference = sa.getReference(); 
 		
-		data = new SequentialBinaryTreeSet<Vector<Integer>>( average);
-		Collection<IPhysical> radar = sa.getScan();
+		data = new SequentialBinaryTreeSet<LatLngVector<Integer>>( average);
+		Collection<? extends IPhysical> radar = sa.getScan();
 		IField field = sa.getField();
 		for( IPhysical vessel: radar ){
 			if( vessel.equals( reference ))
@@ -72,7 +72,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,
 			Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), vessel.getLocation());
 			double distance = vector.getValue();
 			double angle = vector.getKey();
-			data.add( new Vector<Integer>((int)angle, (int)distance ));
+			data.add( new LatLngVector<Integer>((int)angle, (int)distance ));
 		}
 		super.onDrawStart(gc);
 	}
@@ -88,12 +88,12 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,
 	@Override
 	protected void drawObject( GC gc, IPhysical ship ){
 		
-		List<Vector<Integer>> results = this.data.getValues(0);
-		Vector<Integer> vect = null;
+		List<LatLngVector<Integer>> results = this.data.getValues(0);
+		LatLngVector<Integer> vect = null;
 		IVessel reference = (IVessel) getInput().getReference(); 
 		//double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
-		for( Vector<Integer> vector: results ){
+		for( LatLngVector<Integer> vector: results ){
 			if( vector.getKey() != angle )
 				continue;
 			vect = vector;

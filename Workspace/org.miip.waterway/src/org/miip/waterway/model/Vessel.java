@@ -8,7 +8,7 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 
-public class Vessel extends AbstractModel implements IVessel {
+public class Vessel extends AbstractModel<Object> implements IVessel {
 
 	private double speed;
 	private double bearing;//rad
@@ -118,7 +118,7 @@ public class Vessel extends AbstractModel implements IVessel {
 		}else {
 			location = ca.move( this, interval ).getLocation();
 		}
-		super.setLnglat(location);
+		super.setLocation(location);
 		return location;
 	}
 }

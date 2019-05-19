@@ -9,14 +9,14 @@ import org.condast.commons.data.latlng.LatLng;
  * @author Kees
  *
  */
-public class Point extends AbstractModel {
+public class Point extends AbstractModel<Object> {
 
 	public Point(LatLng lngLat) {
 		super( ModelTypes.COURSE, lngLat);
 	}
 
 	@Override
-	public void setLnglat(LatLng lnglat) {
-		super.setLnglat(lnglat);
+	public void setLocation(LatLng lnglat) {
+		super.setLocation(lnglat);
 	}
 }

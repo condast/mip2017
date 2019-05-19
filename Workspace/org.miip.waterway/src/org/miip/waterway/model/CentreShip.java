@@ -2,7 +2,7 @@ package org.miip.waterway.model;
 
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
-import org.condast.commons.data.latlng.Vector;
+import org.condast.commons.data.latlng.LatLngVector;
 
 public class CentreShip extends Ship {
 
@@ -13,11 +13,11 @@ public class CentreShip extends Ship {
 		RIGHT
 	}
 	
-	private Vector<Integer> offset;
+	private LatLngVector<Integer> offset;
 
 	public CentreShip(String id, LatLng position, float speed, Bearing bearing) {
 		super(id, position, speed, bearing);
-		offset = new Vector<Integer>(Bearing.EAST.getAngle(), 0 );
+		offset = new LatLngVector<Integer>(Bearing.EAST.getAngle(), 0 );
 	}
 
 	public CentreShip(String id, LatLng position, float speed) {
@@ -29,7 +29,7 @@ public class CentreShip extends Ship {
 	}
 
 	
-	public Vector<Integer> getOffset() {
+	public LatLngVector<Integer> getOffset() {
 		return offset;
 	}
 
@@ -77,7 +77,7 @@ public class CentreShip extends Ship {
 		if( newDistance <= -40 )
 			newDistance = -40;
 
-		offset = new Vector<Integer>(newBearing, newDistance);						
+		offset = new LatLngVector<Integer>(newBearing, newDistance);						
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class CentreShip extends Ship {
 			int angle = ( bearing < 0 )? offset.getKey()+1: ( bearing > 0 )? offset.getKey()-1: bearing; 
 
 			int distance = (int)(( offset.getValue() > 0 )? offset.getValue() - 1: ( offset.getValue() < 0 )? offset.getValue() + 1:0 );
-			offset = new Vector<Integer>( angle, distance );
+			offset = new LatLngVector<Integer>( angle, distance );
 		}
 		
 		return super.move( interval);
