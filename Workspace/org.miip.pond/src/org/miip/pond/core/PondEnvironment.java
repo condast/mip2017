@@ -12,19 +12,22 @@ import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
+import org.condast.commons.strings.StringUtils;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
+import org.miip.waterway.model.Waterway;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.def.MapLocation;
+import org.miip.waterway.model.eco.Bank;
 import org.miip.waterway.model.eco.PondSituationalAwareness;
 
-public class PondEnvironment extends AbstractExecuteThread implements IReferenceEnvironment<IVessel, IPhysical> {
+public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
 
 	public static final int DEFAULT_START_ANGLE = 90;
 	public static final int DEFAULT_OFFSET = 90;
@@ -58,17 +61,15 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 		super.setEnabled(enabled);
 	}
 
-
 	@Override
 	public void clear() {
-		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100);
+		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, DEFAULT_START_ANGLE);
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		this.proceedCounter = 0;
 		this.countRef = 0;
 		
 		//Vessels have situational awareness and collision avoidance
-		reference = new Vessel( "Reference", latlng, DEFAULT_START_ANGLE, 10);//bearing east, 10 km/h
-		field.setAngle(DEFAULT_START_ANGLE);
+		reference = new Vessel( "Reference", latlng, 0, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
@@ -94,11 +95,11 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 	protected void proceed() {
 		this.others.clear();
 		this.proceedCounter++;
-		int countOther = proceedCounter%360;
+		int countOther = (int) LatLngUtilsDegrees.mod( proceedCounter );
 		if( countOther == 0)
 			countRef++;
 		double angle = field.getAngle() + countRef;
-		double bearing = (180+angle)%360;
+		double bearing = LatLngUtilsDegrees.opposite( angle );
 		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
 		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half );
 		if( !field.isInField(latlng, 1))
@@ -110,7 +111,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 		reference.init(sa, ca);
 
 		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
-		bearing = (180+angle)%360;
+		bearing = LatLngUtilsDegrees.opposite(angle);
 		half = (int) (field.getWidth()/2);
 		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half);
 		if( !field.isInField(latlng, 1))
@@ -210,6 +211,8 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 
 		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ){
 			super( field, sa, true);
+			if( StringUtils.isEmpty( vessel.getName()))
+				System.out.println("STOP!!!!");
 			super.addStrategy( new FlankCAStrategy<IPhysical, IVessel>( vessel, this ));
 			setActive(!( vessel.getName().toLowerCase().equals("other")));
 		}
@@ -222,5 +225,35 @@ public class PondEnvironment extends AbstractExecuteThread implements IReference
 			IVessel vessel = (IVessel) getReference(); 
 			return vessel.getMinTurnDistance();
 		}
+	}
+
+	@Override
+	public void setManual(boolean manual) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Waterway getWaterway() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBankWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Bank[] getBanks() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

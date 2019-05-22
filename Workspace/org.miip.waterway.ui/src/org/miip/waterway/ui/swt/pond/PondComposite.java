@@ -205,14 +205,14 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	}
 
 	protected void updateView(){
-		IVessel ship = (IVessel) environment.getInhabitant();
+		IVessel vessel = (IVessel) environment.getInhabitant();
 		IExecuteThread thread = (IExecuteThread) environment;
 		this.slider_speed.setSelection( thread.getTimer());
-		this.text_name.setText( ship.getName() );
-		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
-		this.text_bearing.setText( String.valueOf( ship.getBearing() ));
-		this.text_lng.setText( String.valueOf( ship.getLocation().getLongitude() ));
-		this.text_lat.setText( String.valueOf( ship.getLocation().getLatitude() ));
+		this.text_name.setText( vessel.getName() );
+		this.text_speed.setText( String.valueOf( vessel.getSpeed() ));
+		this.text_bearing.setText( String.valueOf( vessel.getBearing() ));
+		this.text_lng.setText( String.valueOf( vessel.getLocation().getLongitude() ));
+		this.text_lat.setText( String.valueOf( vessel.getLocation().getLatitude() ));
 
 		this.lblHits.setText(String.valueOf(hits));
 
