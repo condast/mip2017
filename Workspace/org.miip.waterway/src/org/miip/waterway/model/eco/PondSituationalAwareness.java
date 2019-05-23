@@ -51,7 +51,7 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 
 
 	@Override
-	public IField getField() {
+	public IField getView() {
 		// TODO Auto-generated method stub
 		return null;
 	}

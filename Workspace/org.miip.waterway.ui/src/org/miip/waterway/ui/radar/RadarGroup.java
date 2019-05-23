@@ -191,9 +191,9 @@ public class RadarGroup extends Group {
 		this.radar.setInput( sa );
 		if( sa != null ) {
 			if( overwriteRange ) {
-				if( sa.getField() != null ){
-					this.slider_range.setMaximum( (int) (sa.getField().getLength()));
-					radar.setRange((int) sa.getField().getWidth());
+				if( sa.getView() != null ){
+					this.slider_range.setMaximum( (int) (sa.getView().getLength()));
+					radar.setRange((int) sa.getView().getWidth());
 				}
 			}else {
 				sa.setRange(radar.getRange());

@@ -55,7 +55,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	}
 
 	@Override
-	public IField getField() {
+	public IField getView() {
 		return field;
 	}
 	

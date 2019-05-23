@@ -28,7 +28,7 @@ public class DirectRadar extends AbstractSWTRadar<IVessel, IPhysical>{
 		if( ship.equals( reference ))
 			return;
 		
-		IField field = sa.getField();
+		IField field = sa.getView();
 		Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), ship.getLocation());
 		double distance = vector.getValue();
 		double angle = vector.getKey();
