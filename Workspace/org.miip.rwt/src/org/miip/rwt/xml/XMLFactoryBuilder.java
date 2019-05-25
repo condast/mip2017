@@ -12,7 +12,6 @@ import java.lang.reflect.Constructor;
 import java.util.EnumSet;
 
 import org.condast.commons.preferences.AbstractPreferenceStore;
-import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.swt.IStyle;
@@ -352,7 +351,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		}
 	}
 
-	public static class Store extends AbstractPreferenceStore{
+	public static class Store extends AbstractPreferenceStore<Store>{
 
 		protected Store( String bundleName, String category) {
 			super(bundleName);
@@ -364,7 +363,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		}
 
 		@Override
-		protected IPreferenceStore<String, String> onDecorate(Preferences preferences) {
+		protected Store onDecorate(Preferences preferences) {
 			return new Store( preferences );
 		}
 
