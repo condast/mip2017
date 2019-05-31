@@ -210,7 +210,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.slider_speed.setSelection( thread.getTimer());
 		this.text_name.setText( vessel.getName() );
 		this.text_speed.setText( String.valueOf( vessel.getSpeed() ));
-		this.text_bearing.setText( String.valueOf( vessel.getBearing() ));
+		this.text_bearing.setText( String.valueOf( vessel.getHeading() ));
 		this.text_lng.setText( String.valueOf( vessel.getLocation().getLongitude() ));
 		this.text_lat.setText( String.valueOf( vessel.getLocation().getLatitude() ));
 

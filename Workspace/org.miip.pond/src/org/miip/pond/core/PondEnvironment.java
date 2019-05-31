@@ -35,7 +35,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	
 	private int proceedCounter, countRef;
 	private IField field;
-	private IVessel reference;
+	private Vessel reference;
 	private List<IPhysical> others;
 	private int time;
 	
@@ -63,13 +63,13 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	@Override
 	public void clear() {
-		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, DEFAULT_START_ANGLE);
-		LatLng latlng = field.transform(0, field.getWidth()/2);
+		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, 0);
 		this.proceedCounter = 0;
 		this.countRef = 0;
 		
 		//Vessels have situational awareness and collision avoidance
-		reference = new Vessel( "Reference", latlng, 0, 10);//bearing east, 10 km/h
+		LatLng latlng = field.transform(0, field.getWidth()/2);
+		reference = new Vessel( "Reference", latlng, 90, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
@@ -77,7 +77,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		
 		this.others.clear();
 		latlng = field.transform( field.getLength()/2,0);
-		IVessel other = new Vessel( "Other", latlng, DEFAULT_START_ANGLE + DEFAULT_OFFSET, 10 );//bearing south, 10 km/h
+		IVessel other = new Vessel( "Other", latlng, 0, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		ca = new DefaultCollisionAvoidance( other, sa); 
@@ -93,35 +93,23 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	}
 
 	protected void proceed() {
-		this.others.clear();
 		this.proceedCounter++;
 		int countOther = (int) LatLngUtilsDegrees.mod( proceedCounter );
 		if( countOther == 0)
 			countRef++;
 		double angle = field.getAngle() + countRef;
-		double bearing = LatLngUtilsDegrees.opposite( angle );
+		double heading = LatLngUtilsDegrees.opposite( angle );
 		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
-		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half );
+		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half );
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
-		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
-		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
-		sa.setInput(this);
-		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
-		reference.init(sa, ca);
 
-		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
-		bearing = LatLngUtilsDegrees.opposite(angle);
+		angle = field.getAngle() + countOther;
+		heading = LatLngUtilsDegrees.opposite(angle);
 		half = (int) (field.getWidth()/2);
-		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half);
+		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half);
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
-		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h
-		sa = new PondSituationalAwareness( other, field );
-		sa.setInput(this);
-		ca = new DefaultCollisionAvoidance( other, sa); 
-		other.init(sa, ca);
-		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}
 

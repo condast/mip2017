@@ -27,12 +27,6 @@ public interface IVessel extends IAutonomous<IPhysical>
 	 */
 	double getSpeed();
 
-	/**
-	 * in degrees (0-360) starting from North
-	 * @return
-	 */
-	double getBearing();
-
 	ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness();
 
 	/**

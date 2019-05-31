@@ -10,8 +10,9 @@ import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 
 public class Vessel extends AbstractModel<Object> implements IVessel {
 
+	private String name;
 	private double speed;
-	private double bearing;//rad
+	private double heading;//rad
 	private float length;//mtr
 	
 	/**
@@ -23,10 +24,12 @@ public class Vessel extends AbstractModel<Object> implements IVessel {
 
 	public Vessel(String name, double latitude, double longitude, double bearing, double speed) {
 		this( new LatLng(name, latitude, longitude ), bearing, speed);
+		this.name = name;
 	}
 
 	public Vessel( String name, LatLng location, double bearing, double speed) {
 		this( name, location.getLatitude(), location.getLongitude(), bearing, speed );
+		this.name = name;
 	}
 	
 	/**
@@ -37,8 +40,9 @@ public class Vessel extends AbstractModel<Object> implements IVessel {
 	 */
 	public Vessel( LatLng location, double bearing, double speed) {
 		super( IPhysical.ModelTypes.VESSEL, location );
+		this.name = location.getId();
 		this.speed = speed;
-		this.bearing = bearing;
+		this.heading = bearing;
 		this.length = IVessel.DEFAULT_LENGTH;
 	}
 	
@@ -50,7 +54,7 @@ public class Vessel extends AbstractModel<Object> implements IVessel {
 
 	@Override
 	public String getName() {
-		return super.getLocation().getId();
+		return name;
 	}
 
 	@Override
@@ -70,8 +74,12 @@ public class Vessel extends AbstractModel<Object> implements IVessel {
 	}
 
 	@Override
-	public double getBearing() {
-		return bearing;
+	public double getHeading() {
+		return heading;
+	}
+
+	public void setHeading(double bearing) {
+		this.heading = bearing;
 	}
 
 	//@Override
@@ -107,7 +115,7 @@ public class Vessel extends AbstractModel<Object> implements IVessel {
 	@Override
 	public LatLng plotNext(long interval) {
 		double distance = ( this.speed * interval )/3600;// (msec * km/h) = m/3600
-		return LatLngUtilsDegrees.extrapolate( super.getLocation(), this.bearing, distance);
+		return LatLngUtilsDegrees.extrapolate( super.getLocation(), this.heading, distance);
 	}
 
 	@Override

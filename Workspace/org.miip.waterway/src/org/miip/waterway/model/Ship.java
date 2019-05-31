@@ -115,7 +115,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	@Override
-	public double getBearing() {
+	public double getHeading() {
 		return this.bearing;
 	}
 

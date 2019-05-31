@@ -286,7 +286,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 */
 	public static Location drawNext( CentreShip ship, long interval ){
 		double distance = ship.getSpeed() * interval / CentreShip.TO_HOURS;
-		double radian = Math.toRadians( ship.getBearing() );
+		double radian = Math.toRadians( ship.getHeading() );
 		double x = distance * Math.sin( radian );
 		double y = distance * Math.cos( radian );
 		return new Location((float) x, (float)y );

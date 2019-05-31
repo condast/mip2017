@@ -150,7 +150,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		for( IVessel ship: environment.getWaterway().getShips()){
 			if( !field.isInField( ship.getLocation(), 0))
 				continue;
-			MIIPImages.Images img = ( ship.getBearing() < Bearing.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+			MIIPImages.Images img = ( ship.getHeading() < Bearing.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
 			drawImage(gc, scaleToCanvas( ship.getLocation() ), img );
 		}
 
