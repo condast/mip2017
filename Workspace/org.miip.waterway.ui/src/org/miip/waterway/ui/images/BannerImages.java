@@ -19,26 +19,30 @@ import org.eclipse.swt.widgets.Display;
  */
 public class BannerImages extends AbstractImages{
 
-	public static final String BUNDLE_ID = "org.miip.waterway.ui";
+	public static final String BUNDLE_ID = "org.satr.arnac.ui";
 
 	public static final String S_ICON_PATH = "/banner/";
 	
 	public enum Images{
-		MIIP,
-		NMT,
-		DIRKSEN,
-		SMASH,
+		AIP,
 		CONDAST,
+		DIRKSEN,
+		INNOSHIP,
 		JUROD,
 		KC_DHS,
+		MH_MARINE,
+		MIIP,
+		NMT,
+		PK_MARINE,
 		RDM_COE,
+		SETTINGS,
+		SMASH,
 		SHIP,
 		SHIP_ORNG,
 		SHIP_RED,
 		SHIP_YLW,
 		SHIP_GRN,
-		TREE,
-		SETTINGS;
+		TREE;
 
 		@Override
 		public String toString() {
@@ -54,14 +58,14 @@ public class BannerImages extends AbstractImages{
 			case NMT:
 				str = "nmt.jpg";
 				break;
+			case AIP:
+				str = "aip-logo.jpg";
+				break;
 			case CONDAST:
 				str = "condast.png";
 				break;
-			case DIRKSEN:
-				str = "dirksen.jpg";
-				break;
-			case SMASH:
-				str = "smash.jpg";
+			case INNOSHIP:
+				str = "innoship.png";
 				break;
 			case JUROD:
 				str = "jurod.png";
@@ -69,8 +73,17 @@ public class BannerImages extends AbstractImages{
 			case KC_DHS:
 				str = "kc-dhs.png";
 				break;
+			case PK_MARINE:
+				str = "pk-marine.jpg";
+				break;
 			case RDM_COE:
 				str = "rdm-coe.jpg";
+				break;
+			case DIRKSEN:
+				str = "dirksen.jpg";
+				break;
+			case SMASH:
+				str = "smash.jpg";
 				break;
 			default:
 				str = image.name().toLowerCase();
