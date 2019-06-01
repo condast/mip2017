@@ -27,7 +27,7 @@ public class HumanAssist<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 
 		IVessel reference = (IVessel) getInput().getReference(); 
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
-		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
+		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
 
 		int xpos1 = (int) (centrex + length * Math.sin( angle ));
 		int ypos1 = (int) (centrey - length * Math.cos( angle ));

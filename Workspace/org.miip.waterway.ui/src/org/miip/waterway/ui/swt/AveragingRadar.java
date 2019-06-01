@@ -92,7 +92,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IVessel,
 		LatLngVector<Integer> vect = null;
 		IVessel reference = (IVessel) getInput().getReference(); 
 		//double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
-		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
+		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
 		for( LatLngVector<Integer> vector: results ){
 			if( vector.getKey() != angle )
 				continue;

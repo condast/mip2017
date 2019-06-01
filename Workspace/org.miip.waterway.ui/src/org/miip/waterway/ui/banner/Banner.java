@@ -17,7 +17,7 @@ public class Banner extends AbstractBanner {
 	public static final String S_AIP_URL = "https://aip-consultancy.business.site";
 	public static final String S_CONDAST_URL = "http://www.condast.com/";
 	public static final String S_DIRKSEN_URL = "http://www.dirksen.nl/";
-	public static final String S_INNOSHIP_URL = "http://www.rdmcoe.nl/";
+	public static final String S_INNOSHIP_URL = "http://www.innoshipengineering.com/";
 	public static final String S_JUROD_URL = "https://www.jurod.nl/";
 	public static final String S_KC_DHS_URL = "https://www.hogeschoolrotterdam.nl/onderzoek/kenniscentra/duurzame-havenstad/over-het-kenniscentrum/";
 	public static final String S_MIIP_URL = "http://www.maritiemland.nl/news/startbijeenkomst-maritieme-innovatie-impuls-projecten-2017/";

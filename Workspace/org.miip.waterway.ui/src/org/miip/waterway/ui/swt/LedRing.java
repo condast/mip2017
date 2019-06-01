@@ -58,7 +58,7 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		IVessel reference = (IVessel) getInput().getReference(); 
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
-		double angle = LatLngUtils.getBearing(reference.getLocation(), ship.getLocation());
+		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		int key = getKey( angle );
 		setKey(key, distance);

@@ -58,6 +58,11 @@ public class Vessel extends AbstractModel<Object> implements IVessel {
 	}
 
 	@Override
+	public void setLocation(LatLng lnglat) {
+		super.setLocation(lnglat);
+	}
+
+	@Override
 	public double getTurn(long timemsec) {
 		// TODO Auto-generated method stub
 		return 0;

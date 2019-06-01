@@ -3,6 +3,7 @@ package org.miip.pond.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
@@ -14,6 +15,7 @@ import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
@@ -70,14 +72,17 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		//Vessels have situational awareness and collision avoidance
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		reference = new Vessel( "Reference", latlng, 90, 10);//bearing east, 10 km/h
+		Map.Entry<Double, Double> vector = field.getVector(reference.getLocation());
 		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
 		reference.init(sa, ca);
 		
 		this.others.clear();
-		latlng = field.transform( field.getLength()/2,0);
-		IVessel other = new Vessel( "Other", latlng, 0, 10 );//bearing south, 10 km/h
+		latlng = field.transform( field.getLength()/2, 0);
+		if( !field.isInField(latlng, 1))
+			System.out.println("STOP!!!");
+		IVessel other = new Vessel( "Other", latlng, 180, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		ca = new DefaultCollisionAvoidance( other, sa); 
@@ -95,21 +100,29 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	protected void proceed() {
 		this.proceedCounter++;
 		int countOther = (int) LatLngUtilsDegrees.mod( proceedCounter );
-		if( countOther == 0)
+		if( countOther == 0) {
 			countRef++;
-		double angle = field.getAngle() + countRef;
-		double heading = LatLngUtilsDegrees.opposite( angle );
-		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
-		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half );
-		if( !field.isInField(latlng, 1))
-			logger.info("out of bounds");
+			double angle = this.reference.getHeading() + countRef;
+			this.reference.setHeading(angle);
+			int radius = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
+			LatLng location = LatLngUtilsDegrees.extrapolate(this.field.getCentre(), LatLngUtilsDegrees.opposite(angle), radius);
+			if( !field.isInField(location, 1))
+				logger.info("out of bounds");
+			this.reference.setLocation(location);
 
-		angle = field.getAngle() + countOther;
-		heading = LatLngUtilsDegrees.opposite(angle);
-		half = (int) (field.getWidth()/2);
-		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half);
-		if( !field.isInField(latlng, 1))
-			logger.info("out of bounds");
+			for( IPhysical phys: this.others ) {
+				if( !( phys instanceof IVessel ))
+					continue;
+				Vessel other = (Vessel) phys;	
+				angle = other.getHeading() + countRef;
+				other.setHeading(angle);
+				location = LatLngUtilsDegrees.extrapolate(this.field.getCentre(), LatLngUtilsDegrees.opposite(angle), radius);
+				if( !field.isInField(location, 1))
+					logger.info("out of bounds");
+				this.reference.setLocation(location);
+			}
+		}
+
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}
 
@@ -185,6 +198,8 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		for(IPhysical other: others ) {
 			IVessel vessel = (IVessel) other;
 			vessel.move(time);
+			logger.info("Latitude: " + vessel.getLocation().toLocation());
+			logger.info("Diff: " + (field.getCentre().getLatitude() - vessel.getLocation().getLatitude()));
 			if( reference.isInCriticalDistance(other))
 				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
 			if( !pe.getField().isInField(vessel.getLocation(), 1)) {

@@ -156,7 +156,8 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 					continue;
 				IVessel other = (IVessel) phobj;
 				logger.fine("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
-				MIIPImages.Images img = ( other.getHeading() < LatLng.Compass.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+				double distance = LatLngUtils.getDistance(vessel.getLocation(), other.getLocation());
+				MIIPImages.Images img = ( distance > vessel.getSituationalAwareness().getRange() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
 				Point otherPoint = su.scaleToCanvas( phobj.getLocation() );
 				drawLine(gc, other, null);
 				drawOval(gc, other, otherPoint);
