@@ -8,8 +8,11 @@ import org.eclipse.swt.layout.GridLayout;
 
 import java.util.EnumSet;
 
+import org.condast.commons.Utils;
+import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
+import org.condast.commons.strings.StringStyler;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.AbstractSessionHandler;
@@ -28,6 +31,7 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.radar.RadarGroup;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 
 public class PondComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
 	private static final long serialVersionUID = 1L;
@@ -61,6 +65,8 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	private int hits;
 	private boolean disposed;
+	private Label lblStrategy;
+	private Combo strategyCombo;
 
 	/**
 	 * Create the composite.
@@ -69,12 +75,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	 */
 	public PondComposite(Composite parent, int style) {
 		super(parent, style);
-		try {
-			this.createComposite(parent, style);
-		}
-		catch( Exception ex ) {
-			ex.printStackTrace();
-		}
+		this.createComposite(parent, style | SWT.NO_SCROLL);
 		this.disposed = false;
 		this.handler = new SessionHandler(getDisplay());
 	}
@@ -85,6 +86,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 		canvas = new PondCanvas(this, SWT.BORDER );
 		canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ));
+		new Label(this, SWT.NONE);
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new GridLayout(4, false));
@@ -92,18 +94,42 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 		Group group_control = new Group( composite, SWT.NONE );
 		group_control.setText("Control");
-		GridData gd_control = new GridData( SWT.FILL, SWT.FILL, false, true);
 		group_control.setLayout(new GridLayout(3, false));
-		group_control.setLayoutData( gd_control );
+		group_control.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, true) );
+		
+		lblStrategy = new Label(group_control, SWT.NONE);
+		lblStrategy.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblStrategy.setText("Strategy:");
+		
+		strategyCombo = new Combo(group_control, SWT.NONE);
+		strategyCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		strategyCombo.setItems(ICollisionAvoidanceStrategy.DefaultStrategies.getItems());
+		strategyCombo.select(ICollisionAvoidanceStrategy.DefaultStrategies.FLANK_STRATEGY.ordinal());
+		strategyCombo.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try{
+					IVessel vessel = environment.getInhabitant();
+					vessel.clearStrategies();
+					vessel.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
+					super.widgetSelected(e);
+				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
+			}
+		});
+		new Label(group_control, SWT.NONE);
 
 		Label lblSpeedTextLabel = new Label(group_control, SWT.NONE);
 		lblSpeedTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 		lblSpeedTextLabel.setText("Speed:");
 
 		slider_speed = new Slider( group_control, SWT.BORDER );
-		GridData gd_slider = new GridData( SWT.FILL, SWT.FILL, false, false );
 		//gd_slider.widthHint = 80;
-		slider_speed.setLayoutData( gd_slider);
+		slider_speed.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false ));
 		slider_speed.setMinimum(1);
 		slider_speed.setMaximum(1000);
 		slider_speed.setIncrement(10);
@@ -137,6 +163,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		playerbar = new PlayerComposite<IMIIPEnvironment>( group_control, SWT.BORDER );
+		new Label(group_control, SWT.NONE);
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 
 		Group group_ship = new Group( composite, SWT.NONE );
@@ -178,9 +205,11 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lbl_hitText.setText("Hits: ");
 		lblHits = new Label( group_ship, SWT.BORDER );
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
+		new Label(group_ship, SWT.NONE);
 
 		radarGroup = new RadarGroup(composite, SWT.NONE); 
 		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		new Label(composite, SWT.NONE);
 	}
 
 	@Override
@@ -198,6 +227,10 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.environment.setEnabled(true);
 		this.canvas.setInput( this.environment);
 		IVessel reference = (IVessel) this.environment.getInhabitant();
+		ICollisionAvoidanceStrategy.DefaultStrategies strategy = Utils.assertNull(reference.getSelectedStrategies())?
+				ICollisionAvoidanceStrategy.DefaultStrategies.FLANK_STRATEGY: 
+				ICollisionAvoidanceStrategy.DefaultStrategies.valueOf( reference.getSelectedStrategies()[0]);
+		this.strategyCombo.select(strategy.ordinal());
 		this.radarGroup.setInput( reference.getSituationalAwareness(), true );
 		if( this.environment != null )
 			this.environment.addListener(handler);

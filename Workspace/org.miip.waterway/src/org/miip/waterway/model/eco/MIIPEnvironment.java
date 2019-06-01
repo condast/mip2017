@@ -8,14 +8,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
-import org.condast.commons.autonomy.ca.ICollisionAvoidance;
-import org.condast.commons.autonomy.ca.SimpleCollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
@@ -109,8 +105,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		logger.info(latlng.toLocation());
 		reference = new CentreShip( NAME, latlng, 20 );
 		sa.setInput(this);
-		ICollisionAvoidance<IVessel, IPhysical> ca = new DefaultCollisionAvoidance( reference, sa); 
-		reference.init( sa, ca);
+		reference.init( sa, field);
 		
 		//The bank at the bottom
 		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
@@ -290,22 +285,5 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		double x = distance * Math.sin( radian );
 		double y = distance * Math.cos( radian );
 		return new Location((float) x, (float)y );
-	}
-
-	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
-
-		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ) {
-			super( field, sa ,false);
-			super.addStrategy( new SimpleCollisionAvoidanceStrategy<IPhysical, IVessel>( vessel, this ));
-		}
-		
-		/**
-		 * Get the critical distance for passage 
-		 */
-		@Override
-		public double getCriticalDistance() {
-			IVessel vessel = (IVessel) getReference(); 
-			return vessel.getMinTurnDistance();
-		}
 	}
 }

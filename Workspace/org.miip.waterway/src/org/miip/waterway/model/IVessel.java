@@ -1,15 +1,15 @@
 package org.miip.waterway.model;
 
-import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.model.IAutonomous;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.data.plane.IField;
 
 public interface IVessel extends IAutonomous<IPhysical>
 {
 	float DEFAULT_LENGTH = 4.00f;//4 mtr
 
-	void init(ISituationalAwareness<IVessel, IPhysical> sa, ICollisionAvoidance<IVessel, IPhysical> ca);
+	void init(ISituationalAwareness<IVessel, IPhysical> sa, IField field);	
 	
 	/**
 	 * Returns true if the vessel has collision avoidance
@@ -36,5 +36,11 @@ public interface IVessel extends IAutonomous<IPhysical>
 	 */
 	boolean isInCriticalDistance(IPhysical physical);
 
-	double getCriticalDistance();	
+	double getCriticalDistance();
+
+	void clearStrategies();
+
+	boolean addStrategy(String strategyName );
+
+	boolean removeStrategy(String strategyName );
 }

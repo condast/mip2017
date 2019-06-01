@@ -8,6 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.google.gson;version="2.7.0",
  javax.servlet;version="3.0.0",
  org.condast.commons,
+ org.condast.commons.autonomy.ca,
  org.condast.commons.autonomy.env,
  org.condast.commons.autonomy.model,
  org.condast.commons.autonomy.sa,

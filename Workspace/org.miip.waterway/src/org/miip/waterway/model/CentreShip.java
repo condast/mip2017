@@ -1,8 +1,17 @@
 package org.miip.waterway.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
+import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.LatLngVector;
+import org.condast.commons.data.plane.IField;
+import org.condast.commons.strings.StringUtils;
 
 public class CentreShip extends Ship {
 
@@ -14,6 +23,8 @@ public class CentreShip extends Ship {
 	}
 	
 	private LatLngVector<Integer> offset;
+	
+	private IField field;
 
 	public CentreShip(String id, LatLng position, float speed, Bearing bearing) {
 		super(id, position, speed, bearing);
@@ -91,5 +102,48 @@ public class CentreShip extends Ship {
 		}
 		
 		return super.move( interval);
-	}	
+	}
+	
+	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
+
+		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ){
+			super( field, sa, true);
+			if( StringUtils.isEmpty( vessel.getName()))
+				System.out.println("STOP!!!!");
+			addStrategy( ICollisionAvoidanceStrategy.DefaultStrategies.FLANK_STRATEGY.name());
+			setActive(!( vessel.getName().toLowerCase().equals("other")));
+		}
+		
+		@Override
+		protected void clearStrategies() {
+			super.clearStrategies();
+		}
+
+		protected boolean addStrategy( String strategyName ) {
+			ICollisionAvoidanceStrategy<IPhysical, IVessel> strategy = super.getDefaultStrategy(strategyName);
+			if( strategy == null )
+				return false;
+			return super.addStrategy(strategy);
+		}
+
+		protected boolean removeStrategy(String strategyName ) {
+			Collection<ICollisionAvoidanceStrategy<IPhysical, IVessel>> temp =
+					new ArrayList<ICollisionAvoidanceStrategy<IPhysical, IVessel>>(super.getStrategies());
+			boolean result = false;
+			for( ICollisionAvoidanceStrategy<IPhysical, IVessel> strategy: temp) {
+				if( strategy.getName().equals(strategyName))
+					result = super.removeStrategy(strategy);
+			}
+			return result;
+		}
+
+		/**
+		 * Get the critical distance for passage 
+		 */
+		@Override
+		public double getCriticalDistance() {
+			IVessel vessel = (IVessel) getReference(); 
+			return vessel.getMinTurnDistance();
+		}
+	}
 }

@@ -7,6 +7,7 @@ import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
+import org.condast.commons.data.plane.IField;
 
 public class Ship extends AbstractModel<Object> implements IVessel{
 	
@@ -152,5 +153,34 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		double speed = 10 + ( 60 * Math.random());
 		Bearing bearing = ( Math.random() < 0.5f)? Bearing.EAST: Bearing.WEST;
 		return new Ship( name, lnglat, (float) speed, bearing);
+	}
+
+	@Override
+	public String[] getSelectedStrategies() {
+		return ca.getSelectedStrategies();
+	}
+
+	@Override
+	public void init(ISituationalAwareness<IVessel, IPhysical> sa, IField field) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clearStrategies() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean addStrategy(String strategyName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeStrategy(String strategyName) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
