@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Display;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
-import org.miip.waterway.model.Ship.Bearing;
+import org.miip.waterway.model.Ship.Heading;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.model.eco.Bank;
@@ -150,7 +150,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		for( IVessel ship: environment.getWaterway().getShips()){
 			if( !field.isInField( ship.getLocation(), 0))
 				continue;
-			MIIPImages.Images img = ( ship.getHeading() < Bearing.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+			MIIPImages.Images img = ( ship.getHeading() < Heading.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
 			drawImage(gc, scaleToCanvas( ship.getLocation() ), img );
 		}
 

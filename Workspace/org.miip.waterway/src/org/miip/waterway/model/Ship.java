@@ -15,7 +15,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 
 	public static final int TO_HOURS = 60*60;//3600 min.
 
-	public enum Bearing{
+	public enum Heading{
 		NORTH(0),
 		EAST(90),
 		SOUTH(180),
@@ -23,7 +23,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		
 		private int degrees;
 		
-		private Bearing( int degress ){
+		private Heading( int degress ){
 			this.degrees = degress;
 		}
 
@@ -34,7 +34,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	
 	private float length;
 	private float speed;//-20 - 60 km/hour
-	private int bearing; //0-360
+	private int heading; //0-360
 	
 	private ISituationalAwareness<IVessel, IPhysical> sa;
 	private ICollisionAvoidance<IVessel, IPhysical> ca;
@@ -42,18 +42,18 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
 
-	public Ship( String id, LatLng position, float speed, Bearing bearing) {
-		this( id, speed, DEFAULT_LENGTH, position, bearing );
+	public Ship( String id, LatLng position, float speed, Heading heading) {
+		this( id, speed, DEFAULT_LENGTH, position, heading.getAngle() );
 	}
 
 	public Ship( String id, float speed, LatLng position) {
-		this( id, speed, DEFAULT_LENGTH, position, Bearing.EAST );
+		this( id, speed, DEFAULT_LENGTH, position, Heading.EAST.getAngle() );
 	}
 	
-	public Ship( String id, float speed, int length, LatLng position, Bearing bearing) {
-		super( id, IPhysical.ModelTypes.VESSEL, position, null );
+	public Ship( String id, float speed, int length, LatLng position, int heading) {
+		super( id, IPhysical.ModelTypes.VESSEL, position, ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE, null );
 		this.speed = speed;
-		this.bearing = bearing.getAngle();
+		this.heading = heading;
 		this.length = length;
 		this.rotation = (( double )this.length + 5 * Math.random()) * this.speed; 
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
@@ -97,7 +97,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	protected void setBearing( int angle ){
-		this.bearing = angle;
+		this.heading = angle;
 	}
 
 	@Override
@@ -117,13 +117,13 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 
 	@Override
 	public double getHeading() {
-		return this.bearing;
+		return this.heading;
 	}
 
 	@Override
 	public LatLng plotNext(long interval) {
 		double distance = ( this.speed * interval )/TO_HOURS;// (msec * km/h) = m/3600
-		return LatLngUtilsDegrees.extrapolate( super.getLocation(), this.bearing, distance);
+		return LatLngUtilsDegrees.extrapolate( super.getLocation(), this.heading, distance);
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	 */
 	public static Ship createShip( LatLng lnglat, String name ){
 		double speed = 10 + ( 60 * Math.random());
-		Bearing bearing = ( Math.random() < 0.5f)? Bearing.EAST: Bearing.WEST;
+		Heading bearing = ( Math.random() < 0.5f)? Heading.EAST: Heading.WEST;
 		return new Ship( name, lnglat, (float) speed, bearing);
 	}
 
@@ -183,4 +183,10 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public IPhysical clone() throws CloneNotSupportedException {
+		return new Ship(super.getIdentifier(), speed, (int)length, super.getLocation(), heading );
+	}
+
 }

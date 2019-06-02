@@ -26,17 +26,17 @@ public class CentreShip extends Ship {
 	
 	private IField field;
 
-	public CentreShip(String id, LatLng position, float speed, Bearing bearing) {
+	public CentreShip(String id, LatLng position, float speed, Heading bearing) {
 		super(id, position, speed, bearing);
-		offset = new LatLngVector<Integer>(Bearing.EAST.getAngle(), 0 );
+		offset = new LatLngVector<Integer>(Heading.EAST.getAngle(), 0 );
 	}
 
 	public CentreShip(String id, LatLng position, float speed) {
 		super(id, speed, position);
 	}
 
-	public CentreShip(String id, LatLng position, float speed, int length, Bearing bearing) {
-		super(id, speed, length, position, bearing);
+	public CentreShip(String id, LatLng position, float speed, int length, Heading bearing) {
+		super(id, speed, length, position, bearing.getAngle());
 	}
 
 	

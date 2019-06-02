@@ -91,11 +91,11 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	protected void proceed() {
 		this.others.clear();
 		this.proceedCounter++;
-		int countOther = proceedCounter%360;
+		int countOther = (int) LatLngUtilsDegrees.mod(proceedCounter);
 		if( countOther == 0)
 			countRef++;
-		double angle = field.getAngle() + countRef;
-		double bearing = (180+angle)%360;
+		double angle = countRef;
+		double bearing =  (int) LatLngUtilsDegrees.opposite(angle);
 		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
 		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half );
 		if( !field.isInField(latlng, 1))
@@ -105,8 +105,8 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		sa.setInput(this);
 		reference.init(sa, field);
 
-		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
-		bearing = (90+angle)%360;
+		angle = (int) LatLngUtilsDegrees.opposite( countOther );
+		bearing = (int) LatLngUtilsDegrees.mod(90+angle);
 		half = (int) (field.getWidth()/2);
 		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half);
 		if( !field.isInField(latlng, 1))

@@ -21,7 +21,7 @@ import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
 import org.miip.waterway.model.Waterway;
-import org.miip.waterway.model.Ship.Bearing;
+import org.miip.waterway.model.Ship.Heading;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.sa.SituationalAwareness;
 
@@ -94,7 +94,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		topBank = new Bank( section );
 		
 		//The actual waterway
-		LatLng latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.bankWidth); 
+		LatLng latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.bankWidth); 
 		long width = this.field.getWidth() - 2 * this.bankWidth;
 		section = new Field( latlng, this.field.getLength(), width );
 		this.waterway = new Waterway( latlng, section, 100);
@@ -108,7 +108,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		reference.init( sa, field);
 		
 		//The bank at the bottom
-		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Bearing.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
+		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
 		section = new Field( latlng, field.getLength(), this.bankWidth );
 		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
 		

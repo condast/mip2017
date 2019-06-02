@@ -69,6 +69,11 @@ public class Waterway extends AbstractModel<Object>{
 		return ships.toArray( new Ship[ ships.size() ]);
 	}
 
+	@Override
+	public boolean isInCriticalDistance(IPhysical physical) {
+		return false;
+	}
+
 	protected void createShips( long xposition, int amount ){
 		if( this.ships.size() >= nrOfShips )
 			return;
@@ -99,5 +104,11 @@ public class Waterway extends AbstractModel<Object>{
 		createShips( this.getField().getLength() -100, 1 );//(int)(this.nrOfShips/2) );
 		super.setLocation( LatLngUtilsDegrees.extrapolate( super.getLocation(), LatLng.Compass.EAST.getAngle(), distance));
 		logger.fine( "Update Position " + super.getLocation() );
+	}
+
+	@Override
+	public IPhysical clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

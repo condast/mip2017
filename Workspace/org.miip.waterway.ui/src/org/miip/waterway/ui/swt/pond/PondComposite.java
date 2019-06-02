@@ -334,18 +334,12 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 						switch( image ){
 						case START:
 							environment.addListener( handler);
+							
 							thread.start();
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
 							clear = (Button) getButton( PlayerImages.Images.RESET);
 							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());
-							getDisplay().asyncExec( new Runnable(){
-
-								@Override
-								public void run() {
-									requestLayout();
-								}		
-							});
 							break;
 						case STOP:
 							stop();
@@ -362,7 +356,9 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 						default:
 							break;
 						}
-
+						IVessel vessel = environment.getInhabitant();
+						vessel.clearStrategies();
+						vessel.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
 					}
 					catch( Exception ex ){
 						ex.printStackTrace();
