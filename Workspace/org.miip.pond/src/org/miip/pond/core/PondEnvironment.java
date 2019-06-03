@@ -94,10 +94,10 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		int countOther = (int) LatLngUtilsDegrees.mod(proceedCounter);
 		if( countOther == 0)
 			countRef++;
-		double angle = countRef;
-		double bearing =  (int) LatLngUtilsDegrees.opposite(angle);
-		int half = ( field.getLength() > field.getWidth() )?  (int)field.getWidth()/2:  (int)field.getLength()/2;
-		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half );
+		double angle = reference.getHeading() + 1;
+		double heading =  (int) LatLngUtilsDegrees.opposite(angle);
+		int half = (int) (Math.max( field.getLength(), field.getWidth() )/2);
+		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half );
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
@@ -106,9 +106,9 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		reference.init(sa, field);
 
 		angle = (int) LatLngUtilsDegrees.opposite( countOther );
-		bearing = (int) LatLngUtilsDegrees.mod(90+angle);
+		heading = (int) LatLngUtilsDegrees.mod(angle);
 		half = (int) (field.getWidth()/2);
-		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half);
+		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half);
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h
