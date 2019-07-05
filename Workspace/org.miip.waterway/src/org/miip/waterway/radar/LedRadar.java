@@ -55,7 +55,7 @@ public class LedRadar<V,O extends IPhysical>{
 		}else {
 			latitude = ( waypoint.getLocation().getLatitude() + phys.getLocation().getLatitude())/2; 
 			longitude = ( waypoint.getLocation().getLongitude() + phys.getLocation().getLongitude())/2; 
-			angle += ( waypoint.getBearing() + angle )/2;
+			angle += ( waypoint.getHeading() + angle )/2;
 			if( distance > waypoint.getDistance() )
 				distance = waypoint.getDistance();
 			waypoint = new Motion( new LatLng( latitude, longitude ), angle, distance );
