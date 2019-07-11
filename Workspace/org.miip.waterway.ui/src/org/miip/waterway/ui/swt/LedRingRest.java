@@ -3,7 +3,6 @@ package org.miip.waterway.ui.swt;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,6 +11,7 @@ import java.util.logging.Logger;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
+import org.condast.commons.messaging.http.ResponseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -123,7 +123,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		}
 
 		@Override
-		protected String onHandleResponse(URL url, int responsecode, BufferedReader reader) throws IOException {
+		protected String onHandleResponse(ResponseEvent<LedRingRest.Requests> response, BufferedReader reader) throws IOException {
 			String result = super.transform(reader);
 			Gson gson = new Gson();
 			RestRadar.RadarData data = gson.fromJson(result, RestRadar.RadarData.class);
