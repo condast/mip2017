@@ -1,7 +1,6 @@
 package org.miip.waterway.ui.swt;
 
 import com.google.gson.Gson;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,7 +110,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		return super.onDrawEnd(gc);
 	}
 
-	private class WebClient extends AbstractHttpRequest<LedRingRest.Requests>{
+	private class WebClient extends AbstractHttpRequest<LedRingRest.Requests, Object>{
 
 		public WebClient(String path) {
 			super(path);
@@ -123,11 +122,11 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		}
 
 		@Override
-		protected String onHandleResponse(ResponseEvent<LedRingRest.Requests> response, BufferedReader reader) throws IOException {
-			String result = super.transform(reader);
+		protected String onHandleResponse(ResponseEvent<LedRingRest.Requests,Object> response, Object data ) throws IOException {
+			String result = response.getResponse();
 			Gson gson = new Gson();
-			RestRadar.RadarData data = gson.fromJson(result, RestRadar.RadarData.class);
-			scan.put(data.getAngle(), data);
+			RestRadar.RadarData post = gson.fromJson(result, RestRadar.RadarData.class);
+			scan.put(post.getAngle(), post);
 			logger.fine(result);
 			return result;
 		}	
