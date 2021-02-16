@@ -7,7 +7,6 @@
  *******************************************************************************/
 package org.miip.rwt.xml;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.EnumSet;
 
@@ -40,7 +39,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 	private Class<?> clss;
 
 	public XMLFactoryBuilder( Composite parent, Class<?> clss ) {
-		super( new XMLHandler( clss, parent ), clss.getResource( S_DEFAULT_FOLDER + File.separator + S_DEFAULT_DESIGN_FILE) );
+		super( new XMLHandler( clss, parent ) );
 		this.clss = clss;
 	}
 
