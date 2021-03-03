@@ -22,6 +22,6 @@ Import-Package: org.condast.commons.autonomy.ca,
  org.osgi.service.prefs;version="1.1.1"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.miip.pond.Activator
-Service-Component: OSGI-INF/org.miip.pond.design.factory.xml
 Export-Package: org.miip.pond.core
 Automatic-Module-Name: org.miip.pond
+Service-Component: OSGI-INF/org.miip.pond.design.factory.xml

@@ -18,5 +18,5 @@ Import-Package: org.condast.commons.autonomy.env,
  org.osgi.service.component.annotations;version="1.2.0",
  org.osgi.service.prefs;version="1.1.1"
 Bundle-ActivationPolicy: lazy
-Service-Component: OSGI-INF/org.miip.wterway.design.factory.xml
 Automatic-Module-Name: org.miip.waterway.designer
+Service-Component: OSGI-INF/org.miip.wterway.design.factory.xml
