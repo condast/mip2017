@@ -8,13 +8,18 @@ Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Automatic-Module-Name: test.org.condast.rcp
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.rap.rwt;bundle-version="[3.0.0,4.0.0)"
 Import-Package: org.condast.commons,
  org.condast.commons.data.latlng,
  org.condast.commons.ui.session,
  org.condast.js.commons.controller,
  org.condast.js.commons.images,
  org.condast.js.commons.session,
+ org.eclipse.rap.rwt.application;version="3.15.0",
+ org.eclipse.rap.rwt.client;version="3.15.0",
+ org.eclipse.swt,
+ org.eclipse.swt.browser,
+ org.eclipse.swt.layout,
+ org.eclipse.swt.widgets,
  org.miip.waterway.model.def,
  org.openlayer.map.control,
  org.openlayer.map.controller,
