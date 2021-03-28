@@ -60,7 +60,8 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		double angle = Math.toRadians(refAngle);
 		double bearing = Math.toRadians(( refAngle + 180  )%360);
 		LatLng latlng = LatLngUtilsDegrees.extrapolate(field.getCentre(), angle, distance);
-		reference = new Vessel( "Reference", latlng, bearing, 10);//bearing east, 10 km/h
+		String name = "Reference";
+		reference = new Vessel( name.hashCode(), name, latlng, bearing, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa, field);
@@ -69,7 +70,8 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		angle = Math.toRadians( otherAngle);
 		bearing = Math.toRadians(( otherAngle + 180  )%360);
 		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), angle, distance);
-		IVessel other = new Vessel( "Other", latlng, bearing, 10 );//bearing south, 10 km/h
+		name = "Other";
+		IVessel other = new Vessel( name.hashCode(), name , latlng, bearing, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa, field);
@@ -89,7 +91,8 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half );
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
-		reference = new Vessel( "Reference", latlng, angle, 10);//bearing east, 10 km/h
+		String name = "Reference";
+		reference = new Vessel( name.hashCode(), name, latlng, angle, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa, field);
@@ -100,7 +103,8 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), bearing, half);
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
-		IVessel other = new Vessel( "Other", latlng, angle, 10 );//bearing south, 10 km/h
+		name = "Other";
+		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa, field);

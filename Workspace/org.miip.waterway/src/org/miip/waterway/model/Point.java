@@ -13,8 +13,8 @@ import org.condast.commons.data.latlng.LatLngUtils;
  */
 public class Point extends AbstractModel<Object> {
 
-	public Point(LatLng lngLat) {
-		super( ModelTypes.COURSE, lngLat);
+	public Point(long id, LatLng lngLat) {
+		super( id, ModelTypes.COURSE, lngLat);
 	}
 
 	@Override
@@ -30,6 +30,6 @@ public class Point extends AbstractModel<Object> {
 
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
-		return new Point( super.getLocation());
+		return new Point( super.getID(), super.getLocation());
 	}
 }

@@ -28,13 +28,13 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	private ISituationalAwareness<IVessel, IPhysical> sa;
 	private DefaultCollisionAvoidance ca;
 
-	public Vessel(String name, double latitude, double longitude, double bearing, double speed) {
-		this( new LatLng(name, latitude, longitude ), bearing, speed);
+	public Vessel( long id, String name, double latitude, double longitude, double bearing, double speed) {
+		this( id, new LatLng(name, latitude, longitude ), bearing, speed);
 		this.name = name;
 	}
 
-	public Vessel( String name, LatLng location, double bearing, double speed) {
-		this( name, location.getLatitude(), location.getLongitude(), bearing, speed );
+	public Vessel( long id, String name, LatLng location, double bearing, double speed) {
+		this( id, name, location.getLatitude(), location.getLongitude(), bearing, speed );
 		this.name = name;
 	}
 	
@@ -44,12 +44,12 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	 * @param heading
 	 * @param speed
 	 */
-	public Vessel( LatLng location, double heading, double speed) {
-		this( location, heading, speed, null );
+	public Vessel( long id, LatLng location, double heading, double speed) {
+		this( id, location, heading, speed, null );
 	}
 
-	private Vessel( LatLng location, double heading, double speed, Object data) {
-		super( IPhysical.ModelTypes.VESSEL, location, heading, speed, data );
+	private Vessel( long id, LatLng location, double heading, double speed, Object data) {
+		super( id, IPhysical.ModelTypes.VESSEL, location, heading, speed, data );
 		this.name = location.getId();
 		this.length = IVessel.DEFAULT_LENGTH;
 	}
@@ -146,7 +146,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
-		Vessel vessel = new Vessel(getLocation(), getHeading(), getSpeed(), getData());
+		Vessel vessel = new Vessel(getID(), getLocation(), getHeading(), getSpeed(), getData());
 		vessel.name = name;
 		vessel.length = length;
 		vessel.field = field;

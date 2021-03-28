@@ -42,16 +42,16 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
 
-	public Ship( String id, LatLng position, float speed, Heading heading) {
-		this( id, speed, DEFAULT_LENGTH, position, heading.getAngle() );
+	public Ship( long id, String name, LatLng position, float speed, Heading heading) {
+		this( id, name, speed, DEFAULT_LENGTH, position, heading.getAngle() );
 	}
 
-	public Ship( String id, float speed, LatLng position) {
-		this( id, speed, DEFAULT_LENGTH, position, Heading.EAST.getAngle() );
+	public Ship( long id, String name, float speed, LatLng position) {
+		this( id, name, speed, DEFAULT_LENGTH, position, Heading.EAST.getAngle() );
 	}
 	
-	public Ship( String id, float speed, int length, LatLng position, int heading) {
-		super( id, IPhysical.ModelTypes.VESSEL, position, ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE, null );
+	public Ship( long id, String name, float speed, int length, LatLng position, int heading) {
+		super( id, name , IPhysical.ModelTypes.VESSEL, position, ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE, null );
 		this.speed = speed;
 		this.heading = heading;
 		this.length = length;
@@ -152,7 +152,8 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	public static Ship createShip( LatLng lnglat, String name ){
 		double speed = 10 + ( 60 * Math.random());
 		Heading bearing = ( Math.random() < 0.5f)? Heading.EAST: Heading.WEST;
-		return new Ship( name, lnglat, (float) speed, bearing);
+		long id=  name.hashCode();
+		return new Ship( id, name, lnglat, (float) speed, bearing);
 	}
 
 	@Override
@@ -186,7 +187,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
-		return new Ship(super.getIdentifier(), speed, (int)length, super.getLocation(), heading );
+		return new Ship(super.getID(), super.getIdentifier(), speed, (int)length, super.getLocation(), heading );
 	}
 
 }

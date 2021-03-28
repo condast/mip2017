@@ -27,12 +27,12 @@ public class Waterway extends AbstractModel<Object>{
 	
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 	
-	public Waterway( LatLng latlng, Field field) {
-		this( latlng, field, DEFAULT_NR_OF_SHIPS  );
+	public Waterway( long id, LatLng latlng, Field field) {
+		this( id, latlng, field, DEFAULT_NR_OF_SHIPS  );
 	}
 	
-	public Waterway( LatLng latlng, IField field, int nrOfShips) {
-		super( IPhysical.ModelTypes.WATERWAY, latlng );
+	public Waterway( long id, LatLng latlng, IField field, int nrOfShips) {
+		super( id, IPhysical.ModelTypes.WATERWAY, latlng );
 		this.field = field;
 		this.nrOfShips = nrOfShips;
 		ships = new ArrayList<IVessel>();

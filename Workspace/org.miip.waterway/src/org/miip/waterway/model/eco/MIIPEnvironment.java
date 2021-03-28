@@ -97,13 +97,13 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		LatLng latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.bankWidth); 
 		long width = this.field.getWidth() - 2 * this.bankWidth;
 		section = new Field( latlng, this.field.getLength(), width );
-		this.waterway = new Waterway( latlng, section, 100);
+		this.waterway = new Waterway( latlng.hashCode(), latlng, section, 100);
 		
 		//Position of the ship
 		latlng = this.field.getCentre();
 		//This vessel consists of situational awareness and collision avoidance 
 		logger.info(latlng.toLocation());
-		reference = new CentreShip( NAME, latlng, 20 );
+		reference = new CentreShip( NAME.hashCode(), NAME, latlng, 20 );
 		sa.setInput(this);
 		reference.init( sa, field);
 		

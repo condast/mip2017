@@ -142,9 +142,9 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		long position = 0;
 		while( position < field.getLength() ) {
 			location = field.transform( position, 0);
-			results.add( new Point( location ));
+			results.add( new Point( location.hashCode(), location ));
 			location = field.transform( position, field.getWidth());
-			results.add( new Point( location ));
+			results.add( new Point( location.hashCode(), location ));
 			position += 3* xstep;
 		}
 		return results;	

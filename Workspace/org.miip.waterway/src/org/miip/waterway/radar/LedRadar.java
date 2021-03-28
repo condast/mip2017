@@ -51,14 +51,14 @@ public class LedRadar<V,O extends IPhysical>{
 		double distance = LatLngUtils.getDistance(reference.getLocation(), phys.getLocation());
 		Motion waypoint = radarData.get(key);
 		if( waypoint == null ) {
-			waypoint = new Motion( phys.getLocation(), angle, distance, true );
+			waypoint = new Motion(reference.getID(), phys.getLocation(), angle, distance, true );
 		}else {
 			latitude = ( waypoint.getLocation().getLatitude() + phys.getLocation().getLatitude())/2; 
 			longitude = ( waypoint.getLocation().getLongitude() + phys.getLocation().getLongitude())/2; 
 			angle += ( waypoint.getHeading() + angle )/2;
 			if( distance > waypoint.getDistance() )
 				distance = waypoint.getDistance();
-			waypoint = new Motion( new LatLng( latitude, longitude ), angle, distance, true );
+			waypoint = new Motion( reference.getID(), new LatLng( latitude, longitude ), angle, distance, true );
 		}
 		return waypoint;
 	}
