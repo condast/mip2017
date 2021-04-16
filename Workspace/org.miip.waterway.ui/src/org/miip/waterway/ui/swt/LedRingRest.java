@@ -117,7 +117,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 		}
 	
 		@Override
-		public void sendGet( Requests request, Map<String, String> parameters) throws Exception {
+		public void sendGet( Requests request, Map<String, String> parameters) throws IOException {
 			super.sendGet(request, parameters);
 		}
 

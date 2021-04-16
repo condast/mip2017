@@ -6,10 +6,7 @@ import java.util.TimerTask;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.js.commons.controller.IJavascriptController;
-import org.condast.js.commons.controller.JavascriptSynchronizer;
 import org.condast.js.commons.images.IDefaultMarkers;
-import org.condast.js.commons.session.ISessionListener;
-import org.condast.js.commons.session.SessionEvent;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -30,7 +27,6 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	
 	private Browser browser;
 	private IJavascriptController controller; 
-	private JavascriptSynchronizer<Integer> jss;
 
 	private Timer timer;
 	private TimerTask runTimer;
@@ -60,17 +56,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
         text.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
         browser = new Browser( parent, SWT.BORDER);
         browser.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 2, 1 ));
-        controller = new OpenLayerController(browser);
-        jss = new JavascriptSynchronizer<>(controller);
-        jss.addSessionListener( new ISessionListener<Integer>() {
-
-			@Override
-			public void notifySessionChanged(SessionEvent<Integer> event) {
-				text.setText("COUNT: " + counter );
-			}
-        	
-        });
-   
+        controller = new OpenLayerController(browser);   
 	}
 		
 	private class RunTimer extends TimerTask{
