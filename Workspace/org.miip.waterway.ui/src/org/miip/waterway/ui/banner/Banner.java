@@ -1,14 +1,12 @@
 package org.miip.waterway.ui.banner;
 
 import org.condast.commons.ui.banner.AbstractBanner;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.UrlLauncher;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.miip.waterway.ui.images.BannerImages;
 
 public class Banner extends AbstractBanner {
@@ -30,11 +28,9 @@ public class Banner extends AbstractBanner {
 	public Banner(Composite parent, int style) {
 		super(parent, style);
 	}
-
 	
 	@Override
-	protected void createImageBar(Composite comp, int style) {
-		super.createImageBar(comp, style);
+	protected void createBanner(Composite comp, int style) {
 		Button button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.MIIP ), SWT.FLAT );
 		button.setData( S_MIIP_URL );
 		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.NMT ), SWT.FLAT );
@@ -57,13 +53,6 @@ public class Banner extends AbstractBanner {
 		button.setData( S_CONDAST_URL );
 		button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.JUROD ), SWT.FLAT );
 		button.setData( S_JUROD_URL );
-	}
-
-
-	@Override
-	protected Dialog createSettingsDialog(Shell shell) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
