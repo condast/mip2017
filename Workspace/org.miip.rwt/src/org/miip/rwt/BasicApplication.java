@@ -8,6 +8,7 @@ import org.eclipse.rap.rwt.application.Application.OperationMode;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.client.WebClient;
 import org.miip.rwt.entry.MIIPEntryPoint;
+import org.miip.rwt.entry.RouterEntryPoint;
 import org.miip.rwt.entry.SettingsEntryPoint;
 
 public class BasicApplication implements ApplicationConfiguration {
@@ -29,5 +30,6 @@ public class BasicApplication implements ApplicationConfiguration {
         application.addEntryPoint( S_ENTRY_POINT, BasicEntryPoint.class, properties);
         application.addEntryPoint( S_BANNER_ENTRY_POINT, SettingsEntryPoint.class, properties);
         application.addEntryPoint( S_MIIP_ENTRY_POINT, MIIPEntryPoint.class, properties);
+        application.addEntryPoint( RouterEntryPoint.S_ROUTER_ENTRY, RouterEntryPoint.class, properties);
    }
 }
