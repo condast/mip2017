@@ -1,0 +1,1 @@
+id=test-field, latitude=52.256502, longitude=6.135000, length=500, width=300
