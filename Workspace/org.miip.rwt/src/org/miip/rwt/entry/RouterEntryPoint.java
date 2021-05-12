@@ -102,7 +102,7 @@ public class RouterEntryPoint extends AbstractRestEntryPoint {
 		labelEnd = new Label( comp, SWT.BORDER );
 		labelEnd.setLayoutData( labelData);
 
-		map = new PixelXYMap(comp, SWT.BORDER);
+		map = new PixelXYMap(comp, SWT.NONE);
 		map.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 3, 1));
 
 		Config config = new Config();
@@ -132,8 +132,7 @@ public class RouterEntryPoint extends AbstractRestEntryPoint {
 				labelEnd.setBackground( new Color( labelStart.getDisplay(), colour.getRed(), colour.getGreen(), colour.getBlue()));
 			break;
 		case AREA:
-			IField field = browser.getField();
-			map.setInput(event.getColours(), (int) field.getLength());
+			map.setLayer(event.getMap());
 			break;
 		case LINE:
 			graph.setInput(event.getColours());

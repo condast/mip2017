@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.routing.AbstractRouter;
 import org.condast.commons.data.colours.RGBA;
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringStyler;
@@ -43,7 +45,6 @@ public class RouterMapBrowser extends Browser {
 	private LatLng[] selected;
 	private int counter;
 	
-	private IField field;
 	private Router router;
 	
 	private boolean init;
@@ -147,16 +148,12 @@ public class RouterMapBrowser extends Browser {
 		navigation.getLocation();
 	}
 
-	public IField getField() {
-		return field;
-	}
 
 	public void setField( IField field ){
-		this.field = field;
 		this.router = new Router( field);
-		home = this.field.getCentre();
+		home = field.getCentre();
 		ShapesView shapes = new ShapesView( mapController);
-		shapes.addShape(this.field.toWKT());
+		shapes.addShape(field.toWKT());
 	}
 
 	public LatLng[] getSelected() {
@@ -164,13 +161,9 @@ public class RouterMapBrowser extends Browser {
 	}
 
 	public boolean fill() {
-		PixelView pixels = new PixelView( mapController );
-		List<RGBA> results = null;
 		try {
-			results = pixels.getPixelsColours( field );
-			int select = (counter==0)?1:0;
-			notifyColourRead( new ColourEvent( this, Types.AREA,  results.toArray( new RGBA[ results.size() ]), select ));		
-			//router.fill(selected[0], selected[1]);
+			router.fill();
+			notifyColourRead( new ColourEvent( this, router.getInput() ));		
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
@@ -195,11 +188,10 @@ public class RouterMapBrowser extends Browser {
 		if( this.init) {
 			init = false;
 			GeoView geo = new GeoView(mapController);
-			geo.setFieldData( field.toFieldData(17));
+			geo.setFieldData( router.getField().toFieldData(17));
 			geo.jump();
 		}
 		IconsView icons = new IconsView( mapController );
-		PixelView pixels = new PixelView( mapController );
 		//int[] results = pixels.getPixelColour(vesselData.location);
 		//if( results != null ) {
 		//Surroundings surroundings = Legend.getLegend(results);
@@ -212,7 +204,7 @@ public class RouterMapBrowser extends Browser {
 		if( home == null )
 			return;
 		icons.addMarker(home, marker, 'H');
-		if( field == null )
+		if( router.getField() == null )
 			return;
 
 		if( Utils.assertNull(selected))
@@ -225,6 +217,7 @@ public class RouterMapBrowser extends Browser {
 		marker = Markers.BLUE;
 		icons.addMarker(start, marker, 'S');
 
+		PixelView pixels = new PixelView( mapController );
 		int select = ( counter == 1)?0:1;
 		int[] colour = pixels.getPixelColour(selected[select]);
 		RGBA[] rgba = new RGBA[1];
@@ -238,7 +231,7 @@ public class RouterMapBrowser extends Browser {
 		icons.addMarker(end, marker, 'E');
 
 		try {
-			Collection<RGBA> results = pixels.getPixelsColours(selected[0], selected[1]);
+			Collection<RGBA> results = router.getPixels(selected[0], selected[1]);
 			if( !Utils.assertNull(results))
 				notifyColourRead( new ColourEvent( this, Types.LINE,  results.toArray( new RGBA[ results.size() ]), select ));		
 		}
@@ -249,6 +242,7 @@ public class RouterMapBrowser extends Browser {
 		try {
 			if(!router.isFilled())
 				return;
+		
 			Collection<LatLng> results = router.findRoute();
 			marker = Markers.PALEBLUE;
 			for( LatLng wp: results) {
@@ -256,6 +250,7 @@ public class RouterMapBrowser extends Browser {
 					continue;
 				icons.addMarker(wp, marker, 'N');
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -273,24 +268,26 @@ public class RouterMapBrowser extends Browser {
 
 		public Router( IField field ) {
 			super(field);
-		}
-	
+		}	
+
 		@Override
-		public void fill(LatLng location, LatLng destination) {
+		protected void onFill(Map<Integer, List<RGBA>> map) {
 			busy = true;
 			List<RGBA> results = null;
 			try {
 				PixelView pixels = new PixelView( mapController );
+				IField field = getField();
 				results = pixels.getPixelsColours( field );
 				if( Utils.assertNull(results))
 					return;
+				
 				int counter = 0;
-				for( int y=0; y< field.getWidth(); y++ ) {
+				for( int y=0; y<field.getWidth(); y++ ) {
 					for( int x=0; x< field.getLength(); x++ ) {
-						put( x, y, results.get( counter));
+						put( x, y, results.get( counter++));
 					}				
 				}
-				super.fill(location, destination);
+				
 			}
 			finally {
 				busy = false;
@@ -299,20 +296,78 @@ public class RouterMapBrowser extends Browser {
 			notifyColourRead( new ColourEvent( this, Types.AREA,  results.toArray( new RGBA[ results.size() ]), index ));		
 		}
 
+		public List<RGBA> getPixels( LatLng start, LatLng end ){
+			busy = true;
+			List<RGBA> results = new ArrayList<>();
+			try {
+				IField field = getField();
+				if(!field.isInField(start, 1) || !field.isInField(end, 1))
+					return results;
+				super.prepare(start, end);
+				Map.Entry<Double, Double> vs = field.getVector(start);
+				Map.Entry<Double, Double> diff = field.difference(end, start);
+				int length = (int) LatLngUtils.getDistance(start, end);
+				for( int i=0; i<length; i++ ) {
+					int x = ( int )( vs.getKey() + (diff.getKey()*i)/length);
+					int y = ( int )( vs.getValue() + (diff.getValue()*i)/length);
+					RGBA rgba = get( x,y );
+					if( rgba != null)
+						results.add(get( x, y ));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+			finally {
+				busy = false;
+			}
+			return results;
+		}
+			
 		@Override
-		protected int checkObstruction(LatLng first, LatLng last) {
-			PixelView pixels = new PixelView( mapController );
-			int distance = pixels.hasSingleColour(first, last, 10);
+		protected int checkObstruction(LatLng start, LatLng end) {
+			List<RGBA> line = getPixels(start, end);
+			if( Utils.assertNull(line) || line.size() < 2)
+				return -1;
+			int length = (int) LatLngUtils.getDistance(start, end);
+			int distance = -1;
+			RGBA first = line.get(0);		
+			for( int i=1; i<line.size(); i++ ){
+				RGBA next = line.get(i);
+				if( !next.approximate(first, 20 ))
+					return (int)((double)i*length/line.size() );
+			}
 			return distance;
+		}
+
+		public boolean findObstruction(LatLng start, long distance, int angle) {
+			busy = true;
+			try {
+				IField field = getField();
+				if(!field.isInField(start, 1))
+					return false;
+				LatLng waypoint = LatLngUtilsDegrees.extrapolate(start, angle, distance);
+				if(!field.isInField(waypoint, 1))
+					return false;
+				if( checkObstruction(start, waypoint) >= 0 )
+					return true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+			finally {
+				busy = false;
+			}
+			return false;
 		}
 
 		@Override
 		protected Collection<TreeNode> findPath(LatLng first, LatLng last, int distance) {
 			Collection<TreeNode> results = new ArrayList<>();
 			TreeNode node = findTreeNode(first, last, distance, false);
-			results.add(node);	
+			if( node != null )
+				results.add(node);	
 			node = findTreeNode(first, last, distance, true);
-			results.add(node);
+			if( node != null )
+				results.add(node);
 			return results;
 		}
 		
@@ -320,29 +375,29 @@ public class RouterMapBrowser extends Browser {
 			int angle = (int) LatLngUtilsDegrees.getHeading(first, last);
 			TreeNode node = null;
 			LatLng best = last;
-			int bestDistance = 0;
-			do{
-				int degrees = secondary? 180+angle: angle;
-				degrees %=360;
-				LatLng next = LatLngUtilsDegrees.extrapolate(first, degrees, distance);
-				int dist = checkObstruction(first, next);
-				if( dist >= 0 )
-					angle++;
-				else {
-					int temp = dist;
-					dist = checkObstruction(last, next);
-					if( dist < 0 )
-						node=  new TreeNode(next, NodeTypes.NODE);
-					else {
-						angle++;
-						if(( temp + dist )> bestDistance ) { 
-							bestDistance = temp+dist;
-							best = next;
-						}
+			IField field = getField();
+			int degrees = angle %=360;
+			int end = ( 180 + angle )%360;
+			
+			long length = (long) (Math.pow( field.getLength(), 2) + Math.pow( field.getWidth(), 2));
+			if( length < 2 )
+				return null;
+			
+			while(( node == null ) && ( degrees != end)){
+				degrees = (360 + angle)%360;
+				for( long d=1; d<length; d++ ) {
+					LatLng waypoint = LatLngUtilsDegrees.extrapolate(first, angle, d);
+					if(!field.isInField(waypoint, 1)) {
+						if( best == null ) best = waypoint;
+						break;
 					}
+					if( checkObstruction(first, waypoint) < 0 ) {
+						if( checkObstruction(last, waypoint) < 0 ) 
+							return new TreeNode( waypoint );
+					}
+					if( secondary ) angle--; else angle++;	
 				}
 			}
-			while(( node == null ) && ( angle < 180));	
 			return (node != null )?node: new TreeNode( best, NodeTypes.NODE );
 		}
 	}

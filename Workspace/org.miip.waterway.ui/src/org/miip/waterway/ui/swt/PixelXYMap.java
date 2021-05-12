@@ -1,9 +1,7 @@
 package org.miip.waterway.ui.swt;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.condast.commons.data.colours.RGBA;
 import org.condast.commons.ui.xy.AbstractXYMap;
@@ -15,8 +13,6 @@ import org.eclipse.swt.widgets.Composite;
 public class PixelXYMap extends AbstractXYMap<Integer, RGBA> {
 	private static final long serialVersionUID = 1L;
 		
-	private Logger logger = Logger.getLogger(this.getClass().getName());
-	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -45,27 +41,16 @@ public class PixelXYMap extends AbstractXYMap<Integer, RGBA> {
 	protected void drawObject(GC gc, int xprev, int yprev, int xpos, int ypos, Integer key, RGBA value) {
 		if( value != null )
 			gc.setBackground( new Color( getDisplay(), value.getRed(), value.getGreen(), value.getBlue()));
-		gc.fillRectangle( xpos, ypos, xpos-xprev+1, ypos-yprev+1);
+		gc.fillRectangle( xprev, yprev, xpos-xprev, ypos-yprev);
 	}
 
-	public void setInput( RGBA[] colours, int size) {
+	public void setLayer( Map<Integer,List<RGBA>> colours) {
 		getDisplay().asyncExec( new Runnable() {
 
 			@Override
 			public void run() {
 				try {
-					Map<Integer, List<RGBA>> input = getInput();
-					input.clear();
-					for( int i=0; i<colours.length; i++ ) {
-						int row = (int)((double)i/size);
-						List<RGBA> elements = input.get(row);
-						if( elements == null ) {
-							elements = new ArrayList<>();
-							input.put(row, elements );
-						}
-						elements.add(colours[i]);
-					}
-					System.err.println( input.size());
+					setInput(colours);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
