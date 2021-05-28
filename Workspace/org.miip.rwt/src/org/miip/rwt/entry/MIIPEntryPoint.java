@@ -96,7 +96,8 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 									if( env != null )
 										env.setEnabled(false);
 									MiipComposite miip = (MiipComposite) item.getControl();
-									miip.getInput().setEnabled(true);
+									if( miip.getInput() != null )
+										miip.getInput().setEnabled(true);
 									//miip.setInput(dispatcher.getActiveEnvironment());
 									break;
 								case COLLISION_AVOIDANCE_DEMO:

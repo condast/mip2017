@@ -25,8 +25,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	 * Needed for awareness of its environment
 	 * @return
 	 */
-	private ISituationalAwareness<IVessel, IPhysical> sa;
-	private DefaultCollisionAvoidance ca;
+	private ISituationalAwareness<IPhysical, IVessel> sa;
 
 	public Vessel( long id, String name, double latitude, double longitude, double bearing, double speed) {
 		this( id, new LatLng(name, latitude, longitude ), bearing, speed);
@@ -55,10 +54,10 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	}
 
 	@Override
-	public void init( ISituationalAwareness<IVessel, IPhysical> sa, IField field ) {
+	public void init( ISituationalAwareness<IPhysical, IVessel> sa, IField field ) {
 		this.sa = sa;
 		this.field = field;
-		this.ca = new DefaultCollisionAvoidance(this, sa);
+		super.setCollisionAvoidance( new DefaultCollisionAvoidance(this, sa));
 	}
 
 	@Override
@@ -73,7 +72,6 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 
 	@Override
 	public double getTurn(long timemsec) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -81,25 +79,28 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	public double getMinTurnDistance() {
 		return 2*this.length;
 	}
-
-	//@Override
-	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness(){
+	
+	@Override
+	public ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness() {
 		return sa;
 	}
 
 	@Override
 	public void clearStrategies() {
+		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
 		ca.clearStrategies();
 	}
 
 	@Override
 	public boolean addStrategy(String strategyName) {
+		DefaultCollisionAvoidance ca = (DefaultCollisionAvoidance) super.getCollisionAvoidance();
 		return ca.addStrategy(strategyName);
 	}
 
 
 	@Override
 	public boolean removeStrategy(String strategyName ) {
+		DefaultCollisionAvoidance ca = (DefaultCollisionAvoidance) super.getCollisionAvoidance();
 		return ca.removeStrategy(strategyName);
 	}
 
@@ -109,29 +110,34 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	 */
 	@Override
 	public String[] getSelectedStrategies() {
-		return this.ca.getSelectedStrategies();
+		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
+		return ca.getSelectedStrategies();
 	}
 
 	@Override
 	public double getCriticalDistance() {
+		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
 		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();		
 	}
 
 	@Override
 	public boolean isInCriticalDistance( IPhysical physical ) {
+		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
 		double critical = ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
 		return LatLngUtils.getDistance(this.getLocation(), physical.getLocation()) <= critical;
 	}
 
 	@Override
 	public boolean hasCollisionAvoidance() {
-		return (this.ca != null ) &&( this.ca.isActive());
+		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
+		return (ca != null ) &&( ca.isActive());
 	}
 
 	@Override
 	public LatLng move(long interval ) {
 		LatLng location = super.getLocation();
-		if(( this.ca == null ) ||(!ca.isActive())){
+		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
+		if(( ca == null ) ||(!ca.isActive())){
 			location= plotNext(interval);
 		}else {
 			MotionData motion = ca.move( this, interval ); 
@@ -156,7 +162,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
 
-		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ){
+		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IPhysical, IVessel> sa ){
 			super( field, sa, true);
 			if( StringUtils.isEmpty( vessel.getName()))
 				System.out.println("STOP!!!!");
@@ -164,7 +170,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		}
 		
 		@Override
-		protected void clearStrategies() {
+		public void clearStrategies() {
 			super.clearStrategies();
 		}
 

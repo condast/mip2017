@@ -52,10 +52,10 @@ public class PixelXYGraph extends AbstractXYGraph<RGBA> {
 	}
 	
 	@Override
-	protected int onPaint(GC gc, int xprev, int yprev, int xcor, int key, RGBA value) {
+	protected int onPaint(GC gc, int xprev, int ybase, int xcor, int ycor, int key, RGBA value) {
 		if( value != null )
 			gc.setBackground( new Color( getDisplay(), value.getRed(), value.getGreen(), value.getBlue()));
-		gc.fillRectangle( xcor, 0, 1, yprev );
+		gc.fillRectangle( xcor, 0, 1, ybase-ycor );
 		return 0;
 	}
 

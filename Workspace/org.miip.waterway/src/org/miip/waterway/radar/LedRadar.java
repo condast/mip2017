@@ -11,12 +11,12 @@ import org.condast.commons.data.latlng.Motion;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPRadar;
 
-public class LedRadar<V,O extends IPhysical>{
+public class LedRadar<O extends IPhysical,V extends IPhysical>{
 	
 	private Map<Integer, Motion> radarData;
-	private IMIIPRadar<V,O> radar;
+	private IMIIPRadar<O,V> radar;
 	
-	public LedRadar( IMIIPRadar<V,O> radar ) {
+	public LedRadar( IMIIPRadar<O,V> radar ) {
 		super(); 
 		this.radar = radar;
 		radarData = new HashMap<Integer, Motion>();
@@ -31,7 +31,7 @@ public class LedRadar<V,O extends IPhysical>{
 	}
 
 	public void refresh() {
-		ISituationalAwareness<V,O> sa = radar.getInput();
+		ISituationalAwareness<O,V> sa = radar.getInput();
 		this.radarData.clear();
 		if( sa == null )
 			return;

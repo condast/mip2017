@@ -19,7 +19,7 @@ import org.miip.waterway.model.def.IMIIPRadar;
 
 public class RestRadar{
 
-	private IRadar<IVessel, IPhysical> radar;
+	private IRadar<IPhysical, IVessel> radar;
 
 	private Map<Integer, Double> scan;
 
@@ -30,13 +30,13 @@ public class RestRadar{
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	public RestRadar( RadarOptions options, int leds, ISituationalAwareness<IVessel, IPhysical> sa ) {
+	public RestRadar( RadarOptions options, int leds, ISituationalAwareness<IPhysical, IVessel> sa ) {
 		colours = new ArrayList<RadarData>();
 		this.options = options;
 		this.radarType = options.getRadarType();
 		this.leds = leds;
 		this.scan = new HashMap<>();
-		this.radar = new Radar<IVessel, IPhysical>();
+		this.radar = new Radar<IPhysical, IVessel>();
 		this.radar.setInput(sa);
 		radar.setRange( options.getRange());
 		double sensitivity = ( options.getSensitivity() <= 0)?sa.getRange(): options.getSensitivity();
@@ -50,7 +50,7 @@ public class RestRadar{
 	
 	public List<RadarData> drawField(){
 		colours.clear();
-		ISituationalAwareness<IVessel, IPhysical> sa = radar.getInput();
+		ISituationalAwareness<IPhysical, IVessel> sa = radar.getInput();
 		if( sa == null )
 			return colours;
 		for( IPhysical obj: sa.getScan() ){
@@ -107,7 +107,7 @@ public class RestRadar{
 	protected void onDrawEnd() {
 		int[] colour = getBackgroundColour();
 		double distance = radar.getRange() + 10;
-		ISituationalAwareness<IVessel, IPhysical> sa = radar.getInput();
+		ISituationalAwareness<IPhysical, IVessel> sa = radar.getInput();
 		for( int i=0; i< this.leds; i++ ) {
 			Double value = scan.get( i );
 			distance = ( value == null )?Double.MAX_VALUE: value;

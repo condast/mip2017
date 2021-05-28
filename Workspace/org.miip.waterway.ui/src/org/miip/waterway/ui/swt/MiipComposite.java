@@ -147,7 +147,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 		slider_speed = new Slider( group_control, SWT.BORDER );
 		GridData gd_slider = new GridData( SWT.FILL, SWT.FILL, false, false );
-		//gd_slider.widthHint = 80;
 		slider_speed.setLayoutData( gd_slider);
 		slider_speed.setMinimum(1);
 		slider_speed.setMaximum(1000);

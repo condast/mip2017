@@ -62,7 +62,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		LatLng latlng = LatLngUtilsDegrees.extrapolate(field.getCentre(), angle, distance);
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, bearing, 10);//bearing east, 10 km/h
-		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa, field);
 		
@@ -93,7 +93,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 			logger.info("out of bounds");
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, angle, 10);//bearing east, 10 km/h
-		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa, field);
 

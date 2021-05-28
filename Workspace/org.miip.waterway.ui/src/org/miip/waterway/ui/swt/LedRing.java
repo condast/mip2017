@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
+public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int NR_OF_LEDS = 24;
@@ -87,7 +87,7 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel,IPhysical> {
 	protected Color getColour( int key, double distance) {
 		if( super.getInput() == null)
 			return super.getColour(distance);
-		ISituationalAwareness<IVessel, IPhysical> sa = super.getInput();
+		ISituationalAwareness<IPhysical, IVessel> sa = super.getInput();
 		double critical = ( sa.getReference() == null )? 0: sa.getReference().getCriticalDistance();
 		return IRadarColours.RadarColours.getColour(getDisplay(), getRange(), getSensitivity(), critical, distance);
 	}

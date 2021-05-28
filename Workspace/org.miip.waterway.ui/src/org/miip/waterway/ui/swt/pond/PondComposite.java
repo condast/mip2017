@@ -104,7 +104,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		strategyCombo = new Combo(group_control, SWT.NONE);
 		strategyCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		strategyCombo.setItems(ICollisionAvoidanceStrategy.DefaultStrategies.getItems());
-		strategyCombo.select(ICollisionAvoidanceStrategy.DefaultStrategies.FLANK_STRATEGY.ordinal());
+		strategyCombo.select(ICollisionAvoidanceStrategy.DefaultStrategies.SIMPLE_COLLISION_AVOIDANCE.ordinal());
 		strategyCombo.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;
 
@@ -228,7 +228,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.canvas.setInput( this.environment);
 		IVessel reference = (IVessel) this.environment.getInhabitant();
 		ICollisionAvoidanceStrategy.DefaultStrategies strategy = Utils.assertNull(reference.getSelectedStrategies())?
-				ICollisionAvoidanceStrategy.DefaultStrategies.FLANK_STRATEGY: 
+				ICollisionAvoidanceStrategy.DefaultStrategies.SIMPLE_COLLISION_AVOIDANCE: 
 				ICollisionAvoidanceStrategy.DefaultStrategies.valueOf( reference.getSelectedStrategies()[0]);
 		this.strategyCombo.select(strategy.ordinal());
 		this.radarGroup.setInput( reference.getSituationalAwareness(), true );
@@ -365,7 +365,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 					}
 				}		
 			});
-			button.setImage( PlayerImages.getInstance().getImage(type));
+			button.setImage( PlayerImages.getImage(type));
 			return button;
 		}
 	}

@@ -36,8 +36,8 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	private float speed;//-20 - 60 km/hour
 	private int heading; //0-360
 	
-	private ISituationalAwareness<IVessel, IPhysical> sa;
-	private ICollisionAvoidance<IVessel, IPhysical> ca;
+	private ISituationalAwareness<IPhysical,IVessel> sa;
+	private ICollisionAvoidance<IPhysical,IVessel> ca;
 	
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
@@ -59,7 +59,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
 	}
 
-	public void init(ISituationalAwareness<IVessel, IPhysical> sa, ICollisionAvoidance<IVessel, IPhysical>  ca) {
+	public void init(ISituationalAwareness<IPhysical,IVessel> sa, ICollisionAvoidance<IPhysical,IVessel>  ca) {
 		this.sa = sa;
 		this.ca = ca;
 	}
@@ -139,7 +139,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	@Override
-	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
+	public ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness() {
 		return sa;
 	}
 
@@ -162,7 +162,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	@Override
-	public void init(ISituationalAwareness<IVessel, IPhysical> sa, IField field) {
+	public void init(ISituationalAwareness<IPhysical, IVessel> sa, IField field) {
 		// TODO Auto-generated method stub
 		
 	}

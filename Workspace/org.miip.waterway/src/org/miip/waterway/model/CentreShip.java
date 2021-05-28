@@ -106,7 +106,7 @@ public class CentreShip extends Ship {
 	
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
 
-		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IVessel, IPhysical> sa ){
+		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IPhysical,IVessel> sa ){
 			super( field, sa, true);
 			if( StringUtils.isEmpty( vessel.getName()))
 				System.out.println("STOP!!!!");
@@ -115,7 +115,7 @@ public class CentreShip extends Ship {
 		}
 		
 		@Override
-		protected void clearStrategies() {
+		public void clearStrategies() {
 			super.clearStrategies();
 		}
 

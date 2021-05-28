@@ -100,7 +100,7 @@ public class RadarResource{
 			IVessel reference = (IVessel) env.getInhabitant();
 			if( reference == null )
 				return response;
-			ISituationalAwareness<IVessel,IPhysical> sa = reference.getSituationalAwareness();
+			ISituationalAwareness<IPhysical, IVessel> sa = reference.getSituationalAwareness();
 			if( sa == null ) {
 				response = Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 				return response;

@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel,IPhysical>{
+public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysical, IVessel>{
 	private static final long serialVersionUID = 1L;
 
 	private int  totalTime = 35000;//35 sec
@@ -42,7 +42,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel,
 		if(!( physicalobj instanceof IVessel ))
 			return;
 		
-		ISituationalAwareness<IVessel,IPhysical> psa = getInput();
+		ISituationalAwareness<IPhysical, IVessel> psa = getInput();
 		psa.clear();
 		Collection<RadarData<IPhysical>> timemap = psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
 		if( timemap.isEmpty() )

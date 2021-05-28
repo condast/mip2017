@@ -16,7 +16,7 @@ public interface IMIIPEnvironment extends IReferenceEnvironment<IVessel, IPhysic
 
 	Waterway getWaterway();
 
-	ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness();
+	ISituationalAwareness<IPhysical,IVessel> getSituationalAwareness();
 
 	int getBankWidth();
 

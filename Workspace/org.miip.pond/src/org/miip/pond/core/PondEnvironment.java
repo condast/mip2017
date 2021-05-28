@@ -29,7 +29,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public static final int DEFAULT_OFFSET = 90;
 	public static final int DEFAULT_TIME_SECOND = 1000;
 	
-	private int proceedCounter, countRef;
+	private int proceedCounter;
 	private IField field;
 	private Vessel reference;
 	private List<IPhysical> others;
@@ -61,13 +61,12 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, 0);
 		this.proceedCounter = 0;
-		this.countRef = 0;
 		
 		//Vessels have situational awareness and collision avoidance
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, 90, 10);//bearing east, 10 km/h
-		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa, field);
 		
@@ -94,8 +93,6 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.others.clear();
 		this.proceedCounter++;
 		int countOther = (int) LatLngUtilsDegrees.mod(proceedCounter);
-		if( countOther == 0)
-			countRef++;
 		double angle = reference.getHeading() + 1;
 		double heading =  (int) LatLngUtilsDegrees.opposite(angle);
 		int half = (int) (Math.max( field.getLength(), field.getWidth() )/2);
@@ -104,7 +101,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			logger.info("out of bounds");
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, angle, 10);//bearing east, 10 km/h
-		ISituationalAwareness<IVessel, IPhysical> sa = new PondSituationalAwareness( reference, field );
+		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa, field);
 
@@ -218,7 +215,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	}
 
 	@Override
-	public ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness() {
+	public ISituationalAwareness<IPhysical,IVessel> getSituationalAwareness() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -9,7 +9,7 @@ public interface IVessel extends IAutonomous<IPhysical>
 {
 	float DEFAULT_LENGTH = 4.00f;//4 mtr
 
-	void init(ISituationalAwareness<IVessel, IPhysical> sa, IField field);	
+	void init(ISituationalAwareness<IPhysical,IVessel> sa, IField field);	
 	
 	/**
 	 * Returns true if the vessel has collision avoidance
@@ -27,7 +27,7 @@ public interface IVessel extends IAutonomous<IPhysical>
 	 */
 	double getSpeed();
 
-	ISituationalAwareness<IVessel, IPhysical> getSituationalAwareness();
+	ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness();
 
 	/**
 	 * Returns true if the given physical object is too near

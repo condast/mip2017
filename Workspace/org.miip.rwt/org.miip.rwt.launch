@@ -53,12 +53,12 @@
         <setEntry value="org.eclipse.core.jobs@default:default"/>
         <setEntry value="org.eclipse.core.runtime@default:true"/>
         <setEntry value="org.eclipse.equinox.app@default:default"/>
-        <setEntry value="org.eclipse.equinox.common*3.14.0.v20201102-2053@2:true"/>
+        <setEntry value="org.eclipse.equinox.common@2:true"/>
         <setEntry value="org.eclipse.equinox.console@default:default"/>
         <setEntry value="org.eclipse.equinox.ds@1:true"/>
         <setEntry value="org.eclipse.equinox.http.jetty@default:default"/>
         <setEntry value="org.eclipse.equinox.http.registry@default:default"/>
-        <setEntry value="org.eclipse.equinox.http.servlet"/>
+        <setEntry value="org.eclipse.equinox.http.servlet@default:default"/>
         <setEntry value="org.eclipse.equinox.preferences@default:default"/>
         <setEntry value="org.eclipse.equinox.registry@default:default"/>
         <setEntry value="org.eclipse.equinox.security@default:default"/>

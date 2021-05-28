@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.RestRadar;
 
-public class LedRingRest<I> extends AbstractSWTRadar<IVessel,IPhysical> {
+public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	private static final long serialVersionUID = 1L;
 
 //	private static final String REST_URL = "http://localhost:10081/miip2017/sa";

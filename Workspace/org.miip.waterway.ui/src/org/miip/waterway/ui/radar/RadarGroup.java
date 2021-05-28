@@ -27,7 +27,7 @@ import org.miip.waterway.ui.swt.pond.PredictiveRadar;
 public class RadarGroup extends Group {
 	private static final long serialVersionUID = 1L;
 
-	private IRadar<IVessel, IPhysical> radar;
+	private IRadar<IPhysical, IVessel> radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -36,7 +36,7 @@ public class RadarGroup extends Group {
 	private Composite composite;
 	private Composite comp_radar;
 
-	private ISituationalAwareness<IVessel,IPhysical> sa;
+	private ISituationalAwareness<IPhysical, IVessel> sa;
 	private Label lblNewLabel;
 	private Label lblRange;
 
@@ -186,7 +186,7 @@ public class RadarGroup extends Group {
 		radar = new LedRing<IVessel>( comp_radar, SWT.BORDER );
 	}
 
-	public void setInput( ISituationalAwareness<IVessel,IPhysical> sa, boolean overwriteRange ) {
+	public void setInput( ISituationalAwareness<IPhysical, IVessel> sa, boolean overwriteRange ) {
 		this.sa = sa;
 		this.radar.setInput( sa );
 		if( sa != null ) {
