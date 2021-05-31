@@ -2,6 +2,7 @@ package org.miip.waterway.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
@@ -12,14 +13,14 @@ import org.condast.commons.autonomy.model.MotionData;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
-import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringUtils;
 
 public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implements IVessel {
 
 	private String name;
 	private float length;//mtr
-	private IField field;
+	
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	/**
 	 * Needed for awareness of its environment
@@ -38,25 +39,20 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	}
 	
 	/**
-	 * Create a vessel with the given name, bearing (radians) and speed
+	 * Create a vessel with the given name, heading (radians) and speed
 	 * @param location
 	 * @param heading
 	 * @param speed
 	 */
-	public Vessel( long id, LatLng location, double heading, double speed) {
-		this( id, location, heading, speed, null );
-	}
-
-	private Vessel( long id, LatLng location, double heading, double speed, Object data) {
-		super( id, IPhysical.ModelTypes.VESSEL, location, heading, speed, data );
+	private Vessel( long id, LatLng location, double heading, double speed) {
+		super( id, IPhysical.ModelTypes.VESSEL, location, heading, speed );
 		this.name = location.getId();
 		this.length = IVessel.DEFAULT_LENGTH;
 	}
 
 	@Override
-	public void init( ISituationalAwareness<IPhysical, IVessel> sa, IField field ) {
+	public void init( ISituationalAwareness<IPhysical, IVessel> sa ) {
 		this.sa = sa;
-		this.field = field;
 		super.setCollisionAvoidance( new DefaultCollisionAvoidance(this, sa));
 	}
 
@@ -97,7 +93,6 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		return ca.addStrategy(strategyName);
 	}
 
-
 	@Override
 	public boolean removeStrategy(String strategyName ) {
 		DefaultCollisionAvoidance ca = (DefaultCollisionAvoidance) super.getCollisionAvoidance();
@@ -134,36 +129,26 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	}
 
 	@Override
-	public LatLng move(long interval ) {
+	public MotionData move(long interval ) {
+		sa.update( interval );
 		LatLng location = super.getLocation();
-		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
-		if(( ca == null ) ||(!ca.isActive())){
-			location= plotNext(interval);
-		}else {
-			MotionData motion = ca.move( this, interval ); 
-			double heading = getHeading();
-			setHeading( heading);
-			location = motion.getLocation();
-		}
-		super.setLocation(location);
-		return location;
+		MotionData motion = super.move(interval);
+		logger.info("Update: " + location.toLocation());
+		return motion;
 	}
-	
 	
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
-		Vessel vessel = new Vessel(getID(), getLocation(), getHeading(), getSpeed(), getData());
+		Vessel vessel = new Vessel(getID(), getLocation(), getHeading(), getSpeed());
 		vessel.name = name;
 		vessel.length = length;
-		vessel.field = field;
 		return vessel;
 	}
-
 
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
 
 		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IPhysical, IVessel> sa ){
-			super( field, sa, true);
+			super( sa, true);
 			if( StringUtils.isEmpty( vessel.getName()))
 				System.out.println("STOP!!!!");
 			setActive(!( vessel.getName().toLowerCase().equals("other")));

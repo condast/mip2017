@@ -3,11 +3,11 @@ package org.miip.waterway.model;
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.model.AbstractModel;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.model.MotionData;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
-import org.condast.commons.data.plane.IField;
 
 public class Ship extends AbstractModel<Object> implements IVessel{
 	
@@ -127,15 +127,18 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	@Override
-	public LatLng move(long interval ) {
+	public MotionData move(long interval ) {
 		LatLng location = super.getLocation();
+		MotionData motion = new MotionData( location, heading, 100 );  
 		if(( this.ca == null ) ||( !this.ca.isActive())) {
 			location = plotNext(interval);
+			motion.transform(location);
 		}else {
-			location = ca.move( this, interval ).getLocation();
+			motion = ca.move( this, motion, interval );
+			location = motion.getLocation();
 		}
 		super.setLocation(location);
-		return location;
+		return motion;
 	}
 
 	@Override
@@ -162,7 +165,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	@Override
-	public void init(ISituationalAwareness<IPhysical, IVessel> sa, IField field) {
+	public void init(ISituationalAwareness<IPhysical, IVessel> sa) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -4,7 +4,7 @@ Bundle-Name: MIIP 2017 Collision Avoidance
 Bundle-SymbolicName: org.miip.rwt;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Service-Component: OSGI-INF/contribution.xml,
  OSGI-INF/org.miip.rwt.service.environment.xml,
  OSGI-INF/org.miip.rwt.service.composite.xml

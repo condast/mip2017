@@ -24,7 +24,7 @@ import org.miip.waterway.ui.map.RouterMapBrowser;
 import org.miip.waterway.ui.swt.PixelXYGraph;
 import org.miip.waterway.ui.swt.PixelXYMap;
 
-public class RouterEntryPoint extends AbstractRestEntryPoint {
+public class RouterEntryPoint extends AbstractRestEntryPoint<Object> {
 	private static final long serialVersionUID = 1L;
 
 	public static final String S_ROUTER_ENTRY = "/router";

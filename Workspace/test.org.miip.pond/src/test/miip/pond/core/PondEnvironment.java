@@ -64,7 +64,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		reference = new Vessel( name.hashCode(), name, latlng, bearing, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
-		reference.init(sa, field);
+		reference.init(sa);
 		
 		this.others.clear();
 		angle = Math.toRadians( otherAngle);
@@ -74,7 +74,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		IVessel other = new Vessel( name.hashCode(), name , latlng, bearing, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
-		other.init(sa, field);
+		other.init(sa);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this,  EventTypes.INITIALSED,  this.reference));
 	}
@@ -95,7 +95,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		reference = new Vessel( name.hashCode(), name, latlng, angle, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
-		reference.init(sa, field);
+		reference.init(sa);
 
 		angle = field.getAngle() + countOther + DEFAULT_OFFSET ;
 		bearing = (180+angle)%360;
@@ -107,7 +107,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
-		other.init(sa, field);
+		other.init(sa);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}

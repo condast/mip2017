@@ -4,7 +4,7 @@ Bundle-Name: Simulation of a Waterway
 Bundle-SymbolicName: org.miip.waterway
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Condast
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.condast.commons.autonomy.ca,
  org.condast.commons.autonomy.env,
  org.condast.commons.autonomy.model,

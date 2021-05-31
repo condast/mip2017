@@ -93,7 +93,7 @@ public class Waterway extends AbstractModel<Object>{
 		Field newField = new Field( super.getLocation(), field.getLength(), field.getWidth() );
 		for( IVessel vessel: getShips() ){
 			Ship ship = (Ship) vessel;
-			LatLng ll = ship.move( interval );
+			LatLng ll = ship.move( interval ).getLocation();
 			if( !newField.isInField(ll, MARGIN_X ))
 				ships.remove( ship );
 			//logger.info( "New Position for spped:" + ship.getSpeed() + ",\n\t" + ship.getLnglat() );

@@ -74,21 +74,21 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 
 	
 	@Override
-	public Collection<RadarData<IPhysical>> predictFuture(IField field, int time, IVessel reference, IPhysical other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void update( IField field ) {
+	public void clear() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public RadarData<IPhysical> getFreePath(IField field, IPhysical phys, double distance) {
+	public RadarData<IPhysical> getRadarData(IPhysical other) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void update(long time) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -148,11 +148,5 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 			position += 3* xstep;
 		}
 		return results;	
-	}
-
-	@Override
-	public double getNearestDistance() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

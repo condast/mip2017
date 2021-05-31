@@ -7,6 +7,7 @@ import org.miip.pond.Activator;
 import org.miip.pond.core.PondEnvironment;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IDesignFactory;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.prefs.Preferences;
 
@@ -15,7 +16,7 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 
 	private static final String ID = "org.miip.pond.model.PondEnvironment";
 	
-	private static IEnvironment<IVessel> environment = new PondEnvironment();
+	private static IMIIPEnvironment environment = new PondEnvironment();
 	
 	private IPreferenceStore<String, String> store;
 	
@@ -24,7 +25,7 @@ public class DesignFactory implements IDesignFactory<IVessel>{
 	}
 
 	@Override
-	public IEnvironment<IVessel> createEnvironment() {
+	public IMIIPEnvironment createEnvironment() {
 		return environment;
 	}
 

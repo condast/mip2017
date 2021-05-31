@@ -7,8 +7,6 @@ import org.condast.commons.xml.IBuildListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.condast.commons.autonomy.env.IEnvironment;
-import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
@@ -27,6 +25,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.rwt.service.Dispatcher;
 import org.miip.rwt.xml.XMLFactoryBuilder;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.swt.MiipComposite;
 import org.miip.waterway.ui.swt.pond.PondComposite;
 
@@ -73,7 +72,7 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 				case INPUT:
 					String use_str = event.getAttribute(AbstractXMLBuilder.AttributeNames.USE);
 					if((!StringUtils.isEmpty(use_str) && ( event.getData() instanceof IInputWidget ))) {
-						IInputWidget<IEnvironment<IPhysical>> widget = (IInputWidget<IEnvironment<IPhysical>>) event.getData();
+						IInputWidget<IMIIPEnvironment> widget = (IInputWidget<IMIIPEnvironment>) event.getData();
 						widget.setInput( dispatcher.getEnvironment( use_str ));
 					}
 					break;
@@ -90,7 +89,7 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 								if( StringUtils.isEmpty(str))
 									return;
 								TabItems ti = TabItems.valueOf( StringStyler.styleToEnum( (String) item.getData()));
-								IEnvironment<IPhysical> env = dispatcher.getActiveEnvironment();
+								IMIIPEnvironment env = dispatcher.getActiveEnvironment();
 								switch( ti ) {
 								case MAIN:
 									if( env != null )
@@ -98,14 +97,14 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 									MiipComposite miip = (MiipComposite) item.getControl();
 									if( miip.getInput() != null )
 										miip.getInput().setEnabled(true);
-									//miip.setInput(dispatcher.getActiveEnvironment());
+									miip.setInput(dispatcher.getActiveEnvironment());
 									break;
 								case COLLISION_AVOIDANCE_DEMO:
 									if( env != null )
 										env.setEnabled(false);
 									PondComposite pc = (PondComposite) item.getControl();
 									pc.getInput().setEnabled(true);
-									//miip.setInput(dispatcher.getActiveEnvironment());
+									pc.setInput(dispatcher.getActiveEnvironment());
 									break;
 								default:
 									break;

@@ -6,11 +6,11 @@ import java.util.Collection;
 import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
 import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.model.MotionData;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.LatLngVector;
-import org.condast.commons.data.plane.IField;
 import org.condast.commons.strings.StringUtils;
 
 public class CentreShip extends Ship {
@@ -24,8 +24,6 @@ public class CentreShip extends Ship {
 	
 	private LatLngVector<Integer> offset;
 	
-	private IField field;
-
 	public CentreShip(long id, String name, LatLng position, float speed, Heading bearing) {
 		super(id, name, position, speed, bearing);
 		offset = new LatLngVector<Integer>(Heading.EAST.getAngle(), 0 );
@@ -92,7 +90,7 @@ public class CentreShip extends Ship {
 	}
 
 	@Override
-	public LatLng move( long interval) {
+	public MotionData move( long interval) {
 		if( offset != null ){
 			int bearing = offset.getKey();
 			int angle = ( bearing < 0 )? offset.getKey()+1: ( bearing > 0 )? offset.getKey()-1: bearing; 
@@ -107,7 +105,7 @@ public class CentreShip extends Ship {
 	private class DefaultCollisionAvoidance extends AbstractCollisionAvoidance<IPhysical, IVessel>{
 
 		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IPhysical,IVessel> sa ){
-			super( field, sa, true);
+			super( sa, true);
 			if( StringUtils.isEmpty( vessel.getName()))
 				System.out.println("STOP!!!!");
 			addStrategy( ICollisionAvoidanceStrategy.DefaultStrategies.FLANK_STRATEGY.name());

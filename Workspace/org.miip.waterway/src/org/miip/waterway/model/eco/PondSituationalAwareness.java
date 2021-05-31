@@ -24,7 +24,7 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 	public PondSituationalAwareness( IVessel owner, IField field) {
 		super( owner, (int)( field.getDiameter()/3));
 		IVessel vessel = (IVessel) getReference(); 
-		super.setCriticalDistance( vessel.getMinTurnDistance());
+		//super.setCriticalDistance( vessel.getMinTurnDistance());
 	}
 
 
@@ -41,12 +41,6 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 			super.getInput().removeListener(listener);
 		}
 		input.addListener(listener);
-	}
-
-	@Override
-	public double getNearestDistance() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 

@@ -11,7 +11,7 @@ public interface IDesignFactory<D extends Object> {
 	 * Create a new environment
 	 * @return
 	 */
-	public IEnvironment<D> createEnvironment();
+	public IMIIPEnvironment createEnvironment();
 	
 	/**
 	 * Create the preference store for the given environment. This will always be unique within the application

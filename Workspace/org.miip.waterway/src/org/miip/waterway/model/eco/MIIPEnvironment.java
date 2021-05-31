@@ -105,7 +105,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		logger.info(latlng.toLocation());
 		reference = new CentreShip( NAME.hashCode(), NAME, latlng, 20 );
 		sa.setInput(this);
-		reference.init( sa, field);
+		reference.init( sa);
 		
 		//The bank at the bottom
 		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
@@ -225,7 +225,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			Date newTime = Calendar.getInstance().getTime();
 			long interval = newTime.getTime() - currentTime.getTime();
 			this.currentTime = newTime;
-			LatLng location = reference.move( interval );
+			LatLng location = reference.move( interval ).getLocation();
 			logger.info(location.toLocation());
 			
 			Location traverse = drawNext( reference, interval);

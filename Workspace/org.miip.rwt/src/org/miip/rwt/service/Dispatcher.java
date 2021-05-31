@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.Utils;
-import org.condast.commons.autonomy.env.IEnvironment;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.miip.waterway.model.def.IDesignFactory;
+import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.factory.ICompositeFactory;
 import org.miip.waterway.ui.swt.MiipComposite;
 
@@ -17,13 +17,13 @@ public class Dispatcher {
 
 	private static Dispatcher dispatcher = new Dispatcher();
 
-	private Map<String, IEnvironment<IPhysical>> environments;
+	private Map<String, IMIIPEnvironment> environments;
 	private Map<String, ICompositeFactory> factories;
 	
 	private MiipComposite miipComposite;
 	
 	private Dispatcher() {
-		environments = new HashMap<String, IEnvironment<IPhysical>>();
+		environments = new HashMap<>();
 		factories = new HashMap<String, ICompositeFactory>();
 	}
 
@@ -39,17 +39,17 @@ public class Dispatcher {
 		this.miipComposite = miipComposite;
 	}
 
-	public IEnvironment<IPhysical> getActiveEnvironment() {
+	public IMIIPEnvironment getActiveEnvironment() {
 		if(( this.environments == null ) ||( this.environments.isEmpty() ))
 			return null;
-		for( IEnvironment<IPhysical> env: this.environments.values() ){
+		for( IMIIPEnvironment env: this.environments.values() ){
 			if( env.isActive() )
 				return env;
 		}
 		return getEnvironment( S_MIIP);
 	}
 
-	public IEnvironment<IPhysical> getEnvironment( String id ) {
+	public IMIIPEnvironment getEnvironment( String id ) {
 		if( Utils.assertNull(this.environments))
 			return null;
 		return this.environments.get(id);
@@ -59,7 +59,7 @@ public class Dispatcher {
 		this.environments.put( factory.getId(), factory.createEnvironment() );
 	}
 
-	public void addEnvironment( String id, IEnvironment<IPhysical> cenv ){
+	public void addEnvironment( String id, IMIIPEnvironment cenv ){
 		this.environments.put( id, cenv );
 	}
 	

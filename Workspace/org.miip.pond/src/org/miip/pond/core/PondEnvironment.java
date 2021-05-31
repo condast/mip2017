@@ -68,7 +68,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		reference = new Vessel( name.hashCode(), name, latlng, 90, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
-		reference.init(sa, field);
+		reference.init(sa);
 		
 		this.others.clear();
 		latlng = field.transform( field.getLength()/2, 0);
@@ -78,7 +78,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
-		other.init(sa, field);
+		other.init(sa);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.INITIALSED,  reference));
 	}
@@ -103,7 +103,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		reference = new Vessel( name.hashCode(), name, latlng, angle, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
-		reference.init(sa, field);
+		reference.init(sa);
 
 		angle = (int) LatLngUtilsDegrees.opposite( countOther );
 		heading = (int) LatLngUtilsDegrees.mod(angle);
@@ -115,7 +115,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
-		other.init(sa, field);
+		other.init(sa);
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}

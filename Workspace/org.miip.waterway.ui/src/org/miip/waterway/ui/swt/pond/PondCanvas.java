@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.sa.ISituationListener;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
@@ -24,7 +23,6 @@ import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.utils.ScalingUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -36,38 +34,6 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 
 	public static final int GRIDX = 100;//meters
 	public static final int GRIDY = 20;//meters
-	
-	private PaintListener listener = new PaintListener(){
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void paintControl(PaintEvent event) {
-			try{
-				drawField( event.gc );
-			}
-			catch( Exception ex ){
-				ex.printStackTrace();
-			}
-		}
-	};
-
-	private ISituationListener<IPhysical> slistener = new ISituationListener<IPhysical>() {
-
-		@Override
-		public void notifySituationChanged(SituationEvent<IPhysical> event) {
-			if( disposed || getDisplay().isDisposed() || ( event.getVessel() == null ))
-				return;
-			getDisplay().asyncExec( new Runnable() {
-
-				@Override
-				public void run() {
-					redraw();
-				}			
-			});
-			
-		}
-		
-	};
 	
 	private IMIIPEnvironment environment;
 	
@@ -87,7 +53,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		this.disposed = false;
 		trajectory = new HashMap<>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
-		super.addPaintListener(listener);
+		super.addPaintListener( e->onPaintControl(e));
 	}
 
 	@Override
@@ -100,14 +66,35 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		return this.environment;
 	}
 
+	private void onPaintControl(PaintEvent event) {
+		try{
+			drawField( event.gc );
+		}
+		catch( Exception ex ){
+			ex.printStackTrace();
+		}
+	}
+
+	private void onNotifySituationChanged(SituationEvent<IPhysical> event) {
+		if( disposed || getDisplay().isDisposed() || ( event.getVessel() == null ))
+			return;
+		getDisplay().asyncExec( new Runnable() {
+
+			@Override
+			public void run() {
+				redraw();
+			}			
+		});
+	}
+
 	@Override
 	public void setInput( IMIIPEnvironment environment){
 		if( this.environment != null )
-			this.environment.getInhabitant().getSituationalAwareness().removeListener(slistener);
+			this.environment.getInhabitant().getSituationalAwareness().removeListener( e->onNotifySituationChanged(e));
 		
 		this.environment = environment;
 		if( this.environment != null ) {
-			this.environment.getInhabitant().getSituationalAwareness().addListener(slistener);
+			this.environment.getInhabitant().getSituationalAwareness().addListener(e->onNotifySituationChanged(e));
 		}
 	}
 
@@ -242,6 +229,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 	@Override
 	public void dispose() {
 		this.disposed = true;
+		super.removePaintListener( e->onPaintControl(e));
 		super.dispose();
 	}
 

@@ -1,5 +1,6 @@
 package org.miip.waterway.ui.swt.pond;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -44,13 +45,13 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		
 		ISituationalAwareness<IPhysical, IVessel> psa = getInput();
 		psa.clear();
-		Collection<RadarData<IPhysical>> timemap = psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
+		Collection<RadarData<IPhysical>> timemap = new ArrayList<>();//TODO psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
 		if( timemap.isEmpty() )
 			return;
 		double offset = ((double)getClientArea().width)/getInput().getView().getLength();
 		Iterator<RadarData<IPhysical>> iterator = timemap.iterator();
 		RadarData<IPhysical> ref = iterator.next();
-		double angle = ref.getAngle();//0-360, north=0
+		double angle = ref.getHeading();//0-360, north=0
 		double distance = ref.getDistance();
 		int startx = centrex + (int)(offset * distance * Math.sin( Math.toRadians(angle)));
 		int starty = centrey - (int)(offset * distance * Math.cos( Math.toRadians(angle)));
@@ -59,7 +60,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		int xposb=startx, yposb = starty;
 		while( iterator.hasNext() ) {
 			RadarData<IPhysical> data = iterator.next();
-			angle = data.getAngle();//0-360, north=0
+			angle = data.getHeading();//0-360, north=0
 			distance = data.getDistance();
 				
 			int xpos1 = (int)(offset * distance * Math.sin( Math.toRadians(angle)));
