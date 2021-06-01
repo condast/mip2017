@@ -429,7 +429,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 					}
 				}		
 			});
-			button.setImage( PlayerImages.getInstance().getImage(type));
+			button.setImage( PlayerImages.getImage(type));
 			return button;
 		}
 	}	

@@ -13,12 +13,15 @@ import org.condast.commons.autonomy.model.MotionData;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.Waypoint;
 import org.condast.commons.strings.StringUtils;
 
 public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implements IVessel {
 
 	private String name;
 	private float length;//mtr
+	
+	private Collection<Waypoint> waypoints;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -48,8 +51,13 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		super( id, IPhysical.ModelTypes.VESSEL, location, heading, speed );
 		this.name = location.getId();
 		this.length = IVessel.DEFAULT_LENGTH;
+		this.waypoints = new ArrayList<>();
 	}
 
+	public void clear() {
+		this.waypoints.clear();
+	}
+	
 	@Override
 	public void init( ISituationalAwareness<IPhysical, IVessel> sa ) {
 		this.sa = sa;
@@ -66,6 +74,11 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		super.setLocation(lnglat);
 	}
 
+	@Override
+	public void addWayPoint( Waypoint waypoint ) {
+		this.waypoints.add(waypoint);
+	}
+	
 	@Override
 	public double getTurn(long timemsec) {
 		return 0;
@@ -131,6 +144,13 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	@Override
 	public MotionData move(long interval ) {
 		sa.update( interval );
+		
+		Waypoint destination = ( this.waypoints.isEmpty())?null: waypoints.iterator().next();
+		if( destination.isCompleted())
+			return new MotionData( this.getLocation());
+		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
+		ca.prepare( destination.getLocation() );
+		
 		LatLng location = super.getLocation();
 		MotionData motion = super.move(interval);
 		logger.info("Update: " + location.toLocation());

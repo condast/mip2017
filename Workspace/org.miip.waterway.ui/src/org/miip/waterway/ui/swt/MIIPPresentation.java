@@ -177,7 +177,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 	public Point scaleToCanvas( LatLng location ){
 		Rectangle clientArea = getClientArea();
 		IField field = this.environment.getField();
-		Map.Entry<Double, Double> vector = field.getVector(location);
+		Map.Entry<Double, Double> vector = field.getPoint(location);
 		int x= (int)(clientArea.width * vector.getKey()/field.getLength());
 		int y = (int)(clientArea.height * vector.getValue()/field.getWidth());
 		return new Point((int) x, (int) y );

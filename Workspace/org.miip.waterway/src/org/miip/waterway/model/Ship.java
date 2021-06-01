@@ -8,6 +8,7 @@ import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
+import org.condast.commons.data.latlng.Waypoint;
 
 public class Ship extends AbstractModel<Object> implements IVessel{
 	
@@ -191,6 +192,12 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
 		return new Ship(super.getID(), super.getIdentifier(), speed, (int)length, super.getLocation(), heading );
+	}
+
+	@Override
+	public void addWayPoint(Waypoint waypoint) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

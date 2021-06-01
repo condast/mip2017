@@ -15,8 +15,6 @@ import org.miip.waterway.model.IVessel;
 public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysical, IVessel>{
 	private static final long serialVersionUID = 1L;
 
-	private int  totalTime = 35000;//35 sec
-	
 	int count;
 	
 	public PredictiveRadar(Composite parent, int style) {
@@ -36,7 +34,6 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		if( count > 1 )
 			return;
 		count++;
-		IVessel reference = (IVessel) getInput().getReference(); 
 		int centrex = getCentre().x;
 		int centrey = getCentre().y;
 		gc.drawOval(centrex, centrey, 10, 10);

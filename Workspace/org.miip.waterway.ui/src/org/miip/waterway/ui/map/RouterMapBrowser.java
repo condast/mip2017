@@ -304,7 +304,7 @@ public class RouterMapBrowser extends Browser {
 				if(!field.isInField(start, 1) || !field.isInField(end, 1))
 					return results;
 				super.prepare(start, end);
-				Map.Entry<Double, Double> vs = field.getVector(start);
+				Map.Entry<Double, Double> vs = field.getPoint(start);
 				Map.Entry<Double, Double> diff = field.difference(end, start);
 				int length = (int) LatLngUtils.getDistance(start, end);
 				for( int i=0; i<length; i++ ) {

@@ -12,6 +12,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
+import org.condast.commons.data.latlng.Waypoint;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.thread.AbstractExecuteThread;
@@ -69,6 +70,8 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa);
+		LatLng destination = Field.clip( field, reference.getLocation(), 90 );
+		reference.addWayPoint( new Waypoint( destination ));
 		
 		this.others.clear();
 		latlng = field.transform( field.getLength()/2, 0);
@@ -79,6 +82,9 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa);
+		destination = Field.clip( field, other.getLocation(), 180 );
+		other.addWayPoint( new Waypoint( destination ));
+		
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.INITIALSED,  reference));
 	}
@@ -104,6 +110,8 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa);
+		LatLng destination = Field.clip( field, reference.getLocation(), angle );
+		reference.addWayPoint( new Waypoint( destination ));
 
 		angle = (int) LatLngUtilsDegrees.opposite( countOther );
 		heading = (int) LatLngUtilsDegrees.mod(angle);
@@ -116,6 +124,9 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa);
+		destination = Field.clip( field, other.getLocation(), angle);
+		other.addWayPoint( new Waypoint( destination ));
+
 		this.others.add(other);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
 	}
