@@ -122,9 +122,10 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	@Override
-	public LatLng plotNext(long interval) {
+	public MotionData plotNext(long interval) {
 		double distance = ( this.speed * interval )/TO_HOURS;// (msec * km/h) = m/3600
-		return LatLngUtilsDegrees.extrapolate( super.getLocation(), this.heading, distance);
+		LatLng next = LatLngUtilsDegrees.extrapolate( super.getLocation(), this.heading, distance);
+		return new MotionData( next, this.heading);
 	}
 
 	@Override
@@ -132,10 +133,10 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		LatLng location = super.getLocation();
 		MotionData motion = new MotionData( location, heading, 100 );  
 		if(( this.ca == null ) ||( !this.ca.isActive())) {
-			location = plotNext(interval);
+			location = move(interval).getLocation();
 			motion.transform(location);
 		}else {
-			motion = ca.move( this, motion, interval );
+			motion = ca.move( this, motion, interval )[0];
 			location = motion.getLocation();
 		}
 		super.setLocation(location);
@@ -199,5 +200,4 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		// TODO Auto-generated method stub
 		
 	}
-
 }

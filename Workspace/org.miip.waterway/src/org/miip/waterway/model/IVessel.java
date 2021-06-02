@@ -11,6 +11,10 @@ public interface IVessel extends IAutonomous<IPhysical>
 
 	void init(ISituationalAwareness<IPhysical,IVessel> sa);	
 
+	/**
+	 * A vessel always has at least one destination
+	 * @param waypoint
+	 */
 	void addWayPoint(Waypoint waypoint);
 
 	/**

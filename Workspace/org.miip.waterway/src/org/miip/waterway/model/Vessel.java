@@ -2,6 +2,7 @@ package org.miip.waterway.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
@@ -20,8 +21,8 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 
 	private String name;
 	private float length;//mtr
-	
-	private Collection<Waypoint> waypoints;
+
+	private List<Waypoint> waypoints;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
@@ -48,7 +49,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	 * @param speed
 	 */
 	private Vessel( long id, LatLng location, double heading, double speed) {
-		super( id, IPhysical.ModelTypes.VESSEL, location, heading, speed );
+		super( id, IPhysical.ModelTypes.VESSEL, location, heading, speed, DEFAULT_MAX_SPEED );
 		this.name = location.getId();
 		this.length = IVessel.DEFAULT_LENGTH;
 		this.waypoints = new ArrayList<>();
@@ -70,13 +71,13 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	}
 
 	@Override
-	public void setLocation(LatLng lnglat) {
-		super.setLocation(lnglat);
+	public void addWayPoint( Waypoint waypoint ) {
+		this.waypoints.add(waypoint);
 	}
 
 	@Override
-	public void addWayPoint( Waypoint waypoint ) {
-		this.waypoints.add(waypoint);
+	public void setLocation(LatLng lnglat) {
+		super.setLocation(lnglat);
 	}
 	
 	@Override
@@ -143,17 +144,12 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 
 	@Override
 	public MotionData move(long interval ) {
-		sa.update( interval );
-		
 		Waypoint destination = ( this.waypoints.isEmpty())?null: waypoints.iterator().next();
-		if( destination.isCompleted())
+		if(( destination == null ) || destination.isCompleted())
 			return new MotionData( this.getLocation());
-		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
-		ca.prepare( destination.getLocation() );
-		
-		LatLng location = super.getLocation();
+
 		MotionData motion = super.move(interval);
-		logger.info("Update: " + location.toLocation());
+		logger.info("Update: " + motion.getLocation());
 		return motion;
 	}
 	

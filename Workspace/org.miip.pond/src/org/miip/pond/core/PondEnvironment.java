@@ -68,6 +68,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, 90, 10);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
+		sa.setRange(30);
 		sa.setInput(this);
 		reference.init(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), 90 );
@@ -81,6 +82,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, 10 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
+		sa.setRange(30);
 		other.init(sa);
 		destination = Field.clip( field, other.getLocation(), 180 );
 		other.addWayPoint( new Waypoint( destination ));
