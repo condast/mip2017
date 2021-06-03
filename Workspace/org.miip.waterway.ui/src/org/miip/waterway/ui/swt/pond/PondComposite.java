@@ -231,7 +231,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 				ICollisionAvoidanceStrategy.DefaultStrategies.SIMPLE_COLLISION_AVOIDANCE: 
 				ICollisionAvoidanceStrategy.DefaultStrategies.valueOf( reference.getSelectedStrategies()[0]);
 		this.strategyCombo.select(strategy.ordinal());
-		this.radarGroup.setInput( reference.getSituationalAwareness(), true );
+		this.radarGroup.setInput( reference.getSituationalAwareness(), false );
 		if( this.environment != null )
 			this.environment.addListener(handler);
 		this.playerbar.getButton(PlayerImages.Images.START).setEnabled( this.environment != null );

@@ -37,7 +37,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 				avgdist+=value.getValue();
 			}
 			degree = (int)((float)degree/parents.length);
-			return new LatLngVector<Integer>( degree, new Double((double)avgdist/parents.length));
+			return new LatLngVector<Integer>( degree, Double.valueOf((double)avgdist/parents.length));
 		}
 
 		@Override

@@ -61,7 +61,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		double bearing = Math.toRadians(( refAngle + 180  )%360);
 		LatLng latlng = LatLngUtilsDegrees.extrapolate(field.getCentre(), angle, distance);
 		String name = "Reference";
-		reference = new Vessel( name.hashCode(), name, latlng, bearing, 10);//bearing east, 10 km/h
+		reference = new Vessel( name.hashCode(), name, latlng, bearing, 100, 50);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa);
@@ -71,7 +71,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		bearing = Math.toRadians(( otherAngle + 180  )%360);
 		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), angle, distance);
 		name = "Other";
-		IVessel other = new Vessel( name.hashCode(), name , latlng, bearing, 10 );//bearing south, 10 km/h
+		IVessel other = new Vessel( name.hashCode(), name , latlng, bearing, 100, 50 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa);
@@ -92,7 +92,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		String name = "Reference";
-		reference = new Vessel( name.hashCode(), name, latlng, angle, 10);//bearing east, 10 km/h
+		reference = new Vessel( name.hashCode(), name, latlng, angle, 100, 50);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa);
@@ -104,7 +104,7 @@ public class PondEnvironment implements IReferenceEnvironment<IVessel, IPhysical
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		name = "Other";
-		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 10 );//bearing south, 10 km/h
+		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 100, 50 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa);

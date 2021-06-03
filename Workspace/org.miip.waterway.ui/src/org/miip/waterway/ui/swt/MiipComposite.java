@@ -88,7 +88,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			}else if( event.getAngle() == 511 ){
 				logger.info( buffer.toString() );				
 			}else{
-				buffer.append( "[" + event.getAngle() + ", " + event.getDistance() + "] " );
+				buffer.append( "[" + event.getAngle() + ", " + event.getRadarData().getDistance() + "] " );
 			}
 			try {
 				if( getDisplay().isDisposed())
@@ -313,7 +313,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	public void setInput( IMIIPEnvironment environment ){
 		this.environment = environment;
 		if( this.environment != null ) {
-			this.radarGroup.setInput( environment.getSituationalAwareness(), true);
+			this.radarGroup.setInput( environment.getSituationalAwareness(), false);
 		}
 		this.canvas.setInput(environment);
 	}
@@ -391,7 +391,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 							environment.addListener(handler);
 							thread.start();
 							environment.getSituationalAwareness().addListener(shlistener);
-							radarGroup.setInput( environment.getSituationalAwareness(), true);
+							radarGroup.setInput( environment.getSituationalAwareness(), false);
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
 							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());

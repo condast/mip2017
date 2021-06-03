@@ -3,7 +3,6 @@ package org.miip.waterway.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.ca.AbstractCollisionAvoidance;
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
@@ -14,17 +13,16 @@ import org.condast.commons.autonomy.model.MotionData;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
+import org.condast.commons.data.latlng.Motion;
 import org.condast.commons.data.latlng.Waypoint;
 import org.condast.commons.strings.StringUtils;
 
 public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implements IVessel {
 
-	private String name;
 	private float length;//mtr
+	private double maxSpeed;
 
 	private List<Waypoint> waypoints;
-	
-	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	/**
 	 * Needed for awareness of its environment
@@ -32,26 +30,20 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	 */
 	private ISituationalAwareness<IPhysical, IVessel> sa;
 
-	public Vessel( long id, String name, double latitude, double longitude, double bearing, double speed) {
-		this( id, new LatLng(name, latitude, longitude ), bearing, speed);
-		this.name = name;
+	public Vessel( long id, String name, double latitude, double longitude, double heading, double thrust, double maxSpeed) {
+		this( id, name, new LatLng(name, latitude, longitude ), heading, thrust, maxSpeed);
 	}
 
-	public Vessel( long id, String name, LatLng location, double bearing, double speed) {
-		this( id, name, location.getLatitude(), location.getLongitude(), bearing, speed );
-		this.name = name;
-	}
-	
 	/**
 	 * Create a vessel with the given name, heading (radians) and speed
 	 * @param location
 	 * @param heading
-	 * @param speed
+	 * @param thrust
 	 */
-	private Vessel( long id, LatLng location, double heading, double speed) {
-		super( id, IPhysical.ModelTypes.VESSEL, location, heading, speed, DEFAULT_MAX_SPEED );
-		this.name = location.getId();
+	public Vessel( long id, String name, LatLng location, double heading, double thrust, double maxSpeed) {
+		super( id, name, IPhysical.ModelTypes.VESSEL, location, heading, thrust);
 		this.length = IVessel.DEFAULT_LENGTH;
+		this.maxSpeed = maxSpeed;
 		this.waypoints = new ArrayList<>();
 	}
 
@@ -63,11 +55,6 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	public void init( ISituationalAwareness<IPhysical, IVessel> sa ) {
 		this.sa = sa;
 		super.setCollisionAvoidance( new DefaultCollisionAvoidance(this, sa));
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	@Override
@@ -141,22 +128,31 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
 		return (ca != null ) &&( ca.isActive());
 	}
+	
+	@Override
+	protected double calculateSpeed(long interval, double thrust) {
+		return maxSpeed * thrust/100;
+	}
 
 	@Override
-	public MotionData move(long interval ) {
+	public Motion move(long interval ) {
 		Waypoint destination = ( this.waypoints.isEmpty())?null: waypoints.iterator().next();
 		if(( destination == null ) || destination.isCompleted())
-			return new MotionData( this.getLocation());
+			return new Motion(super.getID(), this.getLocation());
 
-		MotionData motion = super.move(interval);
-		logger.info("Update: " + motion.getLocation());
+		double heading = Math.toDegrees( LatLngUtils.getHeading(getLocation(), destination.getLocation()));
+		super.getCurrent().setHeading(heading);
+		Motion motion = super.move(interval);
+		if( destination.destinationReached(getLocation())) {
+			destination.setCompleted(true);
+		}
 		return motion;
 	}
 	
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
-		Vessel vessel = new Vessel(getID(), getLocation(), getHeading(), getSpeed());
-		vessel.name = name;
+		MotionData motionData = getCurrent();
+		Vessel vessel = new Vessel(getID(), getName(), getLocation(), getHeading(), motionData.getThrust(), this.maxSpeed);
 		vessel.length = length;
 		return vessel;
 	}

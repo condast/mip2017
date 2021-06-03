@@ -66,7 +66,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		//Vessels have situational awareness and collision avoidance
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		String name = "Reference";
-		reference = new Vessel( name.hashCode(), name, latlng, 90, 10);//bearing east, 10 km/h
+		reference = new Vessel( name.hashCode(), name, latlng, 90, 50, 100);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setRange(30);
 		sa.setInput(this);
@@ -79,7 +79,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		if( !field.isInField(latlng, 1))
 			System.out.println("STOP!!!");
 		name = "Other";
-		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, 10 );//bearing south, 10 km/h
+		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, 100, 100 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		sa.setRange(30);
@@ -108,7 +108,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		String name = "Reference";
-		reference = new Vessel( name.hashCode(), name, latlng, angle, 10);//bearing east, 10 km/h
+		reference = new Vessel( name.hashCode(), name, latlng, angle, 100, 100);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa);
@@ -122,7 +122,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		name = "Other";
-		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 10 );//bearing south, 10 km/h
+		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 100, 100 );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa);

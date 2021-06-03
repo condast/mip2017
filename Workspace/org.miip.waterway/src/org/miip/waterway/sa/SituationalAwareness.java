@@ -45,7 +45,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 
 		@Override
 		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
-			notifylisteners( new SituationEvent<IPhysical>( this, getReference()));
+			notifylisteners( new SituationEvent<IPhysical>( this, getReference(), null));
 		}
 	};
 	

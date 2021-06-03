@@ -18,7 +18,7 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 	}
 
 	private void onNotifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
-		notifylisteners( new SituationEvent<IPhysical>( this, getReference()));
+		notifylisteners( new SituationEvent<IPhysical>( this, getReference(), null));
 	}
 
 	@Override

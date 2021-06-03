@@ -129,6 +129,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 
 			//The ship in the centre
 			IVessel vessel = (IVessel) this.environment.getInhabitant();
+			//logger.info("Move vessel " + vessel.getName() + "=>" + vessel.getLocation().toLocation());
 			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
 				su.scaleToCanvas(vessel.getLocation());
 			drawLine(gc, vessel, this.environment.getOthers());

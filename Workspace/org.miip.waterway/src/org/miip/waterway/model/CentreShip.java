@@ -1,9 +1,9 @@
 package org.miip.waterway.model;
 
-import org.condast.commons.autonomy.model.MotionData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.LatLngVector;
+import org.condast.commons.data.latlng.Motion;
 
 public class CentreShip extends Ship {
 
@@ -82,7 +82,7 @@ public class CentreShip extends Ship {
 	}
 
 	@Override
-	public MotionData move( long interval) {
+	public Motion move( long interval) {
 		if( offset != null ){
 			int bearing = offset.getKey();
 			int angle = ( bearing < 0 )? offset.getKey()+1: ( bearing > 0 )? offset.getKey()-1: bearing; 

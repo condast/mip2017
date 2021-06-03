@@ -8,6 +8,7 @@ import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
+import org.condast.commons.data.latlng.Motion;
 import org.condast.commons.data.latlng.Waypoint;
 
 public class Ship extends AbstractModel<Object> implements IVessel{
@@ -129,17 +130,16 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	@Override
-	public MotionData move(long interval ) {
-		LatLng location = super.getLocation();
-		MotionData motion = new MotionData( location, heading, 100 );  
+	public Motion move(long interval ) {
+		Motion motion = null;
 		if(( this.ca == null ) ||( !this.ca.isActive())) {
-			location = move(interval).getLocation();
-			motion.transform(location);
+			motion = move(interval);
 		}else {
-			motion = ca.move( this, motion, interval )[0];
-			location = motion.getLocation();
+			MotionData md = ca.move(this, null, interval)[0];
+			double speed = getSpeed();
+			motion = new Motion( getID(), md.getLocation(), md.getHeading(), speed );
 		}
-		super.setLocation(location);
+		super.setLocation( motion.getLocation());
 		return motion;
 	}
 

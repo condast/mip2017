@@ -37,11 +37,13 @@
     <setAttribute key="selected_target_bundles">
         <setEntry value="com.google.gson@default:default"/>
         <setEntry value="javassist@default:default"/>
+        <setEntry value="javax.activation@default:default"/>
         <setEntry value="javax.annotation-api@default:default"/>
         <setEntry value="javax.persistence@default:default"/>
         <setEntry value="javax.servlet@default:default"/>
         <setEntry value="javax.validation.api@default:default"/>
         <setEntry value="javax.ws.rs-api@default:default"/>
+        <setEntry value="javax.xml.bind@default:default"/>
         <setEntry value="org.apache.commons.commons-codec@default:default"/>
         <setEntry value="org.apache.commons.fileupload@default:default"/>
         <setEntry value="org.apache.commons.io@default:default"/>
