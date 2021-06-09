@@ -135,7 +135,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		if(( this.ca == null ) ||( !this.ca.isActive())) {
 			motion = move(interval);
 		}else {
-			MotionData md = ca.suggest(this, null, interval)[0];
+			MotionData md = ca.suggest(this, null, null, interval)[0];
 			double speed = getSpeed();
 			motion = new Motion( getID(), md.getLocation(), md.getHeading(), speed );
 		}

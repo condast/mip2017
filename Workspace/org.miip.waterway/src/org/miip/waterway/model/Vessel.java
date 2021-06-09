@@ -142,7 +142,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 
 		double heading = Math.toDegrees( LatLngUtils.getHeading(getLocation(), destination.getLocation()));
 		super.getCurrent().setHeading(heading);
-		Motion motion = super.move(interval);
+		Motion motion = super.move(destination.getLocation(), interval);
 		if( destination.destinationReached(getLocation())) {
 			destination.setCompleted(true);
 		}
