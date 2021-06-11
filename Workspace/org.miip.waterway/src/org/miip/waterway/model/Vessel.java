@@ -15,7 +15,6 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Motion;
 import org.condast.commons.data.latlng.Waypoint;
-import org.condast.commons.strings.StringUtils;
 
 public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implements IVessel {
 
@@ -29,21 +28,28 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	 * @return
 	 */
 	private ISituationalAwareness<IPhysical, IVessel> sa;
+	
+	private boolean enableCA;
 
-	public Vessel( long id, String name, double latitude, double longitude, double heading, double thrust, double maxSpeed) {
-		this( id, name, new LatLng(name, latitude, longitude ), heading, thrust, maxSpeed);
+	public Vessel( long id, String name, double latitude, double longitude, double heading, double thrust, double maxSpeed, boolean enableCa) {
+		this( id, name, new LatLng(name, latitude, longitude ), heading, thrust, maxSpeed, enableCa);
 	}
 
+	public Vessel( long id, String name, LatLng location, double heading, boolean enableCa) {
+		this( id, name, location, heading, 100, 100, enableCa );
+	}
+	
 	/**
 	 * Create a vessel with the given name, heading (radians) and speed
 	 * @param location
 	 * @param heading
 	 * @param thrust
 	 */
-	public Vessel( long id, String name, LatLng location, double heading, double thrust, double maxSpeed) {
+	public Vessel( long id, String name, LatLng location, double heading, double thrust, double maxSpeed, boolean enableCa) {
 		super( id, name, IPhysical.ModelTypes.VESSEL, location, heading, thrust);
 		this.length = IVessel.DEFAULT_LENGTH;
 		this.maxSpeed = maxSpeed;
+		this.enableCA = enableCa;
 		this.waypoints = new ArrayList<>();
 	}
 
@@ -75,6 +81,14 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	@Override
 	public double getMinTurnDistance() {
 		return 2*this.length;
+	}
+	
+	public boolean destinationReached() {
+		for( Waypoint wp: this.waypoints) {
+			if( !wp.isCompleted())
+				return false;
+		}
+		return true;
 	}
 	
 	@Override
@@ -140,8 +154,6 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		if(( destination == null ) || destination.isCompleted())
 			return new Motion(super.getID(), this.getLocation());
 
-		double heading = Math.toDegrees( LatLngUtils.getHeading(getLocation(), destination.getLocation()));
-		super.getCurrent().setHeading(heading);
 		Motion motion = super.move(destination.getLocation(), interval);
 		if( destination.destinationReached(getLocation())) {
 			destination.setCompleted(true);
@@ -152,7 +164,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
 		MotionData motionData = getCurrent();
-		Vessel vessel = new Vessel(getID(), getName(), getLocation(), getHeading(), motionData.getThrust(), this.maxSpeed);
+		Vessel vessel = new Vessel(getID(), getName(), getLocation(), getHeading(), motionData.getThrust(), this.maxSpeed, this.enableCA);
 		vessel.length = length;
 		return vessel;
 	}
@@ -161,9 +173,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 
 		public DefaultCollisionAvoidance( IVessel vessel, ISituationalAwareness<IPhysical, IVessel> sa ){
 			super( sa, true);
-			if( StringUtils.isEmpty( vessel.getName()))
-				System.out.println("STOP!!!!");
-			setActive(!( vessel.getName().toLowerCase().equals("other")));
+			setActive( enableCA);
 		}
 		
 		@Override

@@ -66,7 +66,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		//Vessels have situational awareness and collision avoidance
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		String name = "Reference";
-		reference = new Vessel( name.hashCode(), name, latlng, 90, 50, 100);//bearing east, 10 km/h
+		reference = new Vessel( name.hashCode(), name, latlng, 90, true );//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setRange(30);
 		sa.setInput(this);
@@ -79,7 +79,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		if( !field.isInField(latlng, 1))
 			System.out.println("STOP!!!");
 		name = "Other";
-		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, 100, 100 );//bearing south, 10 km/h
+		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, false );//bearing south, 10 km/h
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		sa.setRange(30);
@@ -97,36 +97,33 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		return true;
 	}
 
-	protected void proceed() {
+	protected void proceed( int tilt) {
 		this.others.clear();
-		this.proceedCounter++;
-		int countOther = (int) LatLngUtilsDegrees.mod(proceedCounter);
-		double angle = reference.getHeading() + 1;
+		double angle = LatLngUtilsDegrees.mod( this.proceedCounter + 90);
 		double heading =  (int) LatLngUtilsDegrees.opposite(angle);
 		int half = (int) (Math.max( field.getLength(), field.getWidth() )/2);
 		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half );
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		String name = "Reference";
-		reference = new Vessel( name.hashCode(), name, latlng, angle, 100, 100);//bearing east, 10 km/h
+		reference = new Vessel( name.hashCode(), name, latlng, angle, true);//bearing east, 10 km/h
 		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
 		sa.setInput(this);
 		reference.init(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), angle );
 		reference.addWayPoint( new Waypoint( destination ));
 
-		angle = (int) LatLngUtilsDegrees.opposite( countOther );
-		heading = (int) LatLngUtilsDegrees.mod(angle);
-		half = (int) (field.getWidth()/2);
-		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half);
+		angle = (int) LatLngUtilsDegrees.mod(angle - 90);
+		heading = LatLngUtilsDegrees.opposite( angle );
+		latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), angle, half);
 		if( !field.isInField(latlng, 1))
 			logger.info("out of bounds");
 		name = "Other";
-		IVessel other = new Vessel( name.hashCode(), name, latlng, angle, 100, 100 );//bearing south, 10 km/h
+		IVessel other = new Vessel( name.hashCode(), name, latlng, heading, false);
 		sa = new PondSituationalAwareness( other, field );
 		sa.setInput(this);
 		other.init(sa);
-		destination = Field.clip( field, other.getLocation(), angle);
+		destination = LatLngUtilsDegrees.extrapolate( other.getLocation(), 190, half);
 		other.addWayPoint( new Waypoint( destination ));
 
 		this.others.add(other);
@@ -199,20 +196,21 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	@Override
 	public void onExecute() {
 		reference.move(time);
-		if( !pe.getField().isInField(reference.getLocation(), 1)) {
-			proceed();
+		if( reference.destinationReached()) {
+			proceed( ++this.proceedCounter);
 		}
 		for(IPhysical other: others ) {
-			IVessel vessel = (IVessel) other;
+			Vessel vessel = (Vessel) other;
 			vessel.move(time);
 			if( reference.isInCriticalDistance(other))
 				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
-			if( !pe.getField().isInField(vessel.getLocation(), 1)) {
-				proceed();
+			if( vessel.destinationReached()) {
+				proceed( ++this.proceedCounter);
+				break;
 			}
 		}
-		super.sleep(time);
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe));
+		super.sleep(time);
 	}
 
 	@Override

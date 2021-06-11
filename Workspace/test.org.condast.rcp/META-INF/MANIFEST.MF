@@ -10,6 +10,7 @@ Automatic-Module-Name: test.org.condast.rcp
 Bundle-ActivationPolicy: lazy
 Import-Package: org.condast.commons,
  org.condast.commons.data.latlng,
+ org.condast.commons.ui.entry,
  org.condast.commons.ui.session,
  org.condast.js.commons.controller,
  org.condast.js.commons.images,

@@ -12,6 +12,8 @@ import org.condast.commons.Utils;
 import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
+import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
@@ -397,10 +399,19 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 				@Override
 				public void run() {
 					try{
+						IVessel vessel = event.getData();
+						ISituationalAwareness<IPhysical, IVessel> sa = ( vessel == null )?null: vessel.getSituationalAwareness();
 						switch( event.getType() ){
 						case INITIALSED:
+							if( sa != null )
+								radarGroup.setInput( sa, false);
+							break;
 						case PROCEED:
-							radarGroup.setInput(event.getData().getSituationalAwareness(), false);
+							if( sa == null )
+								break;
+							vessel.clearStrategies();
+							vessel.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
+							radarGroup.setInput( sa, false);
 							break;
 						case COLLISION_DETECT:
 						case OUT_OF_BOUNDS:

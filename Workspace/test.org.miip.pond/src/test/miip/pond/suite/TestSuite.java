@@ -8,7 +8,7 @@ import org.condast.commons.test.core.AbstractTestSuite;
 import org.condast.commons.test.core.ITestEvent;
 import org.miip.waterway.model.IVessel;
 
-import test.miip.pond.core.PondEnvironment;
+import test.miip.pond.core.TestPondEnvironment;
 
 public class TestSuite extends AbstractTestSuite<Object, Object> {
 
@@ -17,7 +17,7 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 	}
 	
 	private static TestSuite suite = new TestSuite();
-	PondEnvironment env;
+	TestPondEnvironment env;
 	
 	boolean completed;
 
@@ -54,7 +54,7 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 
 	@Override
 	protected void testSuite() throws Exception {
-		env = new PondEnvironment();
+		env = new TestPondEnvironment();
 		Tests test = Tests.TEST_COLLISION_AVOIDANCE;
 		logger.info("\n\n RUN TEST: " + test + "\n");
 		try{
@@ -77,7 +77,7 @@ public class TestSuite extends AbstractTestSuite<Object, Object> {
 		logger.info("Tests completed");
 	}
 
-	private void testEnvironment( PondEnvironment env, int refAngle, int otherAngle ){
+	private void testEnvironment( TestPondEnvironment env, int refAngle, int otherAngle ){
 		logger.info("START POSITION: " + env.getName());
 		env.clear(refAngle, otherAngle, 100);
 		StringBuffer buffer = new StringBuffer();
