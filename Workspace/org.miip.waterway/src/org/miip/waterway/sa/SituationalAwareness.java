@@ -15,7 +15,6 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.Point;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 
@@ -69,7 +68,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		Waterway waterway = env.getWaterway();
 		for( IVessel phobj: waterway.getShips() ) {
 			double distance = LatLngUtils.distance(super.getReference().getLocation(), phobj.getLocation());
-			results.add(new RadarData(phobj, phobj.getLocation(), 0, phobj.getHeading(), phobj.getSpeed(), distance));
+			results.add(new RadarData<IPhysical>(phobj, phobj.getLocation(), 0, phobj.getHeading(), phobj.getSpeed(), distance));
 		}
 		results.addAll(getBanks(waterway));
 		return results;
