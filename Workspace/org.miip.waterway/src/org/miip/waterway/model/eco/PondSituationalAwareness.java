@@ -7,6 +7,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.AbstractAutonomousSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
 
@@ -22,8 +23,8 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 	}
 
 	@Override
-	public Collection<? extends IPhysical> getScan() {
-		return super.getInput().getOthers();
+	public Collection<RadarData<IPhysical>> getScan() {
+		return super.getSituation().values();
 	}
 
 	@Override

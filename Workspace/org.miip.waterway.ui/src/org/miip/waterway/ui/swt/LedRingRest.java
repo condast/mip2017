@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
@@ -51,7 +52,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	
 	private int leds;
 	
-	private Map<Integer, RestRadar.RadarData> scan;
+	private Map<Integer, RestRadar.MIIPRadarData> scan;
 	
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -81,11 +82,11 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	}
 	
 	@Override
-	protected void drawObject( GC gc, IPhysical ship ){
+	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		/* NOTHING */
 	}
 
-	protected Color getColour( int key, RestRadar.RadarData data) {
+	protected Color getColour( int key, RestRadar.MIIPRadarData data) {
 		int[] colour = ( data == null ) ? new int[] {0, 255, 0 }: data.getColor();
 		return new Color( getDisplay(), colour[0], colour[1], colour[2]);
 	}
@@ -98,7 +99,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 		length = (( length - RADIUS ) < 0)? 0: length - RADIUS;
-		RestRadar.RadarData data = null;
+		RestRadar.MIIPRadarData data = null;
 		for( int i=0; i< this.leds; i++ ) {
 			data = scan.get( i );
 			double phi = i * 2 * Math.PI/this.leds;
@@ -125,7 +126,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		protected String onHandleResponse(ResponseEvent<LedRingRest.Requests,Object> response, Object data ) throws IOException {
 			String result = response.getResponse();
 			Gson gson = new Gson();
-			RestRadar.RadarData post = gson.fromJson(result, RestRadar.RadarData.class);
+			RestRadar.MIIPRadarData post = gson.fromJson(result, RestRadar.MIIPRadarData.class);
 			scan.put(post.getAngle(), post);
 			logger.fine(result);
 			return result;

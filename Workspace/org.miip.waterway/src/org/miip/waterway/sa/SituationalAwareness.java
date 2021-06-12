@@ -12,6 +12,7 @@ import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.data.latlng.LatLng;
+import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Point;
@@ -60,14 +61,16 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	}
 	
 	@Override
-	public Collection<IPhysical> getScan() {
-		Collection<IPhysical> results = new ArrayList<IPhysical>();
+	public Collection<RadarData<IPhysical>> getScan() {
+		Collection<RadarData<IPhysical>> results = new ArrayList<>();
 		if( super.getInput() == null )
 			return results;
 		IMIIPEnvironment env = (IMIIPEnvironment) super.getInput();
 		Waterway waterway = env.getWaterway();
-		for( IPhysical phobj: waterway.getShips() )
-			results.add(phobj);
+		for( IVessel phobj: waterway.getShips() ) {
+			double distance = LatLngUtils.distance(super.getReference().getLocation(), phobj.getLocation());
+			results.add(new RadarData(phobj, phobj.getLocation(), 0, phobj.getHeading(), phobj.getSpeed(), distance));
+		}
 		results.addAll(getBanks(waterway));
 		return results;
 	}
@@ -134,17 +137,17 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		*/
 	}
 	
-	private Collection<Point> getBanks( Waterway waterway ){
+	private Collection<RadarData<IPhysical>> getBanks( Waterway waterway ){
 		IField field = waterway.getField();
 		LatLng location = null;
-		Collection<Point> results = new ArrayList<Point>();
+		Collection<RadarData<IPhysical>> results = new ArrayList<>();
 		double xstep = (double)field.getLength() /(field.getLength() + field.getWidth());
 		long position = 0;
 		while( position < field.getLength() ) {
 			location = field.transform( position, 0);
-			results.add( new Point( location.hashCode(), location ));
+			results.add( new RadarData<IPhysical>( null, location,  0, 0 ));
 			location = field.transform( position, field.getWidth());
-			results.add( new Point( location.hashCode(), location ));
+			results.add( new RadarData<IPhysical>( null, location,  0, 0 ));
 			position += 3* xstep;
 		}
 		return results;	

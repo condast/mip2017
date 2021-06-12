@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Motion;
@@ -36,7 +37,7 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 		if( sa == null )
 			return;
 		IVessel reference = (IVessel) radar.getInput().getReference(); 
-		for( O obj: sa.getScan() ){
+		for( RadarData<O> obj: sa.getScan() ){
 			double angle = LatLngUtils.getHeading(reference.getLocation(), obj.getLocation());
 			int key = ( int )( radar.getSteps() * angle /( 2*Math.PI ));
 			Motion waypoint = calculate(key, obj );
@@ -44,7 +45,7 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 		}
 	}
 
-	public Motion calculate( int key, IPhysical phys) {
+	public Motion calculate( int key, RadarData<O> phys) {
 		IVessel reference = (IVessel) radar.getInput().getReference(); 
 		double latitude = 0; double longitude = 0;
 		double angle = LatLngUtils.getHeading(reference.getLocation(), phys.getLocation());

@@ -21,7 +21,7 @@ import org.condast.commons.log.LogFactory;
 import org.condast.commons.messaging.rest.ResponseCode;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.IRadarData;
-import org.miip.waterway.radar.RadarData;
+import org.miip.waterway.radar.LEDRadarData;
 import org.miip.waterway.radar.RadarOptions;
 import org.miip.waterway.radar.RestRadar;
 import org.miip.waterway.rest.core.Dispatcher;
@@ -52,7 +52,7 @@ public class RadarResource{
 				return Response.noContent().build();
 			IRadarData data = settings.toRadarData();
 			Gson gson = new Gson();
-			String result = gson.toJson(data, RadarData.class);
+			String result = gson.toJson(data, LEDRadarData.class);
 			return Response.ok( result ).build();
 		}
 		catch( Exception ex ) {
@@ -113,7 +113,7 @@ public class RadarResource{
 			if( range > 0 )
 				options.setRange(range);
 			RestRadar radar = new RestRadar( options, nrOfLeds, sa );
-			List<RestRadar.RadarData> rgbs = radar.drawField();
+			List<RestRadar.MIIPRadarData> rgbs = radar.drawField();
 			Gson gson = new Gson();
 			int angle = options.getCounter();
 			response = Response.ok( gson.toJson( rgbs.get( angle ))).build();

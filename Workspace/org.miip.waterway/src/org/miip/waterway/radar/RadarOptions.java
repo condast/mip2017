@@ -161,7 +161,7 @@ public class RadarOptions{
 	}
 
 	public IRadarData toRadarData() {
-		IRadarData data = new RadarData( getChoice(), isEnabled(),(int) getRange(), (int) getSensitivity(), getOptions() );
+		IRadarData data = new LEDRadarData( getChoice(), isEnabled(),(int) getRange(), (int) getSensitivity(), getOptions() );
 		return data;
 	}
 

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.range.DoubleRange;
@@ -54,7 +55,7 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	}
 	
 	@Override
-	protected void drawObject( GC gc, IPhysical ship ){
+	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		IVessel reference = (IVessel) getInput().getReference(); 
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");

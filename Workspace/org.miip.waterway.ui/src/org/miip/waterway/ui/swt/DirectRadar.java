@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
@@ -22,7 +23,7 @@ public class DirectRadar extends AbstractSWTRadar<IPhysical, IVessel>{
 	}
 	
 	@Override
-	protected void drawObject( GC gc, IPhysical ship ){
+	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		ISituationalAwareness<IPhysical, IVessel> sa = super.getInput();
 		IVessel reference = (IVessel) sa.getReference(); 
 		if( ship.equals( reference ))

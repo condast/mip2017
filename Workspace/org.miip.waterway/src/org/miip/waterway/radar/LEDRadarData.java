@@ -2,7 +2,7 @@ package org.miip.waterway.radar;
 
 import org.condast.commons.data.latlng.BaseData;
 
-public class RadarData extends BaseData implements IRadarData {
+public class LEDRadarData extends BaseData implements IRadarData {
 
 	private int ch;//choice
 	private int r;//range
@@ -11,7 +11,7 @@ public class RadarData extends BaseData implements IRadarData {
 	private int o;//(boolean)options: bit 0: log 
 	private boolean enb;
 
-	public RadarData( Choices choice, boolean enable, int range, int sensitivity, int options) {
+	public LEDRadarData( Choices choice, boolean enable, int range, int sensitivity, int options) {
 		ch = choice.ordinal();
 		this.enb = enable;
 		this.r = range;
@@ -19,7 +19,7 @@ public class RadarData extends BaseData implements IRadarData {
 		this.o = options;
 	}
 
-	public RadarData( Choices choice, String remarks) {
+	public LEDRadarData( Choices choice, String remarks) {
 		super(remarks);
 		ch = choice.ordinal();
 	}

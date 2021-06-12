@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.binary.IBinaryTreeSet;
 import org.condast.commons.data.binary.SequentialBinaryTreeSet;
@@ -64,9 +65,9 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 		IVessel reference = sa.getReference(); 
 		
 		data = new SequentialBinaryTreeSet<LatLngVector<Integer>>( average);
-		Collection<? extends IPhysical> radar = sa.getScan();
+		Collection<RadarData<IPhysical>> radar = sa.getScan();
 		IField field = sa.getView();
-		for( IPhysical vessel: radar ){
+		for( RadarData<IPhysical> vessel: radar ){
 			if( vessel.equals( reference ))
 				continue;
 			Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), vessel.getLocation());
@@ -86,7 +87,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 	 * @param adist
 	 */
 	@Override
-	protected void drawObject( GC gc, IPhysical ship ){
+	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		
 		List<LatLngVector<Integer>> results = this.data.getValues(0);
 		LatLngVector<Integer> vect = null;

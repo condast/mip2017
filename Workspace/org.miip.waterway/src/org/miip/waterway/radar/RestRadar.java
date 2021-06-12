@@ -11,6 +11,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.radar.IRadar;
 import org.condast.commons.autonomy.sa.radar.Radar;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.range.DoubleRange;
 import org.condast.commons.ui.radar.IRadarColours;
@@ -24,14 +25,14 @@ public class RestRadar{
 	private Map<Integer, Double> scan;
 
 	private RadarOptions options;
-	private List<RadarData> colours;
+	private List<MIIPRadarData> colours;
 	private int leds;
 	private IMIIPRadar.RadarSelect radarType;
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public RestRadar( RadarOptions options, int leds, ISituationalAwareness<IPhysical, IVessel> sa ) {
-		colours = new ArrayList<RadarData>();
+		colours = new ArrayList<MIIPRadarData>();
 		this.options = options;
 		this.radarType = options.getRadarType();
 		this.leds = leds;
@@ -48,12 +49,12 @@ public class RestRadar{
 		return radarType;
 	}
 	
-	public List<RadarData> drawField(){
+	public List<MIIPRadarData> drawField(){
 		colours.clear();
 		ISituationalAwareness<IPhysical, IVessel> sa = radar.getInput();
 		if( sa == null )
 			return colours;
-		for( IPhysical obj: sa.getScan() ){
+		for( RadarData<IPhysical> obj: sa.getScan() ){
 			drawObject( sa.getReference(), obj );
 		}
 		this.onDrawEnd();	
@@ -80,7 +81,7 @@ public class RestRadar{
 		return range.compareTo(angle);
 	}
 	
-	public void drawObject( IVessel reference, IPhysical ship ){
+	public void drawObject( IVessel reference, RadarData<IPhysical> ship ){
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
@@ -112,11 +113,11 @@ public class RestRadar{
 			Double value = scan.get( i );
 			distance = ( value == null )?Double.MAX_VALUE: value;
 			colour = IRadarColours.RadarColours.getColour( radar.getRange(), radar.getSensitivity(), (int) sa.getReference().getCriticalDistance(), distance);
-			colours.add( new RadarData( i, colour , options.getTransparency()));
+			colours.add( new MIIPRadarData( i, colour , options.getTransparency()));
 		}
 	}
 
-	public Collection<RadarData> getColours() {
+	public Collection<MIIPRadarData> getColours() {
 		return colours;
 	}
 
@@ -128,14 +129,14 @@ public class RestRadar{
 		return colour;
 	}
 
-	public static class RadarData{
+	public static class MIIPRadarData{
 		private int a;
 		private int r;
 		private int g;
 		private int b;
 		private int t;
 
-		protected RadarData(int angle, int[] rgb, int transparency) {
+		protected MIIPRadarData(int angle, int[] rgb, int transparency) {
 			super();
 			this.a = angle;
 			this.r = rgb[0];

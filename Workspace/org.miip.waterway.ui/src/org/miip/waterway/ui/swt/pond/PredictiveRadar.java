@@ -30,7 +30,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 	}
 
 	@Override
-	protected void drawObject( GC gc, IPhysical physicalobj ){
+	protected void drawObject( GC gc, RadarData<IPhysical> physicalobj ){
 		if( count > 1 )
 			return;
 		count++;
