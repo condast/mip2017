@@ -27,7 +27,7 @@ public class TestPondEnvironment implements IReferenceEnvironment<IVessel, IPhys
 
 	private int proceedCounter, countRef;
 	private Field field;
-	private IVessel reference;
+	private Vessel reference;
 	private List<IPhysical> others;
 	private boolean active;
 	

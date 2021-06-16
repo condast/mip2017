@@ -69,11 +69,6 @@ public class Waterway extends AbstractModel<Object>{
 		return ships.toArray( new Ship[ ships.size() ]);
 	}
 
-	@Override
-	public boolean isInCriticalDistance(IPhysical physical) {
-		return false;
-	}
-
 	protected void createShips( long xposition, int amount ){
 		if( this.ships.size() >= nrOfShips )
 			return;

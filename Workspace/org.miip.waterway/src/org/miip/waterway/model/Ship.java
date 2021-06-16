@@ -6,7 +6,6 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.MotionData;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.data.latlng.LatLng;
-import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.Motion;
 import org.condast.commons.data.latlng.Waypoint;
@@ -75,13 +74,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	public double getCriticalDistance() {
 		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();		
 	}
-	
-	@Override
-	public boolean isInCriticalDistance( IPhysical physical ) {
-		double critical = ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
-		return LatLngUtils.getDistance(this.getLocation(), physical.getLocation()) <= critical;
-	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#getTurn(long)
 	 */

@@ -130,11 +130,11 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();		
 	}
 
-	@Override
 	public boolean isInCriticalDistance( IPhysical physical ) {
 		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
 		double critical = ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
-		return LatLngUtils.getDistance(this.getLocation(), physical.getLocation()) <= critical;
+		double distance = LatLngUtils.getDistance(this.getLocation(), physical.getLocation()); 
+		return distance <= critical;
 	}
 
 	@Override

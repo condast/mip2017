@@ -35,13 +35,6 @@ public interface IVessel extends IAutonomous<IPhysical>
 
 	ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness();
 
-	/**
-	 * Returns true if the given physical object is too near
-	 * @param physical
-	 * @return
-	 */
-	boolean isInCriticalDistance(IPhysical physical);
-
 	double getCriticalDistance();
 
 	void clearStrategies();
