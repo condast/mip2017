@@ -39,6 +39,7 @@
         <setEntry value="javax.persistence@default:default"/>
         <setEntry value="javax.servlet@default:default"/>
         <setEntry value="javax.ws.rs-api@default:default"/>
+        <setEntry value="org.apache.commons.commons-codec@default:default"/>
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
         <setEntry value="org.apache.felix.gogo.shell@default:default"/>
         <setEntry value="org.apache.felix.scr@1:true"/>
@@ -71,6 +72,7 @@
         <setEntry value="org.eclipse.rap.rwt@default:default"/>
     </setAttribute>
     <setAttribute key="selected_workspace_bundles">
+        <setEntry value="org.condast.commons.authentication@default:default"/>
         <setEntry value="org.condast.commons.autonomy@default:default"/>
         <setEntry value="org.condast.commons.data@default:default"/>
         <setEntry value="org.condast.commons.messaging@default:default"/>
