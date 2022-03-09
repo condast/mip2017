@@ -68,7 +68,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 		Collection<RadarData<IPhysical>> radar = sa.getScan();
 		IField field = sa.getView();
 		for( RadarData<IPhysical> vessel: radar ){
-			if( vessel.equals( reference ))
+			if( vessel.getPhysical().equals( reference ))
 				continue;
 			Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), vessel.getLocation());
 			double distance = vector.getValue();

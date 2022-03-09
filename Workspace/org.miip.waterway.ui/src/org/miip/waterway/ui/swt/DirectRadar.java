@@ -26,7 +26,7 @@ public class DirectRadar extends AbstractSWTRadar<IPhysical, IVessel>{
 	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		ISituationalAwareness<IPhysical, IVessel> sa = super.getInput();
 		IVessel reference = (IVessel) sa.getReference(); 
-		if( ship.equals( reference ))
+		if( ship.getPhysical().equals( reference ))
 			return;
 		
 		IField field = sa.getView();
