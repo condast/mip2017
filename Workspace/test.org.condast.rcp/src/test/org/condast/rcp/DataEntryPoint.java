@@ -28,6 +28,10 @@ public class DataEntryPoint extends AbstractEntryPoint implements IDataEntryPoin
         checkbox.setText("Hello");
 	}
 	
+	protected SessionStore getData() {
+		return store;
+	}
+	
 	@Override
 	public void setData(SessionStore store) {
 		this.store = store;

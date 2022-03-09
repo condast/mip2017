@@ -339,6 +339,7 @@ public class RouterMapBrowser extends Browser {
 			return distance;
 		}
 
+		@SuppressWarnings("unused")
 		public boolean findObstruction(LatLng start, long distance, int angle) {
 			busy = true;
 			try {
