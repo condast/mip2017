@@ -13,16 +13,16 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPRadar;
 
 public class LedRadar<O extends IPhysical,V extends IPhysical>{
-	
+
 	private Map<Integer, Motion> radarData;
 	private IMIIPRadar<O,V> radar;
-	
+
 	public LedRadar( IMIIPRadar<O,V> radar ) {
-		super(); 
+		super();
 		this.radar = radar;
-		radarData = new HashMap<Integer, Motion>();
+		radarData = new HashMap<>();
 	}
-	
+
 	public Map<Integer, Motion> getRadarData() {
 		return radarData;
 	}
@@ -36,7 +36,7 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 		this.radarData.clear();
 		if( sa == null )
 			return;
-		IVessel reference = (IVessel) radar.getInput().getReference(); 
+		IVessel reference = (IVessel) radar.getInput().getReference();
 		for( RadarData<O> obj: sa.getScan() ){
 			double angle = LatLngUtils.getHeading(reference.getLocation(), obj.getLocation());
 			int key = ( int )( radar.getSteps() * angle /( 2*Math.PI ));
@@ -46,7 +46,7 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 	}
 
 	public Motion calculate( int key, RadarData<O> phys) {
-		IVessel reference = (IVessel) radar.getInput().getReference(); 
+		IVessel reference = (IVessel) radar.getInput().getReference();
 		double latitude = 0; double longitude = 0;
 		double angle = LatLngUtils.getHeading(reference.getLocation(), phys.getLocation());
 		double distance = LatLngUtils.getDistance(reference.getLocation(), phys.getLocation());
@@ -54,8 +54,8 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 		if( waypoint == null ) {
 			waypoint = new Motion(reference.getID(), phys.getLocation(), angle, distance );
 		}else {
-			latitude = ( waypoint.getLocation().getLatitude() + phys.getLocation().getLatitude())/2; 
-			longitude = ( waypoint.getLocation().getLongitude() + phys.getLocation().getLongitude())/2; 
+			latitude = ( waypoint.getLocation().getLatitude() + phys.getLocation().getLatitude())/2;
+			longitude = ( waypoint.getLocation().getLongitude() + phys.getLocation().getLongitude())/2;
 			angle += ( waypoint.getHeading() + angle )/2;
 			if( distance > waypoint.getDistance() )
 				distance = waypoint.getDistance();

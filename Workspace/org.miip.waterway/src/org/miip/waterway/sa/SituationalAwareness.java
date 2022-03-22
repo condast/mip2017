@@ -36,9 +36,9 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		}
 	};
 */
-	
+
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
-	
+
 	private IField field;
 
 	private IEnvironmentListener<IVessel> listener = new IEnvironmentListener<IVessel>() {
@@ -48,7 +48,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 			notifylisteners( new SituationEvent<IPhysical>( this, getReference(), null));
 		}
 	};
-	
+
 	public SituationalAwareness( IVessel vessel, IField field ) {
 		super( vessel, (int)( field.getDiameter()/2 ));
 		this.field = field;
@@ -58,7 +58,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	public IField getView() {
 		return field;
 	}
-	
+
 	@Override
 	public Collection<RadarData<IPhysical>> getScan() {
 		Collection<RadarData<IPhysical>> results = new ArrayList<>();
@@ -74,11 +74,11 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		return results;
 	}
 
-	
+
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	@Override
 	public void update(long time) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -131,11 +131,11 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		else if( angle < 448)
 			control = Controls.LEFT;
 		ship.setControl(control);
-		
+
 		logger.fine("Angle: " + angle + ", Distance " + distance + " Control: " + control.name() );
 		*/
 	}
-	
+
 	private Collection<RadarData<IPhysical>> getBanks( Waterway waterway ){
 		IField field = waterway.getField();
 		LatLng location = null;
@@ -149,6 +149,6 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 			results.add( new RadarData<IPhysical>( null, location,  0, 0 ));
 			position += 3* xstep;
 		}
-		return results;	
+		return results;
 	}
 }

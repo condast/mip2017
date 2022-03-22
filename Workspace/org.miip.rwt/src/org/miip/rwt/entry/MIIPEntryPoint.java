@@ -1,9 +1,5 @@
 package org.miip.rwt.entry;
 
-import org.condast.commons.xml.AbstractXMLBuilder;
-import org.condast.commons.xml.BuildEvent;
-import org.condast.commons.xml.IBuildListener;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +10,10 @@ import org.condast.commons.ui.activate.ActivationEvent;
 import org.condast.commons.ui.activate.IActivateListener;
 import org.condast.commons.ui.logger.LogComposite;
 import org.condast.commons.ui.swt.IInputWidget;
+import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.AbstractXMLBuilder.Selection;
+import org.condast.commons.xml.BuildEvent;
+import org.condast.commons.xml.IBuildListener;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -33,7 +32,7 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 1L;
 
 	private static final String S_PREFERENCE_RADAR = "Rest";
-	
+
 	private enum CompositeNames{
 		MIIP_COMPOSITE,
 		POND_COMPOSITE,
@@ -148,7 +147,7 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 			}
 		}
 	};
-	
+
 	private IActivateListener slistener = new IActivateListener() {
 
 		@Override
@@ -159,12 +158,12 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 			store.setBoolean( Options.OPTIONS.name(), 0, choice);
 		}
 	};
-		
+
 	@Override
 	protected void createContents(Composite parent) {
 		try {
-			preferences = new HashMap<String, IPreferenceStore<String, String>>();
-			parent.setLayout(new FillLayout());       
+			preferences = new HashMap<>();
+			parent.setLayout(new FillLayout());
 			XMLFactoryBuilder builder = new XMLFactoryBuilder( parent, this.getClass());
 			builder.addListener(listener);
 			builder.build();

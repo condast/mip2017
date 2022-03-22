@@ -12,32 +12,32 @@ public class HumanAssist<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int BAR_WIDTH = 20;
-	
+
 	private int bar;
-	
+
 	public HumanAssist(Composite parent, int style ) {
 		super(parent, style);
 		this.bar = BAR_WIDTH;
 	}
-	
+
 	@Override
 	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		int centrex = super.getCentre().x;
 		int centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 
-		IVessel reference = (IVessel) getInput().getReference(); 
+		IVessel reference = getInput().getReference();
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
 
 		int xpos1 = (int) (centrex + length * Math.sin( angle ));
 		int ypos1 = (int) (centrey - length * Math.cos( angle ));
-		
+
 		double diff = Math.toRadians(1);
 		int xpos2 = (int) (centrex + length * Math.sin( angle+diff));
 		int ypos2 = (int) (centrey - length * Math.cos( angle+diff));
 		gc.setBackground( getColour( distance ));
-		gc.fillPolygon(new int[]{centrex, centrey, xpos1, ypos1, (int)xpos2, (int)ypos2});
+		gc.fillPolygon(new int[]{centrex, centrey, xpos1, ypos1, xpos2, ypos2});
 	}
 
 	@Override
@@ -49,6 +49,6 @@ public class HumanAssist<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		gc.fillOval((int)(centrex-clip/2), (int)(centrey-clip/2), (int)(clip), (int)clip);
 		return super.onDrawEnd(gc);
 	}
-	
-	
+
+
 }

@@ -8,19 +8,19 @@ import org.condast.commons.data.colours.RGBA;
 
 public class ColourEvent extends EventObject {
 	private static final long serialVersionUID = 1L;
-	
+
 	public enum Types{
 		POINT,
 		LINE,
 		AREA;
 	}
-	
+
 	private int index;
 	private Types type;
 	private RGBA[] colours;
-	
+
 	private Map<Integer, List<RGBA>> map;
-	
+
 	public ColourEvent(Object source, RGBA[] colours, int index ) {
 		this( source, Types.LINE, colours, index );
 	}

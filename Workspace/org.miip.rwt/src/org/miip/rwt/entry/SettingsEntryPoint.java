@@ -2,7 +2,7 @@ package org.miip.rwt.entry;
 
 import java.util.Collection;
 
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,24 +39,24 @@ public class SettingsEntryPoint extends AbstractEntryPoint {
 						public void run() {
 							Collection<ICompositeFactory> factories= dispatcher.getFactories().values();
 							SettingsDialog dialog = new SettingsDialog( dispatcher.getMiipComposite(), factories.toArray( new ICompositeFactory[ factories.size()]) );
-							if( Dialog.OK == dialog.open()){
-								
+							if( Window.OK == dialog.open()){
+
 							}
 						}
-						
+
 					});
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
 					ex.printStackTrace();
 				}
-			}			
+			}
 		});
 	}
-	
+
 	public void setFactories( Collection<ICompositeFactory> factories ){
 		//this.factories = factories;
 		//banner.setFactories( this.factories);
 	}
-	
+
 }

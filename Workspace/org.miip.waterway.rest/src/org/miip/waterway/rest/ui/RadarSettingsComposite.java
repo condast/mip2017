@@ -1,20 +1,20 @@
 package org.miip.waterway.rest.ui;
 
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.miip.waterway.model.def.IMIIPRadar;
-import org.miip.waterway.radar.IRadarData;
-import org.miip.waterway.radar.RadarOptions;
-import org.miip.waterway.radar.IRadarData.Choices;
-import org.miip.waterway.rest.core.Dispatcher;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
+import org.miip.waterway.model.def.IMIIPRadar;
+import org.miip.waterway.radar.IRadarData;
+import org.miip.waterway.radar.IRadarData.Choices;
+import org.miip.waterway.radar.RadarOptions;
+import org.miip.waterway.rest.core.Dispatcher;
 
 public class RadarSettingsComposite extends Composite {
 	private static final long serialVersionUID = 1L;
@@ -37,10 +37,10 @@ public class RadarSettingsComposite extends Composite {
 		super(parent, style);
 		settings = dispatcher.getOptions();
 		setLayout(new GridLayout(2, false));
-		
+
 		Label lblView = new Label(this, SWT.NONE);
 		lblView.setText("View:");
-		
+
 		radarCombo = new Combo(this, SWT.NONE);
 		radarCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		radarCombo.setItems( IRadarData.Choices.getItems());
@@ -55,10 +55,10 @@ public class RadarSettingsComposite extends Composite {
 				super.widgetSelected(e);
 			}
 		});
-		
+
 		Label lblType = new Label(this, SWT.NONE);
 		lblType.setText("Type:");
-		
+
 		typeCombo = new Combo(this, SWT.NONE);
 		typeCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		typeCombo.setItems( IMIIPRadar.RadarSelect.getItems());
@@ -74,7 +74,7 @@ public class RadarSettingsComposite extends Composite {
 			}
 		});
 
-		
+
 		Label lblRange = new Label(this, SWT.NONE);
 		lblRange.setText("Range:");
 		rangeSpinner = new Spinner(this, SWT.BORDER);
@@ -90,10 +90,10 @@ public class RadarSettingsComposite extends Composite {
 				super.widgetSelected(e);
 			}
 		});
-		
+
 		Label lblSensitivity = new Label(this, SWT.NONE);
 		lblSensitivity.setText("Sensitivity:");
-		
+
 		this.senseSpinner = new Spinner(this, SWT.BORDER);
 		senseSpinner.setPageIncrement(1);
 		senseSpinner.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -110,7 +110,7 @@ public class RadarSettingsComposite extends Composite {
 
 		Label lblTransparency = new Label(this, SWT.NONE);
 		lblTransparency.setText("Transparency:");
-		
+
 		this.transparencySpinner = new Spinner(this, SWT.BORDER);
 		transparencySpinner.setPageIncrement(1);
 		transparencySpinner.setMinimum(0);
@@ -127,7 +127,7 @@ public class RadarSettingsComposite extends Composite {
 				super.widgetSelected(e);
 			}
 		});
-		
+
 		this.enableButton = new Button( this, SWT.CHECK );
 		this.enableButton.setText("Enable");
 		this.enableButton.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
@@ -151,7 +151,7 @@ public class RadarSettingsComposite extends Composite {
 		this.transparencySpinner.setSelection( settings.getTransparency());
 		this.enableButton.setSelection(settings.isEnabled());
 	}
-	
+
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components

@@ -19,12 +19,12 @@ public class Dispatcher {
 
 	private Map<String, IMIIPEnvironment> environments;
 	private Map<String, ICompositeFactory> factories;
-	
+
 	private MiipComposite miipComposite;
-	
+
 	private Dispatcher() {
 		environments = new HashMap<>();
-		factories = new HashMap<String, ICompositeFactory>();
+		factories = new HashMap<>();
 	}
 
 	public static Dispatcher getInstance(){
@@ -62,7 +62,7 @@ public class Dispatcher {
 	public void addEnvironment( String id, IMIIPEnvironment cenv ){
 		this.environments.put( id, cenv );
 	}
-	
+
 	public void removeEnvironment( String id ){
 		this.environments.remove( id );
 	}
@@ -70,7 +70,7 @@ public class Dispatcher {
 	public void addCompositeFactory( ICompositeFactory factory ){
 		this.factories.put( factory.getName(), factory );
 	}
-	
+
 	public void removeFactory( ICompositeFactory factory ){
 		this.factories.remove( factory.getName() );
 	}

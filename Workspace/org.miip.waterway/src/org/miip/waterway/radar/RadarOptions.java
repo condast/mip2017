@@ -9,7 +9,7 @@ import org.miip.waterway.radar.IRadarData.Choices;
 public class RadarOptions{
 
 	public static final int DEFAULT_NR_OF_LEDS = 24;
-	
+
 	public enum Options{
 		ENABLE,
 		TYPE,
@@ -29,7 +29,7 @@ public class RadarOptions{
 	}
 
 	private IPreferenceStore<String, String> store;
-	
+
 	public RadarOptions( IPreferenceStore<String, String> store, String vesselName) {
 		this.store = store;
 		putSettings( Options.TOKEN, getToken(vesselName.getBytes()));
@@ -38,7 +38,7 @@ public class RadarOptions{
 	public boolean isEnabled() {
 		return getBoolean(Options.ENABLE.name(), (byte)0);
 	}
-	
+
 	public void setEnable( boolean choice ) {
 		this.store.setBoolean(Options.ENABLE.name(), (byte)0, choice);
 	}
@@ -50,7 +50,7 @@ public class RadarOptions{
 		}
 		return String.valueOf( token );
 	}
-	
+
 	public Choices getChoice() {
 		String str = getSettings( Options.CHOICE);
 		Choices choice = StringUtils.isEmpty(str)?Choices.RADAR: Choices.valueOf(str);
@@ -63,7 +63,7 @@ public class RadarOptions{
 
 	public IMIIPRadar.RadarSelect getRadarType() {
 		String str = getSettings( Options.TYPE);
-		IMIIPRadar.RadarSelect type = StringUtils.isEmpty(str)? IMIIPRadar.RadarSelect.LED_RING: 
+		IMIIPRadar.RadarSelect type = StringUtils.isEmpty(str)? IMIIPRadar.RadarSelect.LED_RING:
 			IMIIPRadar.RadarSelect.valueOf(str);
 		return type;
 	}
@@ -120,7 +120,7 @@ public class RadarOptions{
 	public boolean isLogging() {
 		return getBoolean(Options.OPTIONS.name(), (byte)0);
 	}
-	
+
 	public void setLogging( boolean choice ) {
 		this.store.setBoolean(Options.OPTIONS.name(), (byte)0, choice);
 	}
@@ -135,7 +135,7 @@ public class RadarOptions{
 		String str = this.store.getSettings( name);
 		int options = StringUtils.isEmpty(str)?0: Integer.parseInt(str);
 		int mask = 1<<position;
-		return ((options&mask) > 0);	
+		return ((options&mask) > 0);
 	}
 
 	protected int getOptions() {
@@ -173,6 +173,6 @@ public class RadarOptions{
 		}
 		return builder.toString();
 	}
-	
-	
+
+
 }

@@ -22,7 +22,7 @@ public class MIIPImages extends AbstractImages{
 	public static final String BUNDLE_ID = "org.miip.waterway.ui";
 
 	public static final String S_ICON_PATH = "/resources/";
-	
+
 	public enum Images{
 		MIIP,
 		NMT,
@@ -41,7 +41,7 @@ public class MIIPImages extends AbstractImages{
 		public String toString() {
 			return StringStyler.prettyString( super.toString() );
 		}
-		
+
 		public static String getResource( Images image ){
 			String str = null;
 			switch( image ){
@@ -71,7 +71,7 @@ public class MIIPImages extends AbstractImages{
 	}
 
 	private static MIIPImages images = new MIIPImages();
-	
+
 	private MIIPImages() {
 		super( S_ICON_PATH, BUNDLE_ID );
 	}
@@ -83,13 +83,13 @@ public class MIIPImages extends AbstractImages{
 	public static MIIPImages getInstance(){
 		return images;
 	}
-	
+
 	@Override
 	public void initialise(){
 		for( Images img: Images.values() )
 			setImage( Images.getResource( img ));
 	}
-	
+
 	public void setImage( String name, String url ){
 		super.setImage(name);
 	}
@@ -111,7 +111,7 @@ public class MIIPImages extends AbstractImages{
 	public static Image getImage( String name ){
 		return getInstance().getImageFromName( name);
 	}
-	
+
 	public static Image getImageFromResource( Display display, Images image ){
 		return getImageFromResource(display, MIIPImages.class, S_ICON_PATH + Images.getResource(image));
 	}

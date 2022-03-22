@@ -29,7 +29,7 @@ public class MapFilter implements Filter {
 	public void init(FilterConfig arg0) throws ServletException {
 		//NOTHING
 	}
-	
+
 	private boolean isForbidden( ServletRequest req ){
 		return !req.getLocalAddr().equals(req.getRemoteAddr());
 	}

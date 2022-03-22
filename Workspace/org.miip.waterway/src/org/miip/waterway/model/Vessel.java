@@ -22,13 +22,13 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	private double maxSpeed;
 
 	private List<Waypoint> waypoints;
-	
+
 	/**
 	 * Needed for awareness of its environment
 	 * @return
 	 */
 	private ISituationalAwareness<IPhysical, IVessel> sa;
-	
+
 	private boolean enableCA;
 
 	public Vessel( long id, String name, double latitude, double longitude, double heading, double thrust, double maxSpeed, boolean enableCa) {
@@ -38,7 +38,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	public Vessel( long id, String name, LatLng location, double heading, boolean enableCa) {
 		this( id, name, location, heading, 100, 100, enableCa );
 	}
-	
+
 	/**
 	 * Create a vessel with the given name, heading (radians) and speed
 	 * @param location
@@ -56,7 +56,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	public void clear() {
 		this.waypoints.clear();
 	}
-	
+
 	@Override
 	public void init( ISituationalAwareness<IPhysical, IVessel> sa ) {
 		this.sa = sa;
@@ -72,7 +72,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	public void setLocation(LatLng lnglat) {
 		super.setLocation(lnglat);
 	}
-	
+
 	@Override
 	public double getTurn(long timemsec) {
 		return 0;
@@ -82,7 +82,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	public double getMinTurnDistance() {
 		return 2*this.length;
 	}
-	
+
 	public boolean destinationReached() {
 		for( Waypoint wp: this.waypoints) {
 			if( !wp.isCompleted())
@@ -90,7 +90,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		}
 		return true;
 	}
-	
+
 	@Override
 	public ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness() {
 		return sa;
@@ -127,13 +127,13 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 	@Override
 	public double getCriticalDistance() {
 		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
-		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();		
+		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
 	}
 
 	public boolean isInCriticalDistance( IPhysical physical ) {
 		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
 		double critical = ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
-		double distance = LatLngUtils.getDistance(this.getLocation(), physical.getLocation()); 
+		double distance = LatLngUtils.getDistance(this.getLocation(), physical.getLocation());
 		return distance <= critical;
 	}
 
@@ -142,7 +142,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		ICollisionAvoidance<IPhysical, IVessel> ca = super.getCollisionAvoidance();
 		return (ca != null ) &&( ca.isActive());
 	}
-	
+
 	@Override
 	protected double calculateSpeed(long interval, double thrust) {
 		return maxSpeed * thrust/100;
@@ -160,7 +160,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		}
 		return motion;
 	}
-	
+
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
 		MotionData motionData = getCurrent();
@@ -175,7 +175,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 			super( sa, true);
 			setActive( enableCA);
 		}
-		
+
 		@Override
 		public void clearStrategies() {
 			super.clearStrategies();
@@ -190,7 +190,7 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 
 		protected boolean removeStrategy(String strategyName ) {
 			Collection<ICollisionAvoidanceStrategy<IPhysical, IVessel>> temp =
-					new ArrayList<ICollisionAvoidanceStrategy<IPhysical, IVessel>>(super.getStrategies());
+					new ArrayList<>(super.getStrategies());
 			boolean result = false;
 			for( ICollisionAvoidanceStrategy<IPhysical, IVessel> strategy: temp) {
 				if( strategy.getName().equals(strategyName))
@@ -200,11 +200,11 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel,Object> implem
 		}
 
 		/**
-		 * Get the critical distance for passage 
+		 * Get the critical distance for passage
 		 */
 		@Override
 		public double getCriticalDistance() {
-			IVessel vessel = (IVessel) getReference(); 
+			IVessel vessel = getReference();
 			return vessel.getMinTurnDistance();
 		}
 	}

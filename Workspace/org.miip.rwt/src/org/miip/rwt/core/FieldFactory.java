@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
@@ -13,7 +14,7 @@ import org.condast.commons.strings.StringStyler;
 public class FieldFactory {
 
 	public static final String S_FIELD_PATH = "/resources/field/field.txt";
-	
+
 	public enum Attributes{
 		ID,
 		LATITUDE,
@@ -26,7 +27,7 @@ public class FieldFactory {
 			return StringStyler.xmlStyleString(name());
 		}
 	}
-	
+
 	public static IField createField() {
 		Collection<IField> fields = new ArrayList<>();
 		Scanner scanner = new Scanner( FieldFactory.class.getResourceAsStream(S_FIELD_PATH));

@@ -27,18 +27,17 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 
 	IOperator<LatLngVector<Integer>, LatLngVector<Integer>> average = new AbstractOperator<LatLngVector<Integer>, LatLngVector<Integer>>(){
 
-		
+
 		@Override
 		public LatLngVector<Integer> calculate(LatLngVector<Integer>[] parents) {
-			Double avgdist = 0d;
+			double avgdist = 0d;
 			int degree = 0;
-			for( int i=0; i< parents.length; i++ ){
-				LatLngVector<Integer> value = parents[i];
+			for (LatLngVector<Integer> value : parents) {
 				degree += value.getKey();
 				avgdist+=value.getValue();
 			}
 			degree = (int)((float)degree/parents.length);
-			return new LatLngVector<Integer>( degree, Double.valueOf((double)avgdist/parents.length));
+			return new LatLngVector<>( degree, Double.valueOf(avgdist/parents.length));
 		}
 
 		@Override
@@ -52,19 +51,19 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
+
 	};
 
 	public AveragingRadar(Composite parent, int style) {
 		super(parent, style);
 	}
-	
+
 	@Override
 	protected void onDrawStart(GC gc) {
 		ISituationalAwareness<IPhysical, IVessel> sa = super.getInput();
-		IVessel reference = sa.getReference(); 
-		
-		data = new SequentialBinaryTreeSet<LatLngVector<Integer>>( average);
+		IVessel reference = sa.getReference();
+
+		data = new SequentialBinaryTreeSet<>( average);
 		Collection<RadarData<IPhysical>> radar = sa.getScan();
 		IField field = sa.getView();
 		for( RadarData<IPhysical> vessel: radar ){
@@ -73,7 +72,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 			Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), vessel.getLocation());
 			double distance = vector.getValue();
 			double angle = vector.getKey();
-			data.add( new LatLngVector<Integer>((int)angle, (int)distance ));
+			data.add( new LatLngVector<>((int)angle, (int)distance ));
 		}
 		super.onDrawStart(gc);
 	}
@@ -88,10 +87,10 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 	 */
 	@Override
 	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
-		
+
 		List<LatLngVector<Integer>> results = this.data.getValues(0);
 		LatLngVector<Integer> vect = null;
-		IVessel reference = (IVessel) getInput().getReference(); 
+		IVessel reference = getInput().getReference();
 		//double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
 		for( LatLngVector<Integer> vector: results ){
@@ -107,7 +106,7 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 		double centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 		length = length * ( vect.getValue() / super.getRange());
-		
+
 		double xpos1 = centrex + length * Math.sin( toRadians( (int) angle ));
 		double ypos1 = centrey + length * Math.cos( toRadians( (int) angle ));
 		double xpos2 = centrex + length * Math.sin( toRadians( (int) (angle+1) ));

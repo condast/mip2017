@@ -20,8 +20,8 @@ public interface IMIIPRadar<V, O extends Object> extends IRadar<V,O>{
 		@Override
 		public String toString() {
 			return StringStyler.prettyString( super.toString() );
-		} 
-		
+		}
+
 		public static String[] getItems(){
 			String[] items = new String[ values().length];
 			for( int i=0; i<items.length; i++ ){
@@ -29,7 +29,7 @@ public interface IMIIPRadar<V, O extends Object> extends IRadar<V,O>{
 			}
 			return items;
 		}
-		
+
 		public static RadarSelect getRadar( int index ){
 			return RadarSelect.values()[index];
 		}

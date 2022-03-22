@@ -28,7 +28,7 @@ public class Banner extends AbstractBanner {
 	public Banner(Composite parent, int style) {
 		super(parent, style);
 	}
-	
+
 	@Override
 	protected void createBanner(Composite comp, int style) {
 		Button button = createImageButton( comp, BannerImages.getImage( BannerImages.Images.MIIP ), SWT.FLAT );
@@ -69,7 +69,7 @@ public class Banner extends AbstractBanner {
 				catch( Exception ex ){
 					ex.printStackTrace();
 				}
-			}					
+			}
 		});
 	}
 }

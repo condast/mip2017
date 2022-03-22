@@ -13,7 +13,7 @@ public class CompositeFactoryProvider implements ICompositeFactory{
 
 	public static final String S_RADAR_SETTINGS = "RadarSettings";
 	public static final String S_RADAR = "Radar Settings";
-	
+
 	@Override
 	public String getName() {
 		return S_RADAR;
@@ -21,7 +21,7 @@ public class CompositeFactoryProvider implements ICompositeFactory{
 
 	@Override
 	public Composite createComposite(Composite parent, int style) {
-		RadarSettingsComposite rsc = new RadarSettingsComposite( parent, style );	
+		RadarSettingsComposite rsc = new RadarSettingsComposite( parent, style );
 		return rsc;
 	}
 }

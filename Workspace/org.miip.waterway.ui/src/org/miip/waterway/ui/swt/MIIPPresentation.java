@@ -1,17 +1,5 @@
 package org.miip.waterway.ui.swt;
 
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.miip.waterway.model.CentreShip;
-import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.Location;
-import org.miip.waterway.model.Ship.Heading;
-import org.miip.waterway.model.Waterway;
-import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.model.eco.Bank;
-import org.miip.waterway.ui.images.MIIPImages;
-
 import java.util.Map;
 
 import org.condast.commons.data.latlng.LatLng;
@@ -25,13 +13,24 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.miip.waterway.model.CentreShip;
+import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.Location;
+import org.miip.waterway.model.Ship.Heading;
+import org.miip.waterway.model.Waterway;
+import org.miip.waterway.model.def.IMIIPEnvironment;
+import org.miip.waterway.model.eco.Bank;
+import org.miip.waterway.ui.images.MIIPImages;
 
 public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnvironment>{
 	private static final long serialVersionUID = 1L;
 
 	public static final int GRIDX = 100;//meters
 	public static final int GRIDY = 20;//meters
-	
+
 	private PaintListener listener = new PaintListener(){
 		private static final long serialVersionUID = 1L;
 
@@ -63,7 +62,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 	public Composite getParent(){
 		return super.getParent();
 	}
-	
+
 	@Override
 	public IMIIPEnvironment getInput() {
 		return this.environment;
@@ -73,8 +72,8 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 	public void setInput( IMIIPEnvironment environment){
 		this.environment = environment;
 	}
-	
-/*	
+
+/*
 	protected Point drawOffset( CentreShip ship, Point centre ){
 		if( ship == null )
 			return centre;
@@ -87,7 +86,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		return new Point( centre.x + xoffset, centre.y + yoffset );
 	}
 */
-	
+
 	protected void drawField( GC gc ){
 		if( environment == null )
 			return;
@@ -107,7 +106,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 
 		//The ship in the centre
 		CentreShip cship = (CentreShip) this.environment.getInhabitant();
-		Point point = ( cship == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
+		Point point = ( cship == null )? new Point( clientArea.width/2, clientArea.height/2):
 			scaleToCanvas(cship.getLocation());
 		drawImage( gc, point, MIIPImages.Images.SHIP);
 
@@ -118,12 +117,12 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		Color color = gc.getForeground();
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ));
 		Waterway waterway = environment.getWaterway();
-		org.miip.waterway.model.eco.Rectangle rectangle = 
+		org.miip.waterway.model.eco.Rectangle rectangle =
 				new org.miip.waterway.model.eco.Rectangle( 0, environment.getBankWidth(), waterway.getField().getLength(), waterway.getField().getWidth());
 
 		int i = (int) (-waterway.getTravelled()%GRIDX);
 		while( i < rectangle.getLength() ){
-			int xpos = scaleXToDisplay( i ); 
+			int xpos = scaleXToDisplay( i );
 			int ypos1 = scaleYToDisplay( rectangle.getYPos());
 			int ypos2 = scaleYToDisplay( (int) (rectangle.getYPos() + rectangle.getWidth()));
 			i += GRIDX;
@@ -133,7 +132,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		while( i < rectangle.getWidth()){
 			int xpos1 = scaleXToDisplay( rectangle.getXPos());
 			int xpos2 = scaleXToDisplay( (int) (rectangle.getXPos() + rectangle.getLength()));
-			int ypos = scaleYToDisplay( rectangle.getYPos() + i ); 
+			int ypos = scaleYToDisplay( rectangle.getYPos() + i );
 			i += GRIDY;
 			gc.drawLine( xpos1, ypos, xpos2, ypos );
 		}
@@ -150,7 +149,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		for( IVessel ship: environment.getWaterway().getShips()){
 			if( !field.isInField( ship.getLocation(), 0))
 				continue;
-			MIIPImages.Images img = ( ship.getHeading() < Heading.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+			MIIPImages.Images img = ( ship.getHeading() < Heading.SOUTH.getAngle() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;
 			drawImage(gc, scaleToCanvas( ship.getLocation() ), img );
 		}
 
@@ -162,7 +161,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		try{
 			img = MIIPImages.getImageFromResource( getDisplay(), image );
 			Rectangle bounds = img.getBounds();
-			Point centre = new Point(( int )( bounds.width/2), (int)( bounds.height/2 ));
+			Point centre = new Point(bounds.width/2, bounds.height/2);
 			int posx = (point.x-centre.x)<0? 0: point.x-centre.x;
 			int posy = (point.y-centre.y)<0? 0: point.y-centre.y;
 			gc.drawImage( img, posx, posy);
@@ -180,7 +179,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		Map.Entry<Double, Double> vector = field.getPoint(location);
 		int x= (int)(clientArea.width * vector.getKey()/field.getLength());
 		int y = (int)(clientArea.height * vector.getValue()/field.getWidth());
-		return new Point((int) x, (int) y );
+		return new Point(x, y );
 	}
 
 	public Point scaleToCanvas( Location location ){
@@ -188,7 +187,7 @@ public class MIIPPresentation extends Canvas implements IInputWidget<IMIIPEnviro
 		IField field = this.environment.getField();
 		int x=  (int)(location.getX() * clientArea.width/field.getLength());
 		int y = (int)(location.getY() * clientArea.height/field.getWidth());
-		return new Point((int) x, (int) y );
+		return new Point(x, y );
 	}
 
 	protected int scaleYToDisplay( int width ){

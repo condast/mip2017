@@ -7,8 +7,8 @@ public class LEDRadarData extends BaseData implements IRadarData {
 	private int ch;//choice
 	private int r;//range
 	private int s;//sensitivity
-	
-	private int o;//(boolean)options: bit 0: log 
+
+	private int o;//(boolean)options: bit 0: log
 	private boolean enb;
 
 	public LEDRadarData( Choices choice, boolean enable, int range, int sensitivity, int options) {
@@ -23,7 +23,7 @@ public class LEDRadarData extends BaseData implements IRadarData {
 		super(remarks);
 		ch = choice.ordinal();
 	}
-	
+
 	public boolean isEnbaled() {
 		return enb;
 	}
@@ -47,5 +47,5 @@ public class LEDRadarData extends BaseData implements IRadarData {
 	public int getOptions() {
 		return o;
 	}
-	
+
 }

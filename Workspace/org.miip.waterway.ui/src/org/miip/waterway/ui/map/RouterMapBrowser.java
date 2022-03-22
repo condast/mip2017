@@ -44,13 +44,13 @@ public class RouterMapBrowser extends Browser {
 	private LatLng home;
 	private LatLng[] selected;
 	private int counter;
-	
+
 	private Router router;
-	
+
 	private boolean init;
-	
+
 	private boolean busy;
-	
+
 	private Collection<IColourListener> listeners;
 
 	private ProgressListener plistener = new ProgressListener() {
@@ -99,9 +99,7 @@ public class RouterMapBrowser extends Browser {
 
 	private void onNotifyEvaluation(EvaluationEvent<Object> event) {
 		try {
-			if(!OpenLayerController.S_CALLBACK_ID.equals(event.getId()))
-				return;
-			if( Utils.assertNull( event.getData()))
+			if( !OpenLayerController.S_CALLBACK_ID.equals(event.getId()) || Utils.assertNull( event.getData()))
 				return;
 			Collection<Object> eventData = Arrays.asList(event.getData());
 			StringBuilder builder = new StringBuilder();
@@ -130,10 +128,10 @@ public class RouterMapBrowser extends Browser {
 			}
 			if( ShapesView.Commands.isValue(str))
 				return;
-			
+
 			//Add waypoints if they are selected
 			Object[] coords = (Object[]) event.getData()[2];
-			LatLng latlng = new LatLng(( Double) coords[1], (Double)coords[0]);	
+			LatLng latlng = new LatLng(( Double) coords[1], (Double)coords[0]);
 			selected[counter] = latlng;
 			counter++;
 			counter %=2;
@@ -163,7 +161,7 @@ public class RouterMapBrowser extends Browser {
 	public boolean fill() {
 		try {
 			router.fill();
-			notifyColourRead( new ColourEvent( this, router.getInput() ));		
+			notifyColourRead( new ColourEvent( this, router.getInput() ));
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
@@ -178,9 +176,9 @@ public class RouterMapBrowser extends Browser {
 			public void run() {
 				updateMap();
 			}
-		});	
+		});
 	}
-	
+
 	protected void updateMap() {
 		if( mapController.isExecuting() || busy )
 			return;
@@ -204,16 +202,13 @@ public class RouterMapBrowser extends Browser {
 		if( home == null )
 			return;
 		icons.addMarker(home, marker, 'H');
-		if( router.getField() == null )
+		if( (router.getField() == null) || Utils.assertNull(selected))
 			return;
 
-		if( Utils.assertNull(selected))
-			return;
-
-		LatLng start = selected[0]; 	
+		LatLng start = selected[0];
 		if( selected[0] == null )
 			return;
-		
+
 		marker = Markers.BLUE;
 		icons.addMarker(start, marker, 'S');
 
@@ -222,27 +217,27 @@ public class RouterMapBrowser extends Browser {
 		int[] colour = pixels.getPixelColour(selected[select]);
 		RGBA[] rgba = new RGBA[1];
 		rgba[0] = new RGBA( colour );
-		notifyColourRead( new ColourEvent( this, Types.POINT, rgba, select ));		
+		notifyColourRead( new ColourEvent( this, Types.POINT, rgba, select ));
 
 		if( selected[1] == null )
 			return;
-		LatLng end = selected[1]; 
+		LatLng end = selected[1];
 		marker = Markers.BLUE;
 		icons.addMarker(end, marker, 'E');
 
 		try {
 			Collection<RGBA> results = router.getPixels(selected[0], selected[1]);
 			if( !Utils.assertNull(results))
-				notifyColourRead( new ColourEvent( this, Types.LINE,  results.toArray( new RGBA[ results.size() ]), select ));		
+				notifyColourRead( new ColourEvent( this, Types.LINE,  results.toArray( new RGBA[ results.size() ]), select ));
 		}
 		catch( Exception ex ) {
 			ex.printStackTrace();
 		}
-		
+
 		try {
 			if(!router.isFilled())
 				return;
-		
+
 			Collection<LatLng> results = router.findRoute();
 			marker = Markers.PALEBLUE;
 			for( LatLng wp: results) {
@@ -250,25 +245,26 @@ public class RouterMapBrowser extends Browser {
 					continue;
 				icons.addMarker(wp, marker, 'N');
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 
+	@Override
 	public void dispose() {
 		this.mapController.dispose();
 		this.mapController.removeEvaluationListener(e->onNotifyEvaluation(e));
 		this.removeProgressListener(plistener);
 		super.dispose();
 	}
-	
+
 	private class Router extends AbstractRouter<RGBA> {
 
 		public Router( IField field ) {
 			super(field);
-		}	
+		}
 
 		@Override
 		protected void onFill(Map<Integer, List<RGBA>> map) {
@@ -280,20 +276,20 @@ public class RouterMapBrowser extends Browser {
 				results = pixels.getPixelsColours( field );
 				if( Utils.assertNull(results))
 					return;
-				
+
 				int counter = 0;
 				for( int y=0; y<field.getWidth(); y++ ) {
 					for( int x=0; x< field.getLength(); x++ ) {
 						put( x, y, results.get( counter++));
-					}				
+					}
 				}
-				
+
 			}
 			finally {
 				busy = false;
 			}
 			int index = (counter==0)?1:0;
-			notifyColourRead( new ColourEvent( this, Types.AREA,  results.toArray( new RGBA[ results.size() ]), index ));		
+			notifyColourRead( new ColourEvent( this, Types.AREA,  results.toArray( new RGBA[ results.size() ]), index ));
 		}
 
 		public List<RGBA> getPixels( LatLng start, LatLng end ){
@@ -316,13 +312,13 @@ public class RouterMapBrowser extends Browser {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			}	
+			}
 			finally {
 				busy = false;
 			}
 			return results;
 		}
-			
+
 		@Override
 		protected int checkObstruction(LatLng start, LatLng end) {
 			List<RGBA> line = getPixels(start, end);
@@ -330,7 +326,7 @@ public class RouterMapBrowser extends Browser {
 				return -1;
 			int length = (int) LatLngUtils.getDistance(start, end);
 			int distance = -1;
-			RGBA first = line.get(0);		
+			RGBA first = line.get(0);
 			for( int i=1; i<line.size(); i++ ){
 				RGBA next = line.get(i);
 				if( !next.approximate(first, 20 ))
@@ -353,7 +349,7 @@ public class RouterMapBrowser extends Browser {
 					return true;
 			} catch (Exception e) {
 				e.printStackTrace();
-			}	
+			}
 			finally {
 				busy = false;
 			}
@@ -365,13 +361,13 @@ public class RouterMapBrowser extends Browser {
 			Collection<TreeNode> results = new ArrayList<>();
 			TreeNode node = findTreeNode(first, last, distance, false);
 			if( node != null )
-				results.add(node);	
+				results.add(node);
 			node = findTreeNode(first, last, distance, true);
 			if( node != null )
 				results.add(node);
 			return results;
 		}
-		
+
 		protected TreeNode findTreeNode( LatLng first, LatLng last, int distance, boolean secondary ) {
 			int angle = (int) LatLngUtilsDegrees.getHeading(first, last);
 			TreeNode node = null;
@@ -379,11 +375,11 @@ public class RouterMapBrowser extends Browser {
 			IField field = getField();
 			int degrees = angle %=360;
 			int end = ( 180 + angle )%360;
-			
+
 			long length = (long) (Math.pow( field.getLength(), 2) + Math.pow( field.getWidth(), 2));
 			if( length < 2 )
 				return null;
-			
+
 			while(( node == null ) && ( degrees != end)){
 				degrees = (360 + angle)%360;
 				for( long d=1; d<length; d++ ) {
@@ -393,10 +389,10 @@ public class RouterMapBrowser extends Browser {
 						break;
 					}
 					if( checkObstruction(first, waypoint) < 0 ) {
-						if( checkObstruction(last, waypoint) < 0 ) 
+						if( checkObstruction(last, waypoint) < 0 )
 							return new TreeNode( waypoint );
 					}
-					if( secondary ) angle--; else angle++;	
+					if( secondary ) angle--; else angle++;
 				}
 			}
 			return (node != null )?node: new TreeNode( best, NodeTypes.NODE );

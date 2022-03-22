@@ -9,7 +9,7 @@ public interface IRadarData {
 
 	public enum Choices {
 		DISABLED,
-		RADAR,  
+		RADAR,
 		COLOUR_WIPE_RED,
 		COLOUR_WIPE_GREEN,
 		COLOUR_WIPE_BLUE,
@@ -20,20 +20,20 @@ public interface IRadarData {
 		RAINBOW_CYCLE,
 		RAINBOW_THEATRE_CHASE,
 		ALL;
-		
+
 		@Override
 		public String toString() {
 			return StringStyler.prettyString( super.toString());
 		}
 
 		public static String[] getItems(){
-			Collection<String> items = new ArrayList<String>();
+			Collection<String> items = new ArrayList<>();
 			for( Choices choice: values()){
 				items.add( choice.toString());
 			}
 			return items.toArray( new String[items.size()]);
 		}
-	};	
+	}
 
 	int getIndex();
 }

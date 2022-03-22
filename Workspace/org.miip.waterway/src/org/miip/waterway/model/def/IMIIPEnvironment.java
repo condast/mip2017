@@ -10,6 +10,7 @@ import org.miip.waterway.model.eco.Bank;
 
 public interface IMIIPEnvironment extends IReferenceEnvironment<IVessel, IPhysical> {
 
+	@Override
 	public IField getField();
 
 	void setManual(boolean manual);

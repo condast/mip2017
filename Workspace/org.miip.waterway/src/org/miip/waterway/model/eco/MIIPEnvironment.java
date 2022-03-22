@@ -20,27 +20,28 @@ import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
-import org.miip.waterway.model.Waterway;
+import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Ship.Heading;
+import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.sa.SituationalAwareness;
 
 public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
 
 	private static final int DEFAULT_TIME_OUT =  1000;
-	
+
 	private static final String NAME = "HMS Rotterdam";
 	private static final double LONGITUDE = 4.00f;
 	private static final double LATITUDE  = 52.000f;
 	private static final int DEFAULT_LENGTH  = 2000; //2 km
 	private static final int DEFAULT_WIDTH  = 500; //500 m
 
-	public static final int BANK_WIDTH = 60;	
+	public static final int BANK_WIDTH = 60;
 
 	private Date currentTime;
 	private Lock lock;
 	private int timer;
-	
+
 	private Field field;//A field is represented by LatLng coordinates for the top-left corner
 	private CentreShip reference;
 	private Bank topBank;
@@ -53,11 +54,11 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private int bankWidth;
 	private boolean manual;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-	
+
 	public MIIPEnvironment() {
 		this( DEFAULT_LENGTH, DEFAULT_WIDTH, BANK_WIDTH );
 	}
-	
+
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
 		this.field = new Field( new LatLng( NAME, LATITUDE, LONGITUDE), length, width);
 		this.sa = new SituationalAwareness(reference, field);
@@ -65,7 +66,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
 		lock = new ReentrantLock();
-		this.listeners = new ArrayList<IEnvironmentListener<IVessel>>();
+		this.listeners = new ArrayList<>();
 	}
 
 	@Override
@@ -88,35 +89,35 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	@Override
 	public boolean onInitialise() {
 		currentTime = Calendar.getInstance().getTime();
-		
+
 		//The bank on the top
 		Field section = new Field( this.field.getCoordinates(), this.field.getLength(), this.bankWidth );
 		topBank = new Bank( section );
-		
+
 		//The actual waterway
-		LatLng latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.bankWidth); 
+		LatLng latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.bankWidth);
 		long width = this.field.getWidth() - 2 * this.bankWidth;
 		section = new Field( latlng, this.field.getLength(), width );
 		this.waterway = new Waterway( latlng.hashCode(), latlng, section, 100);
-		
+
 		//Position of the ship
 		latlng = this.field.getCentre();
-		//This vessel consists of situational awareness and collision avoidance 
+		//This vessel consists of situational awareness and collision avoidance
 		logger.info(latlng.toLocation());
 		reference = new CentreShip( NAME.hashCode(), NAME, latlng, 20 );
 		sa.setInput(this);
 		reference.init( sa);
-		
+
 		//The bank at the bottom
-		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth); 
+		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth);
 		section = new Field( latlng, field.getLength(), this.bankWidth );
 		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
-		
+
 		notifyChangeEvent( new EnvironmentEvent<IVessel>( this, EventTypes.INITIALSED, null ));
 		counter = 0;
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#setManual(boolean)
 	 */
@@ -133,11 +134,12 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			waterway.clear();
 		this.manual = false;
 	}
-	
+
+	@Override
 	public Field getField() {
 		return field;
 	}
-		
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getTimer()
 	 */
@@ -145,7 +147,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public int getTimer() {
 		return timer;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#setTimer(int)
 	 */
@@ -153,15 +155,16 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public void setTimer(int timer) {
 		this.timer = timer;
 	}
-	
+
+	@Override
 	public int getBankWidth() {
 		return bankWidth;
 	}
-	
+
 	public void setBankWidth(int bankWidth) {
 		this.bankWidth = bankWidth;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getShip()
 	 */
@@ -169,14 +172,15 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public IVessel getInhabitant() {
 		return reference;
 	}
-	
+
+	@Override
 	public Bank[] getBanks(){
 		Bank[] bank = new Bank[2];
 		bank[0] = topBank;
 		bank[1] = bottomBank;
 		return bank;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getWaterway()
 	 */
@@ -184,7 +188,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public Waterway getWaterway() {
 		return waterway;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getSituationalAwareness()
 	 */
@@ -192,7 +196,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public SituationalAwareness getSituationalAwareness() {
 		return this.sa ;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#addListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
 	 */
@@ -208,12 +212,12 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public void removeListener( IEnvironmentListener<IVessel> listener ){
 		this.listeners.remove( listener );
 	}
-	
+
 	protected void notifyChangeEvent( EnvironmentEvent<IVessel> event ){
 		for( IEnvironmentListener<IVessel> listener: listeners)
 			listener.notifyEnvironmentChanged(event);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#onExecute()
 	 */
@@ -227,14 +231,14 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			this.currentTime = newTime;
 			LatLng location = reference.move( interval ).getLocation();
 			logger.info(location.toLocation());
-			
+
 			Location traverse = drawNext( reference, interval);
 			topBank.update( traverse.getX());
 			bottomBank.update( traverse.getX());
-			
+
 			LatLng course = LatLngUtilsDegrees.extrapolateEast( field.getCoordinates(), traverse.getX() );
 			field = new Field( course, field.getLength(), field.getWidth() );
-			
+
 			//logger.info( "New Position " + this.position + ",\n\t\t   " + ship.getLnglat() );
 			//logger.info( "Diff " + (this.position.getLongitude() - ship.getLnglat().getLongitude() ));
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
@@ -244,7 +248,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			sa.setInput(this);//after updating waterway
 			float min_distance = manual?this.field.getLength(): 50;
 			sa.controlShip( min_distance, this.manual );
-			
+
 			counter = ( counter + 1)%10;
 			notifyChangeEvent( new EnvironmentEvent<IVessel>( this ));
 		}
@@ -256,7 +260,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		}
 		sleep( timer );
 	}
-	
+
 	/**
 	 * Get the location with respect to the reference
 	 * TODO NOTE: for some reason we need to add a correction of 1.8 in the latitude
@@ -267,7 +271,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		double x = Math.abs( LatLngUtils.lngDistance( field.getCoordinates(), model.getLocation(), 0, 0));
 		double y = 1.8* Math.abs( LatLngUtils.latDistance( field.getCoordinates(), model.getLocation(), 0, 0));
 		logger.fine("Creating location for " + model.getLocation() + " = \n\t [" + x + ",  " + y  );
-		return new Location( x, y );	
+		return new Location( x, y );
 	}
 
 	@Override
@@ -280,7 +284,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @see org.miip.waterway.model.IVessel#plotNext(java.util.Date)
 	 */
 	public static Location drawNext( CentreShip ship, long interval ){
-		double distance = ship.getSpeed() * interval / CentreShip.TO_HOURS;
+		double distance = ship.getSpeed() * interval / Ship.TO_HOURS;
 		double radian = Math.toRadians( ship.getHeading() );
 		double x = distance * Math.sin( radian );
 		double y = distance * Math.cos( radian );

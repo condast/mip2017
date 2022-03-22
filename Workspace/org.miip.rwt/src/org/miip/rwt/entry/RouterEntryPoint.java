@@ -28,14 +28,14 @@ public class RouterEntryPoint extends AbstractRestEntryPoint<Object> {
 	private static final long serialVersionUID = 1L;
 
 	public static final String S_ROUTER_ENTRY = "/router";
-	
+
 	private RouterMapBrowser browser;
-	
-	private CoolBar coolbar; 
+
+	private CoolBar coolbar;
 	private Label labelStart, labelEnd;
 	private PixelXYGraph graph;
 	private PixelXYMap map;
-	
+
 	@Override
 	protected boolean prepare(Composite parent) {
 		return true;
@@ -56,14 +56,14 @@ public class RouterEntryPoint extends AbstractRestEntryPoint<Object> {
 	protected Composite createComposite(Composite parent) {
 		parent.setLayout(new GridLayout(2, false ));
 
-		browser = new RouterMapBrowser( parent, SWT.NONE );	
+		browser = new RouterMapBrowser( parent, SWT.NONE );
 		browser.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true));
 		browser.addColourListener( e->onNotifyColourEvent(e));
-		
+
 		Composite comp = new Composite(parent, SWT.BORDER);
 		comp.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true));
 		comp.setLayout(new GridLayout( 3, false));
-		
+
 		coolbar = new CoolBar(comp, SWT.LEFT_TO_RIGHT);
 		coolbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 		coolbar.setLayout(new GridLayout( 2, false));
@@ -83,19 +83,19 @@ public class RouterEntryPoint extends AbstractRestEntryPoint<Object> {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
-			}		
+			}
 		});
 	    Point p = button.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	    Point p2 = item.computeSize(p.x, p.y+10);
 	    item.setSize(p2);
 		item.setControl( button);
 		coolbar.pack();
-		
+
 		GridData labelData = new GridData( SWT.FILL, SWT.FILL, false, false);
 		labelData.widthHint = 20;
 		labelStart = new Label( comp, SWT.BORDER );
 		labelStart.setLayoutData( labelData);
-		
+
 		graph = new PixelXYGraph(comp, SWT.BORDER);
 		graph.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false));
 
@@ -110,7 +110,7 @@ public class RouterEntryPoint extends AbstractRestEntryPoint<Object> {
 		return browser;
 	}
 
-	
+
 	@Override
 	protected boolean postProcess(Composite parent) {
 		try {

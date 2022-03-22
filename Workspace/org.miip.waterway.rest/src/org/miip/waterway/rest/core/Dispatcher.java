@@ -18,13 +18,13 @@ public class Dispatcher {
 	public static final String S_MIIP = "org.miip.waterway.model.eco.MIIPEnvironment";
 
 	public static final String S_VESSEL_NAME = "Rest";
-	
+
 	private static Dispatcher dispatcher = new Dispatcher();
 
 	private Map<String, IEnvironment<IVessel>> environments;
-	
+
 	private Collection<IDesignFactory<IVessel>> factories;
-	
+
 	private Dispatcher() {
 		factories = new ArrayList<>();
 		environments = new HashMap<>();

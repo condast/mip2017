@@ -9,7 +9,7 @@ public interface IVessel extends IAutonomous<IPhysical>
 {
 	float DEFAULT_LENGTH = 4.00f;//4 mtr
 
-	void init(ISituationalAwareness<IPhysical,IVessel> sa);	
+	void init(ISituationalAwareness<IPhysical,IVessel> sa);
 
 	/**
 	 * A vessel always has at least one destination
@@ -22,7 +22,7 @@ public interface IVessel extends IAutonomous<IPhysical>
 	 * @return
 	 */
 	public boolean hasCollisionAvoidance();
-	
+
 	double getTurn(long timemsec);
 
 	double getMinTurnDistance();
@@ -31,10 +31,12 @@ public interface IVessel extends IAutonomous<IPhysical>
 	 * speed in km/h
 	 * @return
 	 */
+	@Override
 	double getSpeed();
 
 	ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness();
 
+	@Override
 	double getCriticalDistance();
 
 	void clearStrategies();

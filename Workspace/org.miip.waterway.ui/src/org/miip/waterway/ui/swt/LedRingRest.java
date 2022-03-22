@@ -1,6 +1,5 @@
 package org.miip.waterway.ui.swt;
 
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +16,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.radar.RestRadar;
+
+import com.google.gson.Gson;
 
 public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	private static final long serialVersionUID = 1L;
@@ -49,11 +50,11 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	public static final int NR_OF_LEDS = 24;
 	public static final int RADIUS = 10;
 	public static final int DEGREES = 360;
-	
+
 	private int leds;
-	
+
 	private Map<Integer, RestRadar.MIIPRadarData> scan;
-	
+
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public LedRingRest(Composite parent, int style ) {
@@ -61,7 +62,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		this.leds = NR_OF_LEDS;
 		scan = new TreeMap<>();
 	}
-	
+
 	@Override
 	protected void onDrawStart(GC gc) {
 		this.scan.clear();
@@ -80,7 +81,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		}
 		super.onDrawStart(gc);
 	}
-	
+
 	@Override
 	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		/* NOTHING */
@@ -106,7 +107,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 			double x = length * Math.sin( phi );
 			double y = length * Math.cos( phi );
 			gc.setBackground( getColour( i, data ));
-			gc.fillOval((int)(centrex + x), (int)(centrey-y), RADIUS, RADIUS );			
+			gc.fillOval((int)(centrex + x), (int)(centrey-y), RADIUS, RADIUS );
 		}
 		return super.onDrawEnd(gc);
 	}
@@ -116,7 +117,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		public WebClient(String path) {
 			super(path);
 		}
-	
+
 		@Override
 		public void sendGet( Requests request, Map<String, String> parameters) throws IOException {
 			super.sendGet(request, parameters);
@@ -130,6 +131,6 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 			scan.put(post.getAngle(), post);
 			logger.fine(result);
 			return result;
-		}	
+		}
 	}
 }

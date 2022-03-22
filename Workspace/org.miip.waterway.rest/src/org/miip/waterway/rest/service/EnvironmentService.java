@@ -13,7 +13,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 public class EnvironmentService {
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
-	
+
 	@Reference( cardinality = ReferenceCardinality.AT_LEAST_ONE,
 			policy=ReferencePolicy.DYNAMIC)
 	public void bindEnvironment( IDesignFactory<IVessel> factory){

@@ -1,11 +1,5 @@
 package org.miip.waterway.ui.swt.pond;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.layout.GridLayout;
-
 import java.util.EnumSet;
 
 import org.condast.commons.Utils;
@@ -25,15 +19,20 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.radar.RadarGroup;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 
 public class PondComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
 	private static final long serialVersionUID = 1L;
@@ -56,7 +55,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Text text_lng;
 	private Text text_lat;
 	private Label lblHits;
-	
+
 	private PlayerComposite<IMIIPEnvironment> playerbar;
 
 	private Slider slider_speed;
@@ -98,11 +97,11 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		group_control.setText("Control");
 		group_control.setLayout(new GridLayout(3, false));
 		group_control.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, true) );
-		
+
 		lblStrategy = new Label(group_control, SWT.NONE);
 		lblStrategy.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lblStrategy.setText("Strategy:");
-		
+
 		strategyCombo = new Combo(group_control, SWT.NONE);
 		strategyCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		strategyCombo.setItems(ICollisionAvoidanceStrategy.DefaultStrategies.getItems());
@@ -164,7 +163,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblActiveShips = new Label(group_control, SWT.BORDER);
 		lblActiveShips.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		playerbar = new PlayerComposite<IMIIPEnvironment>( group_control, SWT.BORDER );
+		playerbar = new PlayerComposite<>( group_control, SWT.BORDER );
 		new Label(group_control, SWT.NONE);
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 
@@ -197,10 +196,10 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblPosition.setText("Position:");
 
 		text_lng = new Text(group_ship, SWT.BORDER);
-		text_lng.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));	
+		text_lng.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		text_lat = new Text(group_ship, SWT.BORDER);
-		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
+		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Label lbl_hitText = new Label( group_ship, SWT.NONE );
 		lbl_hitText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false ));
@@ -209,7 +208,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 		new Label(group_ship, SWT.NONE);
 
-		radarGroup = new RadarGroup(composite, SWT.NONE); 
+		radarGroup = new RadarGroup(composite, SWT.NONE);
 		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		new Label(composite, SWT.NONE);
 	}
@@ -228,9 +227,9 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 			return;
 		this.environment.setEnabled(true);
 		this.canvas.setInput( this.environment);
-		IVessel reference = (IVessel) this.environment.getInhabitant();
+		IVessel reference = this.environment.getInhabitant();
 		ICollisionAvoidanceStrategy.DefaultStrategies strategy = Utils.assertNull(reference.getSelectedStrategies())?
-				ICollisionAvoidanceStrategy.DefaultStrategies.SIMPLE_COLLISION_AVOIDANCE: 
+				ICollisionAvoidanceStrategy.DefaultStrategies.SIMPLE_COLLISION_AVOIDANCE:
 				ICollisionAvoidanceStrategy.DefaultStrategies.valueOf( reference.getSelectedStrategies()[0]);
 		this.strategyCombo.select(strategy.ordinal());
 		this.radarGroup.setInput( reference.getSituationalAwareness(), false );
@@ -240,7 +239,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	}
 
 	protected void updateView(){
-		IVessel vessel = (IVessel) environment.getInhabitant();
+		IVessel vessel = environment.getInhabitant();
 		IExecuteThread thread = (IExecuteThread) environment;
 		this.slider_speed.setSelection( thread.getTimer());
 		this.text_name.setText( vessel.getName() );
@@ -254,7 +253,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.canvas.redraw();
 		layout(false);
 	}
-	
+
 	@Override
 	public void setVisible(boolean visible) {
 		if( this.environment != null )
@@ -262,6 +261,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		super.setVisible(visible);
 	}
 
+	@Override
 	public void dispose(){
 		this.disposed = true;
 		if( this.environment != null ){
@@ -287,18 +287,18 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 		@Override
 		protected EnumSet<PlayerImages.Images> setupButtonBar() {
-			return EnumSet.of(PlayerImages.Images.START, 
-					PlayerImages.Images.STOP, 
+			return EnumSet.of(PlayerImages.Images.START,
+					PlayerImages.Images.STOP,
 					PlayerImages.Images.NEXT,
 					PlayerImages.Images.RESET);
 		}
 
-		
+
 		@Override
 		public Control getButton(Enum<org.condast.commons.ui.player.PlayerImages.Images> type) {
 				return super.getButton(type);
 		}
-		
+
 		public void stop() {
 			IExecuteThread thread = (IExecuteThread) environment;
 			thread.stop();
@@ -336,7 +336,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 						switch( image ){
 						case START:
 							environment.addListener( handler);
-							
+
 							thread.start();
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
@@ -365,14 +365,14 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 					catch( Exception ex ){
 						ex.printStackTrace();
 					}
-				}		
+				}
 			});
 			button.setImage( PlayerImages.getImage(type));
 			return button;
 		}
 	}
 
-	private class SessionHandler extends AbstractSessionHandler<EnvironmentEvent<IVessel>> 
+	private class SessionHandler extends AbstractSessionHandler<EnvironmentEvent<IVessel>>
 	implements IEnvironmentListener<IVessel>{
 
 		protected SessionHandler(Display display) {
@@ -427,6 +427,6 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 					}
 				}
 			});
-		}	
+		}
 	}
 }

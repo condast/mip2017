@@ -16,7 +16,7 @@ public class BasicEntryPoint extends AbstractEntryPoint {
 	private static final String S_INDEX_LOCATION = "/internal/index.html";
 
 	private Browser browser;
-	
+
 	@Override
     protected void createContents(Composite parent) {
         parent.setLayout(new GridLayout(2, false));

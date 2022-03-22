@@ -12,11 +12,11 @@ public class RestServlet extends AbstractServletWrapper {
 
 	//same as alias in plugin.xml
 	public static final String S_CONTEXT_PATH = "miip2017";
-	
+
 	public RestServlet() {
 		super( S_CONTEXT_PATH );
 	}
-	
+
 	@Override
 	protected Servlet onCreateServlet(String contextPath) {
 		RestApplication resourceConfig = new RestApplication();

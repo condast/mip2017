@@ -15,12 +15,12 @@ public class VesselDrawData {
 		CYAN(6);
 
 		private int index;
-		
+
 		private LineColours( int index ) {
 			this.index = index;
 		}
-		
-		
+
+
 		public int getIndex() {
 			return index;
 		}
@@ -29,8 +29,8 @@ public class VesselDrawData {
 		@Override
 		public String toString() {
 			return this.name().toLowerCase();
-		}	
-		
+		}
+
 		public static LineColours getColour( int index ) {
 			for( LineColours colour: values() ) {
 				if( colour.getIndex() == index )
@@ -41,16 +41,16 @@ public class VesselDrawData {
 	}
 
 	private IVessel vessel;
-	
+
 	//Is needed to sraw lines
 	private LatLng current;
-	
+
 	private LineColours lineColour;
-	
+
 	public VesselDrawData( IVessel manager ) {
 		this( manager, LineColours.BLUE);
 	}
-	
+
 	public VesselDrawData( IVessel manager, LineColours lineColour ) {
 		this.vessel = manager;
 		this.current = manager.getLocation();
@@ -71,5 +71,5 @@ public class VesselDrawData {
 
 	public void setCurrent(LatLng current) {
 		this.current = current;
-	}	
+	}
 }

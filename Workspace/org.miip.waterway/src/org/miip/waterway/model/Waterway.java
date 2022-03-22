@@ -16,39 +16,39 @@ public class Waterway extends AbstractModel<Object>{
 
 	private static final int DEFAULT_NR_OF_SHIPS = 1;
 	private static final int MARGIN_X = 20;//The margin with which ships can disappear behind the visible waterway
-	
+
 	private Collection<IVessel> ships;
 	private int nrOfShips;
-	
+
 	private IField field;
-	
+
 	//The distance travelled since the start button was pressed
 	private long travelled;
-	
+
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
-	
+
 	public Waterway( long id, LatLng latlng, Field field) {
 		this( id, latlng, field, DEFAULT_NR_OF_SHIPS  );
 	}
-	
+
 	public Waterway( long id, LatLng latlng, IField field, int nrOfShips) {
 		super( id, IPhysical.ModelTypes.WATERWAY, latlng );
 		this.field = field;
 		this.nrOfShips = nrOfShips;
-		ships = new ArrayList<IVessel>();
+		ships = new ArrayList<>();
 		this.initialise();
 	}
 
 	protected void initialise(){
-		createShips( 20, (int)(this.nrOfShips/2) );
-		createShips( field.getLength()-200, (int)( this.nrOfShips/2) );
+		createShips( 20, this.nrOfShips/2 );
+		createShips( field.getLength()-200, this.nrOfShips/2 );
 	}
 
 	public void clear(){
 		this.ships.clear();
 		this.travelled = 0;
 	}
-	
+
 	public IField getField() {
 		return field;
 	}

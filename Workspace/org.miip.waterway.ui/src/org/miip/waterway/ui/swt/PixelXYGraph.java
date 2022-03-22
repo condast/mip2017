@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class PixelXYGraph extends AbstractXYGraph<RGBA> {
 	private static final long serialVersionUID = 1L;
-		
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -20,7 +20,7 @@ public class PixelXYGraph extends AbstractXYGraph<RGBA> {
 	public PixelXYGraph(Composite parent, int style) {
 		super(parent, style);
 	}
-	
+
 	@Override
 	protected int onGetXValue(int xpos, int length) {
 		return (int)((double)xpos * size()/length);
@@ -46,11 +46,11 @@ public class PixelXYGraph extends AbstractXYGraph<RGBA> {
 					setMaxValue(colours.length);
 				} catch (Exception e) {
 					e.printStackTrace();
-				}		
-			}		
+				}
+			}
 		});
 	}
-	
+
 	@Override
 	protected int onPaint(GC gc, int xprev, int ybase, int xcor, int ycor, int key, RGBA value) {
 		if( value != null )
@@ -62,7 +62,7 @@ public class PixelXYGraph extends AbstractXYGraph<RGBA> {
 	@Override
 	protected void onCompleted(GC gc) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

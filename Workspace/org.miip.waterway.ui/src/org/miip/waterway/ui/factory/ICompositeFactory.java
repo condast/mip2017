@@ -10,7 +10,7 @@ public interface ICompositeFactory {
 	 * @return
 	 */
 	public String getName();
-	
+
 	/**
 	 * Create a composite with the given id, or null if none was found
 	 * @param id

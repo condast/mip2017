@@ -32,12 +32,12 @@ public class RestRadar{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public RestRadar( RadarOptions options, int leds, ISituationalAwareness<IPhysical, IVessel> sa ) {
-		colours = new ArrayList<MIIPRadarData>();
+		colours = new ArrayList<>();
 		this.options = options;
 		this.radarType = options.getRadarType();
 		this.leds = leds;
 		this.scan = new HashMap<>();
-		this.radar = new Radar<IPhysical, IVessel>();
+		this.radar = new Radar<>();
 		this.radar.setInput(sa);
 		radar.setRange( options.getRange());
 		double sensitivity = ( options.getSensitivity() <= 0)?sa.getRange(): options.getSensitivity();
@@ -48,7 +48,7 @@ public class RestRadar{
 	public IMIIPRadar.RadarSelect getRadarType() {
 		return radarType;
 	}
-	
+
 	public List<MIIPRadarData> drawField(){
 		colours.clear();
 		ISituationalAwareness<IPhysical, IVessel> sa = radar.getInput();
@@ -57,21 +57,21 @@ public class RestRadar{
 		for( RadarData<IPhysical> obj: sa.getScan() ){
 			drawObject( sa.getReference(), obj );
 		}
-		this.onDrawEnd();	
+		this.onDrawEnd();
 		return colours;
 	}
 
 	public int getKey( double angle ) {
-		int key = ( int )((double) this.leds * angle /( 2*Math.PI ));
+		int key = ( int )(this.leds * angle /( 2*Math.PI ));
 		int range = isInRange(key, angle);
 		return (this.leds + key + range ) % this.leds;
 	}
-	
+
 	protected void setKey( int key, double distance ) {
 		Double dist = this.scan.get(key);
 		if(( dist != null ) && ( dist < distance ))
 			distance = dist;
-		this.scan.put(key, distance);		
+		this.scan.put(key, distance);
 	}
 
 	protected int isInRange( int key, double angle ) {
@@ -80,7 +80,7 @@ public class RestRadar{
 		DoubleRange range = new DoubleRange(ref-step, ref+step);
 		return range.compareTo(angle);
 	}
-	
+
 	public void drawObject( IVessel reference, RadarData<IPhysical> ship ){
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
@@ -144,11 +144,11 @@ public class RestRadar{
 			this.b = rgb[2];
 			this.t = transparency;
 		}
-		
+
 		public int getAngle() {
 			return this.a;
 		}
-		
+
 		public int[] getColor() {
 			int[] rgb = new int[3];
 			rgb[0] = this.r;
@@ -156,7 +156,7 @@ public class RestRadar{
 			rgb[2] = this.b;
 			return rgb;
 		}
-		
+
 		@Override
 		public String toString() {
 			StringBuffer buffer = new StringBuffer();

@@ -1,18 +1,12 @@
 package org.miip.waterway.ui.swt.pond;
 
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.miip.waterway.model.IVessel;
-import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.ui.images.MIIPImages;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.SituationEvent;
@@ -28,21 +22,27 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.miip.waterway.model.IVessel;
+import org.miip.waterway.model.def.IMIIPEnvironment;
+import org.miip.waterway.ui.images.MIIPImages;
 
 public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>{
 	private static final long serialVersionUID = 1L;
 
 	public static final int GRIDX = 100;//meters
 	public static final int GRIDY = 20;//meters
-	
+
 	private IMIIPEnvironment environment;
-	
+
 	private Map<IVessel, List<LatLng>> trajectory;
-	
+
 	private boolean disposed;
-	
+
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
-	
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -60,7 +60,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 	public Composite getParent(){
 		return super.getParent();
 	}
-	
+
 	@Override
 	public IMIIPEnvironment getInput() {
 		return this.environment;
@@ -83,7 +83,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 			@Override
 			public void run() {
 				redraw();
-			}			
+			}
 		});
 	}
 
@@ -91,7 +91,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 	public void setInput( IMIIPEnvironment environment){
 		if( this.environment != null )
 			this.environment.getInhabitant().getSituationalAwareness().removeListener( e->onNotifySituationChanged(e));
-		
+
 		this.environment = environment;
 		if( this.environment != null ) {
 			this.environment.getInhabitant().getSituationalAwareness().addListener(e->onNotifySituationChanged(e));
@@ -112,7 +112,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 			IField field = environment.getField();
 			int i = 0;
 			while( i < field.getLength() ){
-				int xpos = su.scaleXToDisplay( i ); 
+				int xpos = su.scaleXToDisplay( i );
 				int ypos1 = 0;
 				int ypos2 = su.scaleYToDisplay( (int) (field.getWidth() ));
 				i += GRIDX;
@@ -122,15 +122,15 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 			while( i < field.getWidth()){
 				int xpos1 = su.scaleXToDisplay( 0 );
 				int xpos2 = su.scaleXToDisplay( (int) field.getLength());
-				int ypos = su.scaleYToDisplay( i ); 
+				int ypos = su.scaleYToDisplay( i );
 				i += GRIDY;
 				gc.drawLine( xpos1, ypos, xpos2, ypos );
 			}
 
 			//The ship in the centre
-			IVessel vessel = (IVessel) this.environment.getInhabitant();
+			IVessel vessel = this.environment.getInhabitant();
 			//logger.info("Move vessel " + vessel.getName() + "=>" + vessel.getLocation().toLocation());
-			Point point = ( vessel == null )? new Point( (int)( clientArea.width/2), (int)(clientArea.height/2)):
+			Point point = ( vessel == null )? new Point( clientArea.width/2, clientArea.height/2):
 				su.scaleToCanvas(vessel.getLocation());
 			drawLine(gc, vessel, this.environment.getOthers());
 			drawOval(gc, vessel, point);
@@ -145,7 +145,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 				IVessel other = (IVessel) phobj;
 				logger.fine("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
 				double distance = LatLngUtils.getDistance(vessel.getLocation(), other.getLocation());
-				MIIPImages.Images img = ( distance > vessel.getSituationalAwareness().getRange() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;	
+				MIIPImages.Images img = ( distance > vessel.getSituationalAwareness().getRange() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;
 				Point otherPoint = su.scaleToCanvas( phobj.getLocation() );
 				drawLine(gc, other, null);
 				drawOval(gc, other, otherPoint);
@@ -176,11 +176,11 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 			return;
 		Rectangle clientArea = getClientArea();
 		ScalingUtils su = new ScalingUtils( this, this.environment.getField());
-		Point defpoint = new Point( (int)( clientArea.width/2), (int)(clientArea.height/2));
+		Point defpoint = new Point( clientArea.width/2, clientArea.height/2);
 		for( int i = 1; i< list.size(); i++ ) {
 			LatLng previous = list.get(i-1);
 			Point ppoint = ( previous == null )? defpoint: su.scaleToCanvas(previous);
-			LatLng next = list.get(i); 
+			LatLng next = list.get(i);
 			Point npoint = ( next == null )? defpoint:su.scaleToCanvas(next);
 			gc.drawLine(ppoint.x, ppoint.y, npoint.x, npoint.y);
 		}
@@ -190,15 +190,15 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		if( !vessel.hasCollisionAvoidance())
 			return;
 		ScalingUtils su = new ScalingUtils( this, this.environment.getField());
-		
-		int radius = su.scaleXToDisplay((int)vessel.getCriticalDistance()); 
-		int transform = (int)( radius/2);
+
+		int radius = su.scaleXToDisplay((int)vessel.getCriticalDistance());
+		int transform = radius/2;
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_RED ));
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
 
-		radius = (int)(su.scaleXToDisplay((int)vessel.getSituationalAwareness().getRange())); 
+		radius = (su.scaleXToDisplay((int)vessel.getSituationalAwareness().getRange()));
 		radius *= 1.5;
-		transform = (int)( radius/2);
+		transform = radius/2;
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_GRAY ));
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
 
@@ -209,7 +209,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		try{
 			img = MIIPImages.getImageFromResource( getDisplay(), image );
 			Rectangle bounds = img.getBounds();
-			Point centre = new Point(( int )( bounds.width/2), (int)( bounds.height/2 ));
+			Point centre = new Point(bounds.width/2, bounds.height/2);
 			int posx = (point.x-centre.x)<0? 0: point.x-centre.x;
 			int posy = (point.y-centre.y)<0? 0: point.y-centre.y;
 			gc.drawImage( img, posx, posy);
@@ -225,8 +225,8 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-	
-	
+
+
 	@Override
 	public void dispose() {
 		this.disposed = true;
@@ -235,7 +235,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 	}
 
 	protected static double getMinDistance( IPhysical reference, Collection<?extends IPhysical> others ) {
-		double minDistance = Double.MAX_VALUE; 
+		double minDistance = Double.MAX_VALUE;
 		for( IPhysical phys: others ) {
 			double dist = LatLngUtils.getDistance(reference.getLocation(), phys.getLocation());
 			if( dist < minDistance)

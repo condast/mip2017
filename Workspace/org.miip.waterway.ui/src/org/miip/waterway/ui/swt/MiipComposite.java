@@ -1,11 +1,5 @@
 package org.miip.waterway.ui.swt;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.layout.GridLayout;
-
 import java.util.EnumSet;
 import java.util.logging.Logger;
 
@@ -26,17 +20,22 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.radar.RadarGroup;
-import org.eclipse.swt.widgets.Button;
 
 public class MiipComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
 	private static final long serialVersionUID = 1L;
@@ -86,7 +85,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				buffer = new StringBuffer();
 				buffer.append( "vectors: " );
 			}else if( event.getAngle() == 511 ){
-				logger.info( buffer.toString() );				
+				logger.info( buffer.toString() );
 			}else{
 				buffer.append( "[" + event.getAngle() + ", " + event.getRadarData().getDistance() + "] " );
 			}
@@ -104,7 +103,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 						catch( Exception ex ){
 							ex.printStackTrace();
 						}
-					}	
+					}
 				});
 			}
 			catch( Exception ex ) {
@@ -220,7 +219,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				}
 			}
 		});
-		playerbar = new PlayerComposite<IMIIPEnvironment>( group_control, SWT.BORDER );
+		playerbar = new PlayerComposite<>( group_control, SWT.BORDER );
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
 		Group group_ship = new Group( composite, SWT.NONE );
 		GridData gd_ship= new GridData( SWT.FILL, SWT.FILL, true, true );
@@ -251,10 +250,10 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblPosition.setText("Position:");
 
 		text_lng = new Text(group_ship, SWT.BORDER);
-		text_lng.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));	
+		text_lng.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		text_lat = new Text(group_ship, SWT.BORDER);
-		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));		
+		text_lat.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Label lbl_hitText = new Label( group_ship, SWT.NONE );
 		lbl_hitText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false ));
@@ -262,21 +261,22 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lblHits = new Label( group_ship, SWT.BORDER );
 		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
 
-		radarGroup = new RadarGroup(composite, SWT.NONE); 
+		radarGroup = new RadarGroup(composite, SWT.NONE);
 		radarGroup.setText("Radar");
 		radarGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		//radar = new DirectRadar( comp_radar, SWT.BORDER );	
+		//radar = new DirectRadar( comp_radar, SWT.BORDER );
 		canvas.addKeyListener(new KeyAdapter(){
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void keyPressed(KeyEvent e)
 			{
 				if( !btn_manual.getSelection())
 					return;
 				try{
 					CentreShip ship = (CentreShip) environment.getInhabitant();
-					CentreShip.Controls control = null; 
+					CentreShip.Controls control = null;
 					if( ship == null )
 						return;
 					switch( e.keyCode ){
@@ -292,10 +292,10 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 					case SWT.ARROW_RIGHT:
 						control = CentreShip.Controls.RIGHT;
 						break;
-					default: 
+					default:
 						break;
 					}
-					ship.setControl(control);	
+					ship.setControl(control);
 				}
 				catch( Exception ex ){
 					ex.printStackTrace();
@@ -322,7 +322,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		Ship ship = (Ship) environment.getInhabitant();
 		IExecuteThread thread = (IExecuteThread) environment;
 		this.slider_speed.setSelection( thread.getTimer());
-		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());					
+		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());
 		canvas.redraw();
 		this.text_name.setText( ship.getIdentifier() );
 		this.text_speed.setText( String.valueOf( ship.getSpeed() ));
@@ -332,6 +332,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.lblActiveShips.setText( String.valueOf( environment.getWaterway().getShips().length));
 	}
 
+	@Override
 	public void dispose(){
 		if( this.environment != null ){
 			if( this.environment.getSituationalAwareness() != null )
@@ -358,8 +359,8 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 		@Override
 		protected EnumSet<PlayerImages.Images> setupButtonBar() {
-			return EnumSet.of(PlayerImages.Images.START, 
-					PlayerImages.Images.STOP, 
+			return EnumSet.of(PlayerImages.Images.START,
+					PlayerImages.Images.STOP,
 					PlayerImages.Images.NEXT,
 					PlayerImages.Images.RESET);
 		}
@@ -400,7 +401,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 								@Override
 								public void run() {
 									layout();
-								}		
+								}
 							});
 							break;
 						case STOP:
@@ -427,14 +428,14 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 					catch( Exception ex ){
 						ex.printStackTrace();
 					}
-				}		
+				}
 			});
 			button.setImage( PlayerImages.getImage(type));
 			return button;
 		}
-	}	
-	
-	private class SessionHandler extends AbstractSessionHandler<EnvironmentEvent<IVessel>> 
+	}
+
+	private class SessionHandler extends AbstractSessionHandler<EnvironmentEvent<IVessel>>
 	implements IEnvironmentListener<IVessel>{
 
 		protected SessionHandler(Display display) {
@@ -465,6 +466,6 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 			catch( Exception ex ){
 				ex.printStackTrace();
 			}
-		}	
+		}
 	}
 }

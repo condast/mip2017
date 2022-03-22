@@ -22,11 +22,11 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	public static final int NR_OF_LEDS = 24;
 	public static final int RADIUS = 10;
 	public static final int DEGREES = 360;
-	
+
 	private int leds;
-	
+
 	private Map<Integer, Double> scan;
-	
+
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	public LedRing(Composite parent, int style ) {
@@ -34,7 +34,7 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		this.leds = NR_OF_LEDS;
 		scan = new TreeMap<>( );
 	}
-	
+
 	@Override
 	protected void onDrawStart(GC gc) {
 		this.scan.clear();
@@ -42,21 +42,21 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	}
 
 	public int getKey( double angle ) {
-		int key = ( int )((double) this.leds * angle /( 2*Math.PI ));
+		int key = ( int )(this.leds * angle /( 2*Math.PI ));
 		int range = isInRange(key, angle);
 		return (this.leds + key + range ) % this.leds;
 	}
-	
+
 	protected void setKey( int key, double distance ) {
 		Double dist = this.scan.get(key);
 		if(( dist != null ) && ( dist < distance ))
 			distance = dist;
-		this.scan.put(key, distance);		
+		this.scan.put(key, distance);
 	}
-	
+
 	@Override
 	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
-		IVessel reference = (IVessel) getInput().getReference(); 
+		IVessel reference = getInput().getReference();
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
@@ -84,7 +84,7 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 		DoubleRange range = new DoubleRange(ref-step, ref+step);
 		return range.compareTo(angle);
 	}
-	
+
 	protected Color getColour( int key, double distance) {
 		if( super.getInput() == null)
 			return super.getColour(distance);
@@ -109,7 +109,7 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 			double x = length * Math.sin( phi );
 			double y = length * Math.cos( phi );
 			gc.setBackground( getColour( i, distance ));
-			gc.fillOval((int)(centrex + x), (int)(centrey-y), RADIUS, RADIUS );			
+			gc.fillOval((int)(centrex + x), (int)(centrey-y), RADIUS, RADIUS );
 		}
 		return super.onDrawEnd(gc);
 	}

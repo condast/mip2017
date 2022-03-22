@@ -6,7 +6,7 @@ import org.condast.commons.data.latlng.LatLng;
 
 /**
  * With a point, one can choose to either keep the location fixed and change the
- * lnglat coordinates, or to change the location. 
+ * lnglat coordinates, or to change the location.
  * @author Kees
  *
  */

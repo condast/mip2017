@@ -30,11 +30,11 @@ import com.google.gson.Gson;
 
 @Path("/sa")
 public class RadarResource{
-		
+
 	private Logger logger = Logger.getLogger( this.getClass().getName());
 
 	private Dispatcher dispatcher = Dispatcher.getInstance();
-		
+
 	public RadarResource() {
 		super();
 	}
@@ -64,10 +64,10 @@ public class RadarResource{
 	@POST
 	@Path("/log")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes("application/x-www-form-urlencoded") 
+	@Consumes("application/x-www-form-urlencoded")
 	public Response logPost( @QueryParam("id") String id, @QueryParam("token") String token, @FormParam("msg") String message ) {
 		try {
-			Level restLevel = LogFactory.createLogLevel(id, Level.SEVERE.intValue() - 1); 
+			Level restLevel = LogFactory.createLogLevel(id, Level.SEVERE.intValue() - 1);
 			RadarOptions settings = dispatcher.getOptions();
 			if( settings == null )
 				return Response.noContent().build();
@@ -84,7 +84,6 @@ public class RadarResource{
 	}
 
 	// This method is called if TEXT_PLAIN is request
-	@SuppressWarnings("unchecked")
 	@GET
 	@Path("/radar")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -93,11 +92,11 @@ public class RadarResource{
 		Response response = Response.noContent().build();
 		try {
 			logger.info("Query for Radar " + id + ", nr of leds: " + leds );
-			IReferenceEnvironment<IVessel, IPhysical> env = (IReferenceEnvironment<IVessel, IPhysical>) Dispatcher.getInstance().getActiveEnvironment(); 
-			if( env == null )		
+			IReferenceEnvironment<IVessel, IPhysical> env = (IReferenceEnvironment<IVessel, IPhysical>) Dispatcher.getInstance().getActiveEnvironment();
+			if( env == null )
 				return response;
-			
-			IVessel reference = (IVessel) env.getInhabitant();
+
+			IVessel reference = env.getInhabitant();
 			if( reference == null )
 				return response;
 			ISituationalAwareness<IPhysical, IVessel> sa = reference.getSituationalAwareness();
@@ -109,7 +108,7 @@ public class RadarResource{
 			RadarOptions options = dispatcher.getOptions();
 			if( sensitivity > 0 )
 				options.setSensitivity(sensitivity);
-			
+
 			if( range > 0 )
 				options.setRange(range);
 			RestRadar radar = new RestRadar( options, nrOfLeds, sa );
@@ -126,8 +125,8 @@ public class RadarResource{
 			response = Response.serverError().build();
 		}
 		return response;
-	}	
-	
+	}
+
 	private class OptionsData{
 		private boolean o;
 

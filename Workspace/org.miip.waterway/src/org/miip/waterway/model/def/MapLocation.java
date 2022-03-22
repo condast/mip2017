@@ -16,7 +16,7 @@ public class MapLocation {
 	//Rijnhaven
 	public static final float RIJN_LONGTITUDE = 4.487553f;
 	public static final float RIJN_LATITUDE = 51.903933f;
-		
+
 	public static final float DORDT_LONGTITUDE = 4.75f;
 	public static final float DORDT_LATITUDE = 51.8158f;
 	public static final String DORDT_NAAM = "Derde MerwedeHaven (Dordrecht)";

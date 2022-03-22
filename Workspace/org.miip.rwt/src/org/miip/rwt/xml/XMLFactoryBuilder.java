@@ -13,8 +13,9 @@ import java.util.EnumSet;
 import org.condast.commons.preferences.AbstractPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
-import org.condast.commons.ui.swt.IStyle;
+import org.condast.commons.ui.image.AbstractImages;
 import org.condast.commons.ui.swt.IInputWidget;
+import org.condast.commons.ui.swt.IStyle;
 import org.condast.commons.ui.widgets.StatusBar;
 import org.condast.commons.xml.AbstractXMLBuilder;
 import org.condast.commons.xml.AbstractXmlHandler;
@@ -30,12 +31,11 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Widget;
 import org.miip.waterway.ui.NavigationComposite;
-import org.miip.waterway.ui.images.MIIPImages;
 import org.osgi.service.prefs.Preferences;
 import org.xml.sax.Attributes;
 
 public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBuilder.Selection> {
-	
+
 	private Class<?> clss;
 
 	public XMLFactoryBuilder( Composite parent, Class<?> clss ) {
@@ -61,7 +61,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		XMLHandler handler = (XMLHandler) super.getHandler();
 		return handler.getRoot();
 	}
-	
+
 	@Override
 	public void build() {
 		super.build();
@@ -71,14 +71,14 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 	public Widget[] getUnits() {
 		return getHandler().getUnits();
 	}
-	
+
 	private static class XMLHandler extends AbstractXmlHandler<Widget,XMLFactoryBuilder.Selection>{
-		
+
 		private Composite composite;
 		private Composite root;
 		private Class<?> clss;
 		private LayoutDataBuilder databuilder;
-		
+
 		public XMLHandler( Class<?> clss, Composite parent ) {
 			super( EnumSet.allOf( XMLFactoryBuilder.Selection.class));
 			this.root = parent;
@@ -88,7 +88,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		public Composite getRoot(){
 			return root;
 		}
-		
+
 		@Override
 		public Composite[] getUnits() {
 			Composite[] comps = new Composite[1];
@@ -135,7 +135,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			case LAYOUT:
 				LayoutBuilder layoutBuilder = new LayoutBuilder();
 				comp = (Composite) parent;
-				layoutBuilder.setLayout(comp, attributes); 
+				layoutBuilder.setLayout(comp, attributes);
 				break;
 			case NAVIGATION:
 				widget = new NavigationComposite( (Composite) parent, style);
@@ -145,7 +145,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				Control control = (Control) widget;
 				control.setLayoutData( gd_nav);
 				//navcomp.addSelectionListener(listener);
-				retval = (Composite) widget;
+				retval = widget;
 				break;
 			case TABFOLDER:
 				folder = new TabFolder( (Composite) parent, style);
@@ -153,14 +153,14 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				comp = (Composite) widget;
 				comp.setLayout( new GridLayout());
 				control = (Control) widget;
-				retval = (Composite) widget;
+				retval = widget;
 				break;
 			case COMPOSITE:
 				if( parent instanceof Composite ){
 					widget = createComposite( class_str, (Composite) parent, style );
 				}else if( parent instanceof TabItem ){
 					TabItem item = (TabItem) parent;
-					folder = (TabFolder)item.getParent();
+					folder = item.getParent();
 					widget = createComposite( class_str, folder, style );
 					item.setControl((Control) widget);
 				}
@@ -186,7 +186,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 				break;
 			case IMAGE:
 				NavigationComposite navcomp = (NavigationComposite) super.getCurrentData();
-				Image image = MIIPImages.getImageFromResource( navcomp.getDisplay(), this.getClass(), url );
+				Image image = AbstractImages.getImageFromResource( navcomp.getDisplay(), this.getClass(), url );
 				navcomp.setImage( image );
 				break;
 			case ITEM:
@@ -221,7 +221,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			case STATUS_BAR:
 				StatusBar bar = new StatusBar((Composite) parent, IStyle.SWT_ENUM.convert( style_str ));
 				widget = bar;
-				if( !StringUtils.isEmpty( name ))				
+				if( !StringUtils.isEmpty( name ))
 					bar.setLabelText( name );
 				widget = bar;
 				bar.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -251,9 +251,9 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		@Override
 		public Composite getUnit(String id) {
 			return null;
-		}	
+		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected static Composite createComposite( String className, Composite parent, int style ){
 		if( StringUtils.isEmpty( className ))
@@ -261,7 +261,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		Composite composite = null;
 		try{
 			Class<Composite> cls = (Class<Composite>) Class.forName( className );
-			Constructor<Composite> cons = cls.getConstructor( Composite.class, Integer.TYPE);          
+			Constructor<Composite> cons = cls.getConstructor( Composite.class, Integer.TYPE);
 			composite = cons.newInstance( parent, style );
 		}
 		catch( Exception ex ){
@@ -284,7 +284,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 
 		public void setLayout( Composite parent, Attributes attributes ){
 			String name = getAttribute( attributes, AttributeNames.NAME );
-			Layout layout = StringUtils.isEmpty( name )? Layout.FILL_LAYOUT: 
+			Layout layout = StringUtils.isEmpty( name )? Layout.FILL_LAYOUT:
 				Layout.valueOf( StringStyler.styleToEnum( name ));
 			String numcol_str = getAttribute(attributes, LayoutAttributes.NUM_COLUMS );
 			int numcol = StringUtils.isEmpty( numcol_str)?1: Integer.parseInt( numcol_str);
@@ -317,7 +317,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		protected LayoutDataBuilder() {
 			this( new GridData() );
 		}
-		
+
 		protected LayoutDataBuilder( GridData data) {
 			this.data = data;
 		}
@@ -328,10 +328,10 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 
 		private void setGridLayoutData( Selection layout, Attributes attributes ){
 			String align_str = getAttribute( attributes, LayoutAttributes.ALIGN );
-			Integer align = StringUtils.isEmpty( align_str )? SWT.FILL: 
-				IStyle.SWT_ENUM.convert( StringStyler.styleToEnum( align_str )); 
+			Integer align = StringUtils.isEmpty( align_str )? SWT.FILL:
+				IStyle.SWT_ENUM.convert( StringStyler.styleToEnum( align_str ));
 			String grab_excess_str = getAttribute( attributes, LayoutAttributes.GRAB_EXCESS );
-			boolean grab_excess = StringUtils.isEmpty( grab_excess_str)? false: 
+			boolean grab_excess = StringUtils.isEmpty( grab_excess_str)? false:
 				Boolean.parseBoolean( grab_excess_str);
 			String span_str = getAttribute( attributes, LayoutAttributes.SPAN );
 			int span = StringUtils.isEmpty( span_str )? 0: Integer.parseInt( span_str );
@@ -356,7 +356,7 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 			super(bundleName);
 			super.addChild( category );
 		}
-	
+
 		public Store(Preferences preferences) {
 			super(preferences);
 		}
@@ -369,6 +369,6 @@ public class XMLFactoryBuilder extends AbstractXMLBuilder<Widget, AbstractXMLBui
 		@Override
 		public void setBoolean(String name, int position, boolean choice) {
 			super.setBoolean(name, position, choice);
-		}		
+		}
 	}
 }

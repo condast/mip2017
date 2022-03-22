@@ -3,7 +3,7 @@ package org.miip.waterway.model;
 public class Location {
 
 	private double x, y;
-	
+
 	public Location( double x, double y ) {
 		this.x = x;
 		this.y = y;

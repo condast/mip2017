@@ -7,10 +7,10 @@ import org.openlayer.map.controller.OpenLayerController;
 
 public class MapComposite extends Composite {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Browser browser;
 	private OpenLayerController controller;
-	
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -23,7 +23,7 @@ public class MapComposite extends Composite {
 		controller = new OpenLayerController(browser);
 	}
 
-	
+
 	protected OpenLayerController getController() {
 		return controller;
 	}

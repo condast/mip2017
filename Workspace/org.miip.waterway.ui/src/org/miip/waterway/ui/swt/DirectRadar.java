@@ -17,18 +17,18 @@ public class DirectRadar extends AbstractSWTRadar<IPhysical, IVessel>{
 	private static final long serialVersionUID = 1L;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName());
-	
+
 	public DirectRadar(Composite parent, int style) {
 		super(parent, style);
 	}
-	
+
 	@Override
 	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
 		ISituationalAwareness<IPhysical, IVessel> sa = super.getInput();
-		IVessel reference = (IVessel) sa.getReference(); 
+		IVessel reference = sa.getReference();
 		if( ship.getPhysical().equals( reference ))
 			return;
-		
+
 		IField field = sa.getView();
 		Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), ship.getLocation());
 		double distance = vector.getValue();
@@ -41,7 +41,7 @@ public class DirectRadar extends AbstractSWTRadar<IPhysical, IVessel>{
 		double centrex = getCentre().x;
 		double centrey = getCentre().y;
 		double length = Math.sqrt( centrex * centrex + centrey * centrey);
-		
+
 		//ScalingUtils su = new ScalingUtils( this, sa.getField());
 		double offset = distance * length/getRange();
 		double xpos1 = centrex + offset * Math.sin( angle );

@@ -18,10 +18,10 @@ import org.eclipse.swt.widgets.Slider;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPRadar;
 import org.miip.waterway.ui.swt.AveragingRadar;
+import org.miip.waterway.ui.swt.DirectRadar;
 import org.miip.waterway.ui.swt.HumanAssist;
 import org.miip.waterway.ui.swt.LedRing;
 import org.miip.waterway.ui.swt.LedRingRest;
-import org.miip.waterway.ui.swt.DirectRadar;
 import org.miip.waterway.ui.swt.pond.PredictiveRadar;
 
 public class RadarGroup extends Group {
@@ -80,27 +80,27 @@ public class RadarGroup extends Group {
 								radar = new DirectRadar(comp_radar, SWT.BORDER);
 								break;
 							case AVERAGE:
-								AveragingRadar<IVessel> avr = new AveragingRadar<IVessel>(comp_radar, SWT.BORDER);
+								AveragingRadar<IVessel> avr = new AveragingRadar<>(comp_radar, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = avr;
 								break;
 							case LED_RING:
-								LedRing<IPhysical> ledring = new LedRing<IPhysical>(comp_radar, SWT.BORDER);
+								LedRing<IPhysical> ledring = new LedRing<>(comp_radar, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = ledring;
 								break;
 							case LED_RING_REST:
-								LedRingRest<IPhysical> ledringrest = new LedRingRest<IPhysical>(comp_radar, SWT.BORDER);
+								LedRingRest<IPhysical> ledringrest = new LedRingRest<>(comp_radar, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = ledringrest;
 								break;
 							case POND:
-								PredictiveRadar<IVessel> pondr = new PredictiveRadar<IVessel>(comp_radar, SWT.BORDER);
+								PredictiveRadar<IVessel> pondr = new PredictiveRadar<>(comp_radar, SWT.BORDER);
 								//avr.setExpand( 1);
 								radar = pondr;
 								break;
 							default:
-								radar = new HumanAssist<IVessel>( comp_radar, SWT.BORDER );	
+								radar = new HumanAssist<IVessel>( comp_radar, SWT.BORDER );
 								break;
 							}
 							radar.setInput(sa);
@@ -180,7 +180,7 @@ public class RadarGroup extends Group {
 		});
 		lbl_range = new Label( composite, SWT.BORDER );
 		lbl_range.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		comp_radar = new Composite( this, SWT.NONE); 
+		comp_radar = new Composite( this, SWT.NONE);
 		comp_radar.setLayout(new FillLayout());
 		comp_radar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		radar = new LedRing<IVessel>( comp_radar, SWT.BORDER );

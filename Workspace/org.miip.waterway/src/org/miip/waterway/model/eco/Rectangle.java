@@ -5,7 +5,7 @@ public class Rectangle {
 	private int x,y;
 	private long length;
 	private long width;
-	
+
 	public Rectangle( int x, int y, long length, long width ) {
 		this.x = x;
 		this.y = y;

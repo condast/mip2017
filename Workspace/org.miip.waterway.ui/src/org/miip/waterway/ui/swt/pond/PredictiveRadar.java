@@ -16,7 +16,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 	private static final long serialVersionUID = 1L;
 
 	int count;
-	
+
 	public PredictiveRadar(Composite parent, int style) {
 		super(parent, style);
 		count = 0;
@@ -39,7 +39,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		gc.drawOval(centrex, centrey, 10, 10);
 		if(!( physicalobj instanceof IVessel ))
 			return;
-		
+
 		ISituationalAwareness<IPhysical, IVessel> psa = getInput();
 		psa.clear();
 		Collection<RadarData<IPhysical>> timemap = new ArrayList<>();//TODO psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
@@ -52,14 +52,14 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		double distance = ref.getDistance();
 		int startx = centrex + (int)(offset * distance * Math.sin( Math.toRadians(angle)));
 		int starty = centrey - (int)(offset * distance * Math.cos( Math.toRadians(angle)));
-		
+
 		int xposf=startx, yposf = starty;
 		int xposb=startx, yposb = starty;
 		while( iterator.hasNext() ) {
 			RadarData<IPhysical> data = iterator.next();
 			angle = data.getHeading();//0-360, north=0
 			distance = data.getDistance();
-				
+
 			int xpos1 = (int)(offset * distance * Math.sin( Math.toRadians(angle)));
 			int ypos1 = (int)(offset * distance * Math.cos( Math.toRadians(angle)));
 			int xtemp, ytemp;

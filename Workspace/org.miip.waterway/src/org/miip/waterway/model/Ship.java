@@ -11,7 +11,7 @@ import org.condast.commons.data.latlng.Motion;
 import org.condast.commons.data.latlng.Waypoint;
 
 public class Ship extends AbstractModel<Object> implements IVessel{
-	
+
 	private static final int DEFAULT_LENGTH = 20;//m
 
 	public static final int TO_HOURS = 60*60;//3600 min.
@@ -21,9 +21,9 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		EAST(90),
 		SOUTH(180),
 		WEST(270);
-		
+
 		private int degrees;
-		
+
 		private Heading( int degress ){
 			this.degrees = degress;
 		}
@@ -32,14 +32,14 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 			return degrees;
 		}
 	}
-	
+
 	private float length;
 	private float speed;//-20 - 60 km/hour
 	private int heading; //0-360
-	
+
 	private ISituationalAwareness<IPhysical,IVessel> sa;
 	private ICollisionAvoidance<IPhysical,IVessel> ca;
-	
+
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
 
@@ -50,13 +50,13 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	public Ship( long id, String name, float speed, LatLng position) {
 		this( id, name, speed, DEFAULT_LENGTH, position, Heading.EAST.getAngle() );
 	}
-	
+
 	public Ship( long id, String name, float speed, int length, LatLng position, int heading) {
 		super( id, name , IPhysical.ModelTypes.VESSEL, position, ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE, null );
 		this.speed = speed;
 		this.heading = heading;
 		this.length = length;
-		this.rotation = (( double )this.length + 5 * Math.random()) * this.speed; 
+		this.rotation = (this.length + 5 * Math.random()) * this.speed;
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
 	}
 
@@ -72,7 +72,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 
 	@Override
 	public double getCriticalDistance() {
-		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();		
+		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
 	}
 
 	/* (non-Javadoc)
@@ -82,7 +82,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	public double getTurn( long timemsec ){
 		return timemsec * this.rot * 60000;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.IVessel#getMinTurnDistance()
 	 */
@@ -162,13 +162,13 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	@Override
 	public void init(ISituationalAwareness<IPhysical, IVessel> sa) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void clearStrategies() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public IPhysical clone() throws CloneNotSupportedException {
 		return new Ship(super.getID(), super.getIdentifier(), speed, (int)length, super.getLocation(), heading );
@@ -191,7 +191,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	@Override
 	public void addWayPoint(Waypoint waypoint) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

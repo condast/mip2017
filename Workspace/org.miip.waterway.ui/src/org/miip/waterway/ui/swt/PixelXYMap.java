@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class PixelXYMap extends AbstractXYMap<Integer, RGBA> {
 	private static final long serialVersionUID = 1L;
-		
+
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -54,8 +54,8 @@ public class PixelXYMap extends AbstractXYMap<Integer, RGBA> {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				refresh();				
-			}	
+				refresh();
+			}
 		});
 	}
 }

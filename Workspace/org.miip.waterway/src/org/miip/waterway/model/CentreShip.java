@@ -13,12 +13,12 @@ public class CentreShip extends Ship {
 		LEFT,
 		RIGHT
 	}
-	
+
 	private LatLngVector<Integer> offset;
-	
+
 	public CentreShip(long id, String name, LatLng position, float speed, Heading bearing) {
 		super(id, name, position, speed, bearing);
-		offset = new LatLngVector<Integer>(Heading.EAST.getAngle(), 0 );
+		offset = new LatLngVector<>(Heading.EAST.getAngle(), 0 );
 	}
 
 	public CentreShip(long id, String name, LatLng position, float speed) {
@@ -29,7 +29,7 @@ public class CentreShip extends Ship {
 		super(id, name, speed, length, position, bearing.getAngle());
 	}
 
-	
+
 	public LatLngVector<Integer> getOffset() {
 		return offset;
 	}
@@ -63,7 +63,7 @@ public class CentreShip extends Ship {
 		case RIGHT:
 			distance = +3;
 			break;
-		default: 
+		default:
 			break;
 		}
 		int newBearing = ( offset == null )? bearing: (int) (offset.getKey() + bearing);
@@ -78,19 +78,19 @@ public class CentreShip extends Ship {
 		if( newDistance <= -40 )
 			newDistance = -40;
 
-		offset = new LatLngVector<Integer>(newBearing, newDistance);						
+		offset = new LatLngVector<>(newBearing, newDistance);
 	}
 
 	@Override
 	public Motion move( long interval) {
 		if( offset != null ){
 			int bearing = offset.getKey();
-			int angle = ( bearing < 0 )? offset.getKey()+1: ( bearing > 0 )? offset.getKey()-1: bearing; 
+			int angle = ( bearing < 0 )? offset.getKey()+1: ( bearing > 0 )? offset.getKey()-1: bearing;
 
 			int distance = (int)(( offset.getValue() > 0 )? offset.getValue() - 1: ( offset.getValue() < 0 )? offset.getValue() + 1:0 );
-			offset = new LatLngVector<Integer>( angle, distance );
+			offset = new LatLngVector<>( angle, distance );
 		}
-		
+
 		return super.move( interval);
 	}
 }

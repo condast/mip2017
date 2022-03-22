@@ -22,7 +22,7 @@ public class BannerImages extends AbstractImages{
 	public static final String BUNDLE_ID = "org.satr.arnac.ui";
 
 	public static final String S_ICON_PATH = "/banner/";
-	
+
 	public enum Images{
 		AIP,
 		CONDAST,
@@ -48,7 +48,7 @@ public class BannerImages extends AbstractImages{
 		public String toString() {
 			return StringStyler.prettyString( super.toString() );
 		}
-		
+
 		public static String getResource( Images image ){
 			String str = null;
 			switch( image ){
@@ -96,7 +96,7 @@ public class BannerImages extends AbstractImages{
 	}
 
 	private static BannerImages images = new BannerImages();
-	
+
 	private BannerImages() {
 		super( S_ICON_PATH, BUNDLE_ID );
 	}
@@ -108,13 +108,13 @@ public class BannerImages extends AbstractImages{
 	public static BannerImages getInstance(){
 		return images;
 	}
-	
+
 	@Override
 	public void initialise(){
 		for( Images img: Images.values() )
 			setImage( Images.getResource( img ));
 	}
-	
+
 	public void setImage( String name, String url ){
 		super.setImage(name);
 	}
@@ -136,7 +136,7 @@ public class BannerImages extends AbstractImages{
 	public static Image getImage( String name ){
 		return getInstance().getImageFromName( name);
 	}
-	
+
 	public static Image getImageFromResource( Display display, Images image ){
 		return getImageFromResource(display, BannerImages.class, S_ICON_PATH + Images.getResource(image));
 	}
