@@ -22,4 +22,6 @@ public interface IMIIPEnvironment extends IReferenceEnvironment<IVessel, IPhysic
 	int getBankWidth();
 
 	Bank[] getBanks();
+
+	int getIteration();
 }

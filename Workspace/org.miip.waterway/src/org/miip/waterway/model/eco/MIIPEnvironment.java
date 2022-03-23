@@ -50,7 +50,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private SituationalAwareness sa;
 
 	private Collection<IEnvironmentListener<IVessel>> listeners;
-	private int counter;
+	private int iteration;
 	private int bankWidth;
 	private boolean manual;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -114,7 +114,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		bottomBank = new Bank( section, 0, (int) (this.field.getWidth() - this.bankWidth) );
 
 		notifyChangeEvent( new EnvironmentEvent<IVessel>( this, EventTypes.INITIALSED, null ));
-		counter = 0;
+		iteration = 0;
 		return true;
 	}
 
@@ -163,6 +163,11 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	public void setBankWidth(int bankWidth) {
 		this.bankWidth = bankWidth;
+	}
+
+	@Override
+	public int getIteration() {
+		return iteration;
 	}
 
 	/* (non-Javadoc)
@@ -249,7 +254,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			float min_distance = manual?this.field.getLength(): 50;
 			sa.controlShip( min_distance, this.manual );
 
-			counter = ( counter + 1)%10;
+			iteration = ( iteration + 1)%10;
 			notifyChangeEvent( new EnvironmentEvent<IVessel>( this ));
 		}
 		catch( Exception ex ){

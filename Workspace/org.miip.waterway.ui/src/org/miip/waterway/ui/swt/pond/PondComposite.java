@@ -1,6 +1,7 @@
 package org.miip.waterway.ui.swt.pond;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
@@ -8,6 +9,7 @@ import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
@@ -32,6 +34,7 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPEnvironment;
+import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.radar.RadarGroup;
 
 public class PondComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
@@ -68,7 +71,12 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private boolean disposed;
 	private Label lblStrategy;
 	private Combo strategyCombo;
-
+	
+	private Label showIteration;
+	private Label showAngle;
+	private Label showDistance;
+	private Label showCriticalDistance;
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -82,7 +90,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	}
 
 	protected void createComposite( Composite parent, int style ){
-		setLayout(new GridLayout(2, false));
+		setLayout(new GridLayout(1, false));
 		this.setData( RWT.CUSTOM_VARIANT, S_MIIP);
 
 		canvas = new PondCanvas(this, SWT.BORDER );
@@ -91,7 +99,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new GridLayout(4, false));
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,2,1));
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		Group group_control = new Group( composite, SWT.NONE );
 		group_control.setText("Control");
@@ -166,6 +174,38 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		playerbar = new PlayerComposite<>( group_control, SWT.BORDER );
 		new Label(group_control, SWT.NONE);
 		playerbar.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false, 3, 1));
+
+		Group group_run = new Group( composite, SWT.NONE );
+		group_run.setLayout(new GridLayout(2, false));
+		group_run.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true));
+		group_run.setText("Run");
+		Label lblIterationLabel = new Label(group_run, SWT.NONE);
+		lblIterationLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		lblIterationLabel.setText("Iteration:");
+		showIteration = new Label(group_run, SWT.BORDER);
+		showIteration.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		showIteration.setText( String.valueOf( slider_speed.getSelection() ));
+
+		Label lblAngleLabel = new Label(group_run, SWT.NONE);
+		lblAngleLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		lblAngleLabel.setText("Angle:");
+		showAngle = new Label(group_run, SWT.BORDER);
+		showAngle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		showAngle.setText( String.valueOf( slider_speed.getSelection() ));
+
+		Label lblDistanceLabel = new Label(group_run, SWT.NONE);
+		lblDistanceLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		lblDistanceLabel.setText("Distance:");
+		showDistance = new Label(group_run, SWT.BORDER);
+		showDistance.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		showDistance.setText( String.valueOf( slider_speed.getSelection() ));
+
+		Label lblCriticalDistanceLabel = new Label(group_run, SWT.NONE);
+		lblCriticalDistanceLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		lblCriticalDistanceLabel.setText("Critical Distance:");
+		showCriticalDistance = new Label(group_run, SWT.BORDER);
+		showCriticalDistance.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		showCriticalDistance.setText( String.valueOf( slider_speed.getSelection() ));
 
 		Group group_ship = new Group( composite, SWT.NONE );
 		GridData gd_ship= new GridData( SWT.FILL, SWT.FILL, true, true );
@@ -399,7 +439,11 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 				@Override
 				public void run() {
 					try{
+						showIteration.setText( String.valueOf( environment.getIteration()));
+						showAngle.setText( String.valueOf( environment.getIteration()));
 						IVessel vessel = event.getData();
+						if( vessel != null )
+							showCriticalDistance.setText(  String.valueOf( vessel.getCriticalDistance()));
 						ISituationalAwareness<IPhysical, IVessel> sa = ( vessel == null )?null: vessel.getSituationalAwareness();
 						switch( event.getType() ){
 						case INITIALSED:
@@ -416,6 +460,16 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 						case COLLISION_DETECT:
 						case OUT_OF_BOUNDS:
 							playerbar.stop();
+							break;
+						case CHANGED:
+							addData(event);
+							if( sa == null )
+								return;
+							Set<RadarData<IPhysical>> data = SituationalAwareness.getSortedRadarData(sa.getScan());
+							if( !Utils.assertNull(data)) {
+								RadarData<IPhysical> other = data.iterator().next();
+								showDistance.setText( String.valueOf( other.getDistance()));
+							}
 							break;
 						default:
 							addData(event);

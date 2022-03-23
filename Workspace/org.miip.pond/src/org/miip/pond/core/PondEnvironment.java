@@ -35,6 +35,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private Vessel reference;
 	private List<IPhysical> others;
 	private int time;
+	private int iteration;
 	
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	
@@ -48,6 +49,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		pe = this; 
 		this.time = DEFAULT_TIME_SECOND;
 		this.proceedCounter = 0;
+		this.iteration = 0;
 		this.clear();
 	}
 
@@ -61,6 +63,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	@Override
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, 0);
+		this.iteration = 0;
 		this.proceedCounter = 0;
 		
 		//Vessels have situational awareness and collision avoidance
@@ -127,7 +130,14 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		other.addWayPoint( new Waypoint( destination ));
 
 		this.others.add(other);
+		iteration++;
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.PROCEED,  reference));
+	}
+
+	
+	@Override
+	public int getIteration() {
+		return iteration;
 	}
 
 	@Override
@@ -209,7 +219,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 				break;
 			}
 		}
-		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe));
+		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.CHANGED, reference));
 		super.sleep(time);
 	}
 

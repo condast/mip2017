@@ -2,6 +2,8 @@ package org.miip.waterway.sa;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.env.EnvironmentEvent;
@@ -150,5 +152,9 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 			position += 3* xstep;
 		}
 		return results;
+	}
+	
+	public static Set<RadarData<IPhysical>> getSortedRadarData( Collection<RadarData<IPhysical>> data ){
+		return new TreeSet<RadarData<IPhysical>>( data);
 	}
 }

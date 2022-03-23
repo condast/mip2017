@@ -102,7 +102,8 @@ public class MIIPEntryPoint extends AbstractEntryPoint {
 									if( env != null )
 										env.setEnabled(false);
 									PondComposite pc = (PondComposite) item.getControl();
-									pc.getInput().setEnabled(true);
+									if( pc.getInput() != null )
+										pc.getInput().setEnabled(true);
 									pc.setInput(dispatcher.getActiveEnvironment());
 									break;
 								default:
