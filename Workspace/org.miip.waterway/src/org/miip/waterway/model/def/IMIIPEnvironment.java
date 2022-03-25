@@ -24,4 +24,12 @@ public interface IMIIPEnvironment extends IReferenceEnvironment<IVessel, IPhysic
 	Bank[] getBanks();
 
 	int getIteration();
+
+	public void setIteration(int selection);
+
+	/**
+	 * The current angle of the test
+	 * @return
+	 */
+	double getAngle();
 }

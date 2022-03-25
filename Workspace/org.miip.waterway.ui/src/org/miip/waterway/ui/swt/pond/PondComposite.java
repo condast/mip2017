@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPEnvironment;
@@ -54,7 +55,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Text text_name;
 	private Label lblSpeedLabel;
 	private Text text_speed;
-	private Text text_bearing;
+	private Text text_heading;
 	private Text text_lng;
 	private Text text_lat;
 	private Label lblHits;
@@ -72,7 +73,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Label lblStrategy;
 	private Combo strategyCombo;
 	
-	private Label showIteration;
+	private Spinner spinnerIteration;
 	private Label showAngle;
 	private Label showDistance;
 	private Label showCriticalDistance;
@@ -182,9 +183,24 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		Label lblIterationLabel = new Label(group_run, SWT.NONE);
 		lblIterationLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		lblIterationLabel.setText("Iteration:");
-		showIteration = new Label(group_run, SWT.BORDER);
-		showIteration.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		showIteration.setText( String.valueOf( slider_speed.getSelection() ));
+		spinnerIteration = new Spinner(group_run, SWT.BORDER);
+		spinnerIteration.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		spinnerIteration.setSelection( slider_speed.getSelection() );
+		spinnerIteration.addSelectionListener( new SelectionAdapter(){
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try{
+					Spinner spinner = (Spinner) e.widget;
+					environment.setIteration( spinner.getSelection());
+					super.widgetSelected(e);
+				}
+				catch( Exception ex ){
+					ex.printStackTrace();
+				}
+			}
+		});
 
 		Label lblAngleLabel = new Label(group_run, SWT.NONE);
 		lblAngleLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
@@ -228,8 +244,8 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		text_speed = new Text(group_ship, SWT.BORDER);
 		text_speed.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		text_bearing = new Text(group_ship, SWT.BORDER);
-		text_bearing.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		text_heading = new Text(group_ship, SWT.BORDER);
+		text_heading.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		Label lblPosition = new Label(group_ship, SWT.NONE);
 		lblPosition.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -245,7 +261,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		lbl_hitText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, false, false ));
 		lbl_hitText.setText("Hits: ");
 		lblHits = new Label( group_ship, SWT.BORDER );
-		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ));
+		lblHits.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ));
 		new Label(group_ship, SWT.NONE);
 
 		radarGroup = new RadarGroup(composite, SWT.NONE);
@@ -283,10 +299,10 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		IExecuteThread thread = (IExecuteThread) environment;
 		this.slider_speed.setSelection( thread.getTimer());
 		this.text_name.setText( vessel.getName() );
-		this.text_speed.setText( String.valueOf( vessel.getSpeed() ));
-		this.text_bearing.setText( String.valueOf( vessel.getHeading() ));
-		this.text_lng.setText( String.valueOf( vessel.getLocation().getLongitude() ));
-		this.text_lat.setText( String.valueOf( vessel.getLocation().getLatitude() ));
+		this.text_speed.setText( String.format("%,.2f", vessel.getSpeed() ));
+		this.text_heading.setText( String.format("%,.2f", vessel.getHeading() ));
+		this.text_lng.setText( String.format("%,.6f", vessel.getLocation().getLongitude() ));
+		this.text_lat.setText( String.format("%,.6f", vessel.getLocation().getLatitude() ));
 
 		this.lblHits.setText(String.valueOf(hits));
 
@@ -439,7 +455,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 				@Override
 				public void run() {
 					try{
-						showIteration.setText( String.valueOf( environment.getIteration()));
+						spinnerIteration.setSelection( environment.getIteration());
 						showAngle.setText( String.valueOf( environment.getIteration()));
 						IVessel vessel = event.getData();
 						if( vessel != null )
@@ -468,7 +484,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 							Set<RadarData<IPhysical>> data = SituationalAwareness.getSortedRadarData(sa.getScan());
 							if( !Utils.assertNull(data)) {
 								RadarData<IPhysical> other = data.iterator().next();
-								showDistance.setText( String.valueOf( other.getDistance()));
+								showDistance.setText( String.format("%,.2f", other.getDistance()));
 							}
 							break;
 						default:

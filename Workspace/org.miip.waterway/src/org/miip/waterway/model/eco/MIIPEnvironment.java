@@ -170,6 +170,16 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		return iteration;
 	}
 
+	@Override
+	public void setIteration(int iteration) {
+		this.iteration = iteration;
+	}
+
+	@Override
+	public double getAngle() {
+		return this.iteration;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getShip()
 	 */

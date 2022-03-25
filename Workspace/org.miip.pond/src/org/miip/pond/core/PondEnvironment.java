@@ -30,12 +30,12 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public static final int DEFAULT_OFFSET = 90;
 	public static final int DEFAULT_TIME_SECOND = 1000;
 	
-	private int proceedCounter;
 	private IField field;
 	private Vessel reference;
 	private List<IPhysical> others;
 	private int time;
 	private int iteration;
+	private double angle;
 	
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	
@@ -48,8 +48,8 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.listeners = new ArrayList<IEnvironmentListener<IVessel>>();
 		pe = this; 
 		this.time = DEFAULT_TIME_SECOND;
-		this.proceedCounter = 0;
 		this.iteration = 0;
+		this.angle = 0;
 		this.clear();
 	}
 
@@ -64,7 +64,6 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, 0);
 		this.iteration = 0;
-		this.proceedCounter = 0;
 		
 		//Vessels have situational awareness and collision avoidance
 		LatLng latlng = field.transform(0, field.getWidth()/2);
@@ -100,9 +99,9 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		return true;
 	}
 
-	protected void proceed( int tilt) {
+	protected void proceed() {
 		this.others.clear();
-		double angle = LatLngUtilsDegrees.mod( this.proceedCounter + 90);
+		angle = LatLngUtilsDegrees.mod( this.iteration + 90);
 		double heading =  (int) LatLngUtilsDegrees.opposite(angle);
 		int half = (int) (Math.max( field.getLength(), field.getWidth() )/2);
 		LatLng latlng = LatLngUtilsDegrees.extrapolate( field.getCentre(), heading, half );
@@ -138,6 +137,16 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	@Override
 	public int getIteration() {
 		return iteration;
+	}
+
+	@Override
+	public void setIteration(int iteration) {
+		this.iteration = iteration;
+	}
+
+	@Override
+	public double getAngle() {
+		return angle;
 	}
 
 	@Override
@@ -207,7 +216,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	public void onExecute() {
 		reference.move(time);
 		if( reference.destinationReached()) {
-			proceed( ++this.proceedCounter);
+			proceed();
 		}
 		for(IPhysical other: others ) {
 			Vessel vessel = (Vessel) other;
@@ -215,7 +224,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			if( reference.isInCriticalDistance(other))
 				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
 			if( vessel.destinationReached()) {
-				proceed( ++this.proceedCounter);
+				proceed();
 				break;
 			}
 		}
