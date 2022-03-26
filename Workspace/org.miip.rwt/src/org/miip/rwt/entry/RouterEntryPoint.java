@@ -41,6 +41,7 @@ public class RouterEntryPoint extends AbstractRestEntryPoint<Object> {
 		return true;
 	}
 
+	
 	@Override
 	protected void handleTimer() {
 		browser.refresh();

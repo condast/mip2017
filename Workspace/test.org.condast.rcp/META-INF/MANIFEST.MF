@@ -8,7 +8,8 @@ Bundle-Vendor: Condast
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Automatic-Module-Name: test.org.condast.rcp
 Bundle-ActivationPolicy: lazy
-Import-Package: org.condast.commons,
+Import-Package: javax.servlet.http;version="3.1.0",
+ org.condast.commons,
  org.condast.commons.authentication.session,
  org.condast.commons.data.latlng,
  org.condast.commons.ui.entry,

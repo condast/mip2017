@@ -1,5 +1,7 @@
 package test.org.condast.rcp;
 
+import java.util.Map;
+import javax.servlet.http.HttpSession;
 import org.condast.commons.ui.entry.IDataEntryPoint;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
@@ -31,9 +33,10 @@ public class DataEntryPoint extends AbstractEntryPoint implements IDataEntryPoin
 	protected SessionStore getData() {
 		return store;
 	}
+
 	
 	@Override
-	public void setData(SessionStore store) {
+	public void setData(Map<HttpSession, SessionStore> stores, SessionStore store) {
 		this.store = store;
 	}
 }
