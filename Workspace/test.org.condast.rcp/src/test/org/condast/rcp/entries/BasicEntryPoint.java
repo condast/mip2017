@@ -1,4 +1,4 @@
-package test.org.condast.rcp;
+package test.org.condast.rcp.entries;
 
 import java.util.Timer;
 import java.util.TimerTask;

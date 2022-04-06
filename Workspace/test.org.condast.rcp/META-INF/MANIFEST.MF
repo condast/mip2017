@@ -12,6 +12,9 @@ Import-Package: javax.servlet.http;version="3.1.0",
  org.condast.commons,
  org.condast.commons.authentication.session,
  org.condast.commons.data.latlng,
+ org.condast.commons.data.plane,
+ org.condast.commons.messaging.http,
+ org.condast.commons.ui.controller,
  org.condast.commons.ui.entry,
  org.condast.commons.ui.session,
  org.condast.js.commons.controller,
@@ -25,5 +28,7 @@ Import-Package: javax.servlet.http;version="3.1.0",
  org.miip.waterway.model.def,
  org.openlayer.map.control,
  org.openlayer.map.controller,
- org.osgi.framework
+ org.osgi.framework,
+ org.satr.arnac.ui.map,
+ org.satr.arnac.ui.swt
 Service-Component: OSGI-INF/contribution.xml
