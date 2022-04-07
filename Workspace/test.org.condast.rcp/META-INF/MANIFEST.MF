@@ -11,6 +11,8 @@ Bundle-ActivationPolicy: lazy
 Import-Package: javax.servlet.http;version="3.1.0",
  org.condast.commons,
  org.condast.commons.authentication.session,
+ org.condast.commons.authentication.user,
+ org.condast.commons.config,
  org.condast.commons.data.latlng,
  org.condast.commons.data.plane,
  org.condast.commons.messaging.http,
