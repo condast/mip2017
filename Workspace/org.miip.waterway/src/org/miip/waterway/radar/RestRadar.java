@@ -20,7 +20,7 @@ import org.miip.waterway.model.def.IMIIPRadar;
 
 public class RestRadar{
 
-	private IRadar<IPhysical, IVessel> radar;
+	private IRadar radar;
 
 	private Map<Integer, Double> scan;
 
@@ -37,8 +37,8 @@ public class RestRadar{
 		this.radarType = options.getRadarType();
 		this.leds = leds;
 		this.scan = new HashMap<>();
-		this.radar = new Radar<>();
-		this.radar.setInput(sa);
+		this.radar = new Radar();
+		//this.radar.setInput(sa);
 		radar.setRange( options.getRange());
 		double sensitivity = ( options.getSensitivity() <= 0)?sa.getRange(): options.getSensitivity();
 		radar.setSensitivity( (int) sensitivity);
@@ -51,10 +51,10 @@ public class RestRadar{
 
 	public List<MIIPRadarData> drawField(){
 		colours.clear();
-		ISituationalAwareness<IPhysical, IVessel> sa = radar.getInput();
+		ISituationalAwareness<IPhysical,IVessel> sa = null;// radar.getInput();
 		if( sa == null )
 			return colours;
-		for( RadarData<IPhysical> obj: sa.getScan() ){
+		for( RadarData obj: sa.getScan() ){
 			drawObject( sa.getReference(), obj );
 		}
 		this.onDrawEnd();
@@ -81,7 +81,7 @@ public class RestRadar{
 		return range.compareTo(angle);
 	}
 
-	public void drawObject( IVessel reference, RadarData<IPhysical> ship ){
+	public void drawObject( IVessel reference, RadarData ship ){
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
@@ -108,7 +108,7 @@ public class RestRadar{
 	protected void onDrawEnd() {
 		int[] colour = getBackgroundColour();
 		double distance = radar.getRange() + 10;
-		ISituationalAwareness<IPhysical, IVessel> sa = radar.getInput();
+		ISituationalAwareness<IPhysical, IVessel> sa = null;//radar.getInput();
 		for( int i=0; i< this.leds; i++ ) {
 			Double value = scan.get( i );
 			distance = ( value == null )?Double.MAX_VALUE: value;

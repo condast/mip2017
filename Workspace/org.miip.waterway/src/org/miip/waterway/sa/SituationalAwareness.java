@@ -62,15 +62,15 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	}
 
 	@Override
-	public Collection<RadarData<IPhysical>> getScan() {
-		Collection<RadarData<IPhysical>> results = new ArrayList<>();
+	public Collection<RadarData> getScan() {
+		Collection<RadarData> results = new ArrayList<>();
 		if( super.getInput() == null )
 			return results;
 		IMIIPEnvironment env = (IMIIPEnvironment) super.getInput();
 		Waterway waterway = env.getWaterway();
 		for( IVessel phobj: waterway.getShips() ) {
 			double distance = LatLngUtils.distance(super.getReference().getLocation(), phobj.getLocation());
-			results.add(new RadarData<IPhysical>(phobj, phobj.getLocation(), 0, phobj.getHeading(), phobj.getSpeed(), distance));
+			results.add(new RadarData(phobj, phobj.getLocation(), 0, phobj.getHeading(), phobj.getSpeed(), distance));
 		}
 		results.addAll(getBanks(waterway));
 		return results;
@@ -84,7 +84,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 	}
 
 	@Override
-	public RadarData<IPhysical> getRadarData(IPhysical other) {
+	public RadarData getRadarData(IPhysical other) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -138,23 +138,23 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		*/
 	}
 
-	private Collection<RadarData<IPhysical>> getBanks( Waterway waterway ){
+	private Collection<RadarData> getBanks( Waterway waterway ){
 		IField field = waterway.getField();
 		LatLng location = null;
-		Collection<RadarData<IPhysical>> results = new ArrayList<>();
+		Collection<RadarData> results = new ArrayList<>();
 		double xstep = (double)field.getLength() /(field.getLength() + field.getWidth());
 		long position = 0;
 		while( position < field.getLength() ) {
 			location = field.transform( position, 0);
-			results.add( new RadarData<IPhysical>( null, location,  0, 0 ));
+			results.add( new RadarData( null, location,  0, 0 ));
 			location = field.transform( position, field.getWidth());
-			results.add( new RadarData<IPhysical>( null, location,  0, 0 ));
+			results.add( new RadarData( null, location,  0, 0 ));
 			position += 3* xstep;
 		}
 		return results;
 	}
 	
-	public static Set<RadarData<IPhysical>> getSortedRadarData( Collection<RadarData<IPhysical>> data ){
-		return new TreeSet<RadarData<IPhysical>>( data);
+	public static Set<RadarData> getSortedRadarData( Collection<RadarData> data ){
+		return new TreeSet<RadarData>( data);
 	}
 }

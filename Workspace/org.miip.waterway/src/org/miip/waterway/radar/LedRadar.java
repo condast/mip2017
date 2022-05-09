@@ -15,9 +15,9 @@ import org.miip.waterway.model.def.IMIIPRadar;
 public class LedRadar<O extends IPhysical,V extends IPhysical>{
 
 	private Map<Integer, Motion> radarData;
-	private IMIIPRadar<O,V> radar;
+	private IMIIPRadar<V> radar;
 
-	public LedRadar( IMIIPRadar<O,V> radar ) {
+	public LedRadar( IMIIPRadar<V> radar ) {
 		super();
 		this.radar = radar;
 		radarData = new HashMap<>();
@@ -32,12 +32,12 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 	}
 
 	public void refresh() {
-		ISituationalAwareness<O,V> sa = radar.getInput();
+		ISituationalAwareness<V,O> sa = null;//radar.getInput();
 		this.radarData.clear();
 		if( sa == null )
 			return;
-		IVessel reference = (IVessel) radar.getInput().getReference();
-		for( RadarData<O> obj: sa.getScan() ){
+		IVessel reference = null;//(IVessel) radar.getInput().getReference();
+		for( RadarData obj: sa.getScan() ){
 			double angle = LatLngUtils.getHeading(reference.getLocation(), obj.getLocation());
 			int key = ( int )( radar.getSteps() * angle /( 2*Math.PI ));
 			Motion waypoint = calculate(key, obj );
@@ -45,8 +45,8 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 		}
 	}
 
-	public Motion calculate( int key, RadarData<O> phys) {
-		IVessel reference = (IVessel) radar.getInput().getReference();
+	public Motion calculate( int key, RadarData phys) {
+		IVessel reference = null;//(IVessel) radar.getInput().getReference();
 		double latitude = 0; double longitude = 0;
 		double angle = LatLngUtils.getHeading(reference.getLocation(), phys.getLocation());
 		double distance = LatLngUtils.getDistance(reference.getLocation(), phys.getLocation());

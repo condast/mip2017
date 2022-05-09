@@ -19,7 +19,7 @@ import org.miip.waterway.radar.RestRadar;
 
 import com.google.gson.Gson;
 
-public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
+public class LedRingRest<I> extends AbstractSWTRadar<IVessel> {
 	private static final long serialVersionUID = 1L;
 
 //	private static final String REST_URL = "http://localhost:10081/miip2017/sa";
@@ -83,7 +83,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
+	protected void drawObject( GC gc, RadarData ship ){
 		/* NOTHING */
 	}
 

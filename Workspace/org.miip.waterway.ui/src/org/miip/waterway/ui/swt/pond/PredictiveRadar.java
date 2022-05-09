@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysical, IVessel>{
+public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel>{
 	private static final long serialVersionUID = 1L;
 
 	int count;
@@ -25,12 +25,12 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 	@Override
 	protected void onDrawStart(GC gc) {
 		count = 0;
-		getInput().clear();//the radar controls the situational awareness cache.
+		//getInput().clear();//the radar controls the situational awareness cache.
 		super.onDrawStart(gc);
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData<IPhysical> physicalobj ){
+	protected void drawObject( GC gc, RadarData physicalobj ){
 		if( count > 1 )
 			return;
 		count++;
@@ -40,14 +40,14 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		if(!( physicalobj instanceof IVessel ))
 			return;
 
-		ISituationalAwareness<IPhysical, IVessel> psa = getInput();
+		ISituationalAwareness<IPhysical, IVessel> psa = null;//getInput();
 		psa.clear();
-		Collection<RadarData<IPhysical>> timemap = new ArrayList<>();//TODO psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
+		Collection<RadarData> timemap = new ArrayList<>();//TODO psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
 		if( timemap.isEmpty() )
 			return;
-		double offset = ((double)getClientArea().width)/getInput().getView().getLength();
-		Iterator<RadarData<IPhysical>> iterator = timemap.iterator();
-		RadarData<IPhysical> ref = iterator.next();
+		double offset = ((double)getClientArea().width);//getInput().getView().getLength();
+		Iterator<RadarData> iterator = timemap.iterator();
+		RadarData ref = iterator.next();
 		double angle = ref.getHeading();//0-360, north=0
 		double distance = ref.getDistance();
 		int startx = centrex + (int)(offset * distance * Math.sin( Math.toRadians(angle)));
@@ -56,7 +56,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IPhysica
 		int xposf=startx, yposf = starty;
 		int xposb=startx, yposb = starty;
 		while( iterator.hasNext() ) {
-			RadarData<IPhysical> data = iterator.next();
+			RadarData data = iterator.next();
 			angle = data.getHeading();//0-360, north=0
 			distance = data.getDistance();
 

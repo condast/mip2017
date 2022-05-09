@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.sa.SituationalAwareness;
 import org.miip.waterway.ui.radar.RadarGroup;
 
 public class PondComposite extends Composite implements IInputWidget<IMIIPEnvironment> {
@@ -481,9 +480,9 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 							addData(event);
 							if( sa == null )
 								return;
-							Set<RadarData<IPhysical>> data = SituationalAwareness.getSortedRadarData(sa.getScan());
+							Set<RadarData> data = null;//SituationalAwareness.getSortedRadarData(sa.getScan());
 							if( !Utils.assertNull(data)) {
-								RadarData<IPhysical> other = data.iterator().next();
+								RadarData other = data.iterator().next();
 								showDistance.setText( String.format("%,.2f", other.getDistance()));
 							}
 							break;

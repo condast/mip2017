@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
+public class LedRing<I> extends AbstractSWTRadar<IVessel> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int NR_OF_LEDS = 24;
@@ -55,8 +55,8 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
-		IVessel reference = getInput().getReference();
+	protected void drawObject( GC gc, RadarData ship ){
+		IVessel reference = null;//getInput().getReference();
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
@@ -88,7 +88,7 @@ public class LedRing<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	protected Color getColour( int key, double distance) {
 		if( super.getInput() == null)
 			return super.getColour(distance);
-		ISituationalAwareness<IPhysical, IVessel> sa = super.getInput();
+		ISituationalAwareness<IPhysical, IVessel> sa = null;//super.getInput();
 		double critical = ( sa.getReference() == null )? 0: sa.getReference().getCriticalDistance();
 		return IRadarColours.RadarColours.getColour(getDisplay(), getRange(), getSensitivity(), critical, distance);
 	}

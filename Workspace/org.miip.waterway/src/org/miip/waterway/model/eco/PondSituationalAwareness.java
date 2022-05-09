@@ -23,7 +23,7 @@ public class PondSituationalAwareness extends AbstractAutonomousSituationalAware
 	}
 
 	@Override
-	public Collection<RadarData<IPhysical>> getScan() {
+	public Collection<RadarData> getScan() {
 		return super.getSituation().values();
 	}
 

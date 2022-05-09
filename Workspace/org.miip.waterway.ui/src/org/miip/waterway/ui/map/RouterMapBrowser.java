@@ -269,7 +269,7 @@ public class RouterMapBrowser extends Browser {
 		@Override
 		protected void onFill(Map<Integer, List<RGBA>> map) {
 			busy = true;
-			List<RGBA> results = null;
+			Map<Integer,List<RGBA>> results = null;
 			try {
 				PixelView pixels = new PixelView( mapController );
 				IField field = getField();
@@ -280,7 +280,7 @@ public class RouterMapBrowser extends Browser {
 				int counter = 0;
 				for( int y=0; y<field.getWidth(); y++ ) {
 					for( int x=0; x< field.getLength(); x++ ) {
-						put( x, y, results.get( counter++));
+						//put( x, y, results.get( counter++));
 					}
 				}
 
@@ -289,7 +289,7 @@ public class RouterMapBrowser extends Browser {
 				busy = false;
 			}
 			int index = (counter==0)?1:0;
-			notifyColourRead( new ColourEvent( this, Types.AREA,  results.toArray( new RGBA[ results.size() ]), index ));
+			//notifyColourRead( new ColourEvent( this, Types.AREA,  results.toArray( new RGBA[ results.size() ]), index ));
 		}
 
 		public List<RGBA> getPixels( LatLng start, LatLng end ){

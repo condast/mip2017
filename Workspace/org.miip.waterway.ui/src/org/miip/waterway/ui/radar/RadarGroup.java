@@ -27,7 +27,7 @@ import org.miip.waterway.ui.swt.pond.PredictiveRadar;
 public class RadarGroup extends Group {
 	private static final long serialVersionUID = 1L;
 
-	private IRadar<IPhysical, IVessel> radar;
+	private IRadar radar;
 	private Combo combo_radar;
 	private Slider slider_sense;
 	private Label lbl_sense;
@@ -97,13 +97,13 @@ public class RadarGroup extends Group {
 							case POND:
 								PredictiveRadar<IVessel> pondr = new PredictiveRadar<>(comp_radar, SWT.BORDER);
 								//avr.setExpand( 1);
-								radar = pondr;
+								//radar = pondr;
 								break;
 							default:
 								radar = new HumanAssist<IVessel>( comp_radar, SWT.BORDER );
 								break;
 							}
-							radar.setInput(sa);
+							//radar.setInput(sa);
 							radar.setRange( slider_range.getSelection());
 							radar.setSensitivity( slider_sense.getSelection());
 							radar.refresh();
@@ -188,7 +188,7 @@ public class RadarGroup extends Group {
 
 	public void setInput( ISituationalAwareness<IPhysical, IVessel> sa, boolean overwriteRange ) {
 		this.sa = sa;
-		this.radar.setInput( sa );
+		//this.radar.setInput( sa );
 		if( sa != null ) {
 			if( overwriteRange ) {
 				if( sa.getView() != null ){

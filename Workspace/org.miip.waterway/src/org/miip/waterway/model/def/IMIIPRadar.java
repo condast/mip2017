@@ -3,7 +3,7 @@ package org.miip.waterway.model.def;
 import org.condast.commons.autonomy.sa.radar.IRadar;
 import org.condast.commons.strings.StringStyler;
 
-public interface IMIIPRadar<V, O extends Object> extends IRadar<V,O>{
+public interface IMIIPRadar<V extends Object> extends IRadar{
 
 	public static final int DEFAULT_SENSITIVITY = 100;//0-100
 	public static final int DEFAULT_RANGE = 30;//max 30 meters

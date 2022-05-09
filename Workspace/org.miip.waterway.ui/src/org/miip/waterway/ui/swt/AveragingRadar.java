@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysical, IVessel>{
+public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysical>{
 	private static final long serialVersionUID = 1L;
 
 	private IBinaryTreeSet<LatLngVector<Integer>> data;
@@ -60,13 +60,13 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 
 	@Override
 	protected void onDrawStart(GC gc) {
-		ISituationalAwareness<IPhysical, IVessel> sa = super.getInput();
+		ISituationalAwareness<IPhysical, IVessel> sa = null;//super.getInput();
 		IVessel reference = sa.getReference();
 
 		data = new SequentialBinaryTreeSet<>( average);
-		Collection<RadarData<IPhysical>> radar = sa.getScan();
+		Collection<RadarData> radar = sa.getScan();
 		IField field = sa.getView();
-		for( RadarData<IPhysical> vessel: radar ){
+		for( RadarData vessel: radar ){
 			if( vessel.getPhysical().equals( reference ))
 				continue;
 			Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), vessel.getLocation());
@@ -86,11 +86,11 @@ public class AveragingRadar<I extends Object>  extends AbstractSWTRadar<IPhysica
 	 * @param adist
 	 */
 	@Override
-	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
+	protected void drawObject( GC gc, RadarData ship ){
 
 		List<LatLngVector<Integer>> results = this.data.getValues(0);
 		LatLngVector<Integer> vect = null;
-		IVessel reference = getInput().getReference();
+		IVessel reference = null;//getInput().getReference();
 		//double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
 		for( LatLngVector<Integer> vector: results ){

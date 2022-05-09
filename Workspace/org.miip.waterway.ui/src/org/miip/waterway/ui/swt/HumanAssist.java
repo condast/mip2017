@@ -1,6 +1,5 @@
 package org.miip.waterway.ui.swt;
 
-import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.radar.RadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
@@ -8,7 +7,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.miip.waterway.model.IVessel;
 
-public class HumanAssist<I> extends AbstractSWTRadar<IPhysical, IVessel> {
+public class HumanAssist<I> extends AbstractSWTRadar<IVessel> {
 	private static final long serialVersionUID = 1L;
 
 	public static final int BAR_WIDTH = 20;
@@ -21,12 +20,12 @@ public class HumanAssist<I> extends AbstractSWTRadar<IPhysical, IVessel> {
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData<IPhysical> ship ){
+	protected void drawObject( GC gc, RadarData ship ){
 		int centrex = super.getCentre().x;
 		int centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;
 
-		IVessel reference = getInput().getReference();
+		IVessel reference = null;//getInput().getReference();
 		double distance = LatLngUtils.getDistance(reference.getLocation(), ship.getLocation());
 		double angle = LatLngUtils.getHeading(reference.getLocation(), ship.getLocation());
 
