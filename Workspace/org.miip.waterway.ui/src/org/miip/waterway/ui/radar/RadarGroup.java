@@ -3,6 +3,7 @@ package org.miip.waterway.ui.radar;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.radar.IRadar;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,7 +37,7 @@ public class RadarGroup extends Group {
 	private Composite composite;
 	private Composite comp_radar;
 
-	private ISituationalAwareness<IPhysical, IVessel> sa;
+	private ISituationalAwareness<VesselRadarData> sa;
 	private Label lblNewLabel;
 	private Label lblRange;
 
@@ -186,15 +187,15 @@ public class RadarGroup extends Group {
 		radar = new LedRing<IVessel>( comp_radar, SWT.BORDER );
 	}
 
-	public void setInput( ISituationalAwareness<IPhysical, IVessel> sa, boolean overwriteRange ) {
+	public void setInput( ISituationalAwareness<VesselRadarData> sa, boolean overwriteRange ) {
 		this.sa = sa;
 		//this.radar.setInput( sa );
 		if( sa != null ) {
 			if( overwriteRange ) {
-				if( sa.getView() != null ){
-					this.slider_range.setMaximum( (int) (sa.getView().getLength()));
-					radar.setRange((int) sa.getView().getWidth());
-				}
+				//if( sa.getView() != null ){
+				//	this.slider_range.setMaximum( (int) (sa.getView().getLength()));
+				//	radar.setRange((int) sa.getView().getWidth());
+				//}
 			}else {
 				sa.setRange(radar.getRange());
 				sa.setSensitivity(radar.getSensitivity());

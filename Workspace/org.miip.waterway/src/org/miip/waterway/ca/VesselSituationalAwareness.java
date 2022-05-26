@@ -1,4 +1,4 @@
-package org.miip.waterway.sa;
+package org.miip.waterway.ca;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,7 +12,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
@@ -20,7 +20,7 @@ import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 
-public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical, IVessel> {
+public class VesselSituationalAwareness extends AbstractSituationalAwareness<VesselRadarData> {
 
 	/*
 	private AbstractOperator<Vector<Integer>, Vector<Integer>> operator = new AbstractOperator<Vector<Integer>, Vector<Integer>>(){
@@ -41,39 +41,37 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
 
+	private IVessel vessel;
 	private IField field;
+	private IMIIPEnvironment env;
 
 	private IEnvironmentListener<IVessel> listener = new IEnvironmentListener<IVessel>() {
 
 		@Override
 		public void notifyEnvironmentChanged(EnvironmentEvent<IVessel> event) {
-			notifylisteners( new SituationEvent<IPhysical>( this, getReference(), null));
+			notifylisteners( new SituationEvent<VesselRadarData>( this));
 		}
 	};
 
-	public SituationalAwareness( IVessel vessel, IField field ) {
-		super( vessel, (int)( field.getDiameter()/2 ));
+	public VesselSituationalAwareness( IVessel vessel, IField field ) {
+		super( 0, field );
+		this.vessel = vessel;
 		this.field = field;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IField getView() {
-		return field;
-	}
-
-	@Override
-	public Collection<RadarData> getScan() {
-		Collection<RadarData> results = new ArrayList<>();
-		if( super.getInput() == null )
-			return results;
-		IMIIPEnvironment env = (IMIIPEnvironment) super.getInput();
+	public IPhysical[] getScan() {
+		Collection<IPhysical> results = new ArrayList<>();
+		if( env == null )
+			return results.toArray( new IPhysical[ results.size()]);
 		Waterway waterway = env.getWaterway();
 		for( IVessel phobj: waterway.getShips() ) {
-			double distance = LatLngUtils.distance(super.getReference().getLocation(), phobj.getLocation());
-			results.add(new RadarData(phobj, phobj.getLocation(), 0, phobj.getHeading(), phobj.getSpeed(), distance));
+			double distance = LatLngUtils.distance(vessel.getLocation(), phobj.getLocation());
+			//results.add(new VesselRadarData(phobj, phobj.getLocation(), 0, phobj.getHeading(), phobj.getSpeed(), distance));
 		}
-		results.addAll(getBanks(waterway));
-		return results;
+		//results.addAll(getBanks(waterway));
+		return results.toArray( new IPhysical[ results.size()]);
 	}
 
 
@@ -83,21 +81,7 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 
 	}
 
-	@Override
-	public RadarData getRadarData(IPhysical other) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void update(long time) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void onSetInput(IReferenceEnvironment<IVessel, IPhysical> input) {
-		IMIIPEnvironment env = (IMIIPEnvironment) super.getInput();
 		if( env!= null ) {
 			if( env.equals(input ))
 				return;
@@ -138,23 +122,23 @@ public class SituationalAwareness extends AbstractSituationalAwareness<IPhysical
 		*/
 	}
 
-	private Collection<RadarData> getBanks( Waterway waterway ){
+	private Collection<VesselRadarData> getBanks( Waterway waterway ){
 		IField field = waterway.getField();
 		LatLng location = null;
-		Collection<RadarData> results = new ArrayList<>();
+		Collection<VesselRadarData> results = new ArrayList<>();
 		double xstep = (double)field.getLength() /(field.getLength() + field.getWidth());
 		long position = 0;
 		while( position < field.getLength() ) {
 			location = field.transform( position, 0);
-			results.add( new RadarData( null, location,  0, 0 ));
+			results.add( new VesselRadarData( null, location,  0, 0 ));
 			location = field.transform( position, field.getWidth());
-			results.add( new RadarData( null, location,  0, 0 ));
+			results.add( new VesselRadarData( null, location,  0, 0 ));
 			position += 3* xstep;
 		}
 		return results;
 	}
 	
-	public static Set<RadarData> getSortedRadarData( Collection<RadarData> data ){
-		return new TreeSet<RadarData>( data);
+	public static Set<VesselRadarData> getSortedRadarData( Collection<VesselRadarData> data ){
+		return new TreeSet<VesselRadarData>( data);
 	}
 }

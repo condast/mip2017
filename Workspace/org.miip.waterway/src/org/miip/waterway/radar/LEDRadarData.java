@@ -2,7 +2,7 @@ package org.miip.waterway.radar;
 
 import org.condast.commons.data.latlng.BaseData;
 
-public class LEDRadarData extends BaseData implements IRadarData {
+public class LEDRadarData extends BaseData implements ILEDRadarData {
 
 	private int ch;//choice
 	private int r;//range

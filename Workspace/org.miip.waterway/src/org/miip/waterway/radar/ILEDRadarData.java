@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import org.condast.commons.strings.StringStyler;
 
-public interface IRadarData {
+public interface ILEDRadarData {
 
 	public enum Choices {
 		DISABLED,

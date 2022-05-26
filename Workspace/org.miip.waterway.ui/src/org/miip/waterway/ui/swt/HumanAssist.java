@@ -1,6 +1,6 @@
 package org.miip.waterway.ui.swt;
 
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.eclipse.swt.graphics.GC;
@@ -20,7 +20,7 @@ public class HumanAssist<I> extends AbstractSWTRadar<IVessel> {
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData ship ){
+	protected void drawObject( GC gc, VesselRadarData ship ){
 		int centrex = super.getCentre().x;
 		int centrey = super.getCentre().y;
 		double length = (centrex < centrey )? centrex: centrey;

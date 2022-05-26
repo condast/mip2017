@@ -12,11 +12,14 @@ import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.thread.AbstractExecuteThread;
+import org.miip.waterway.ca.VesselSituationalAwareness;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Location;
@@ -24,7 +27,6 @@ import org.miip.waterway.model.Ship;
 import org.miip.waterway.model.Ship.Heading;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
-import org.miip.waterway.sa.SituationalAwareness;
 
 public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
 
@@ -47,7 +49,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private Bank topBank;
 	private Bank bottomBank;
 	private Waterway waterway;
-	private SituationalAwareness sa;
+	private VesselSituationalAwareness sa;
 
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	private int iteration;
@@ -61,7 +63,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	private MIIPEnvironment( int length, int width, int bankWidth ) {
 		this.field = new Field( new LatLng( NAME, LATITUDE, LONGITUDE), length, width);
-		this.sa = new SituationalAwareness(reference, field);
+		this.sa = new VesselSituationalAwareness(reference, field);
 		this.bankWidth = bankWidth;
 		this.timer = DEFAULT_TIME_OUT;
 		this.manual = false;
@@ -105,8 +107,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		//This vessel consists of situational awareness and collision avoidance
 		logger.info(latlng.toLocation());
 		reference = new CentreShip( NAME.hashCode(), NAME, latlng, 20 );
-		sa.setInput(this);
-		reference.init( sa);
+		//reference.init( sa);
 
 		//The bank at the bottom
 		latlng = LatLngUtilsDegrees.extrapolate(this.field.getCoordinates(), Heading.SOUTH.getAngle(), this.field.getWidth() - this.bankWidth);
@@ -205,14 +206,6 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	}
 
 	/* (non-Javadoc)
-	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getSituationalAwareness()
-	 */
-	@Override
-	public SituationalAwareness getSituationalAwareness() {
-		return this.sa ;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#addListener(org.condast.symbiotic.core.environment.IEnvironmentListener)
 	 */
 	@Override
@@ -259,8 +252,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			//logger.info( "Diff " + LatLngUtils.distance(this.position, ship.getLnglat() ));
 			waterway.update( interval, traverse.getX());
 
-			SituationalAwareness sa = (SituationalAwareness) this.reference.getSituationalAwareness();
-			sa.setInput(this);//after updating waterway
+			VesselSituationalAwareness sa = null;//(SituationalAwareness) this.reference.getSituationalAwareness();
+			//sa.setInput(this);//after updating waterway
 			float min_distance = manual?this.field.getLength(): 50;
 			sa.controlShip( min_distance, this.manual );
 
@@ -304,5 +297,11 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		double x = distance * Math.sin( radian );
 		double y = distance * Math.cos( radian );
 		return new Location((float) x, (float)y );
+	}
+
+	@Override
+	public ISituationalAwareness<VesselRadarData> getSituationalAwareness() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

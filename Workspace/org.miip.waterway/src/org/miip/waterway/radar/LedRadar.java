@@ -5,7 +5,8 @@ import java.util.Map;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.IRadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.Motion;
@@ -32,20 +33,21 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 	}
 
 	public void refresh() {
-		ISituationalAwareness<V,O> sa = null;//radar.getInput();
+		ISituationalAwareness<VesselRadarData> sa = null;//radar.getInput();
 		this.radarData.clear();
 		if( sa == null )
 			return;
 		IVessel reference = null;//(IVessel) radar.getInput().getReference();
-		for( RadarData obj: sa.getScan() ){
-			double angle = LatLngUtils.getHeading(reference.getLocation(), obj.getLocation());
+		for( IRadarData<VesselRadarData> radarData: sa.getRadarData() ){
+			VesselRadarData data = radarData.getData( IRadarData.DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			double angle = LatLngUtils.getHeading(reference.getLocation(), data.getLocation());
 			int key = ( int )( radar.getSteps() * angle /( 2*Math.PI ));
-			Motion waypoint = calculate(key, obj );
+			Motion waypoint = calculate(key, data );
 			this.radarData.put(key, waypoint);
 		}
 	}
 
-	public Motion calculate( int key, RadarData phys) {
+	public Motion calculate( int key, VesselRadarData phys) {
 		IVessel reference = null;//(IVessel) radar.getInput().getReference();
 		double latitude = 0; double longitude = 0;
 		double angle = LatLngUtils.getHeading(reference.getLocation(), phys.getLocation());

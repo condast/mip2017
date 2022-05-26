@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
@@ -30,7 +30,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel>
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData physicalobj ){
+	protected void drawObject( GC gc, VesselRadarData physicalobj ){
 		if( count > 1 )
 			return;
 		count++;
@@ -40,14 +40,14 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel>
 		if(!( physicalobj instanceof IVessel ))
 			return;
 
-		ISituationalAwareness<IPhysical, IVessel> psa = null;//getInput();
+		ISituationalAwareness<VesselRadarData> psa = null;//getInput();
 		psa.clear();
-		Collection<RadarData> timemap = new ArrayList<>();//TODO psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
+		Collection<VesselRadarData> timemap = new ArrayList<>();//TODO psa.predictFuture( null, this.totalTime, reference, (IVessel) physicalobj);
 		if( timemap.isEmpty() )
 			return;
 		double offset = ((double)getClientArea().width);//getInput().getView().getLength();
-		Iterator<RadarData> iterator = timemap.iterator();
-		RadarData ref = iterator.next();
+		Iterator<VesselRadarData> iterator = timemap.iterator();
+		VesselRadarData ref = iterator.next();
 		double angle = ref.getHeading();//0-360, north=0
 		double distance = ref.getDistance();
 		int startx = centrex + (int)(offset * distance * Math.sin( Math.toRadians(angle)));
@@ -56,7 +56,7 @@ public class PredictiveRadar<I extends Object> extends AbstractSWTRadar<IVessel>
 		int xposf=startx, yposf = starty;
 		int xposb=startx, yposb = starty;
 		while( iterator.hasNext() ) {
-			RadarData data = iterator.next();
+			VesselRadarData data = iterator.next();
 			angle = data.getHeading();//0-360, north=0
 			distance = data.getDistance();
 

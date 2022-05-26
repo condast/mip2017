@@ -8,8 +8,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.condast.commons.Utils;
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
+import org.condast.commons.autonomy.sa.radar.IRadarData.DefaultDimensions;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
@@ -75,8 +79,8 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		}
 	}
 
-	private void onNotifySituationChanged(SituationEvent<IPhysical> event) {
-		if( disposed || getDisplay().isDisposed() || ( event.getVessel() == null ))
+	private void onNotifySituationChanged(SituationEvent<VesselRadarData> event) {
+		if( disposed || getDisplay().isDisposed() || ( event.getSource() == null ))
 			return;
 		getDisplay().asyncExec( new Runnable() {
 
@@ -89,12 +93,25 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 
 	@Override
 	public void setInput( IMIIPEnvironment environment){
-		if( this.environment != null )
-			this.environment.getInhabitant().getSituationalAwareness().removeListener( e->onNotifySituationChanged(e));
+		IVessel reference = null;
+		ICollisionAvoidance<IVessel, VesselRadarData> ca = null;
+		ISituationalAwareness<VesselRadarData> sa = null;
+		if( this.environment != null ) {
+			reference = environment.getInhabitant();
+			ca = reference.getCollisionAvoidance();
+			sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			sa.removeListener( e->onNotifySituationChanged(e));			
+		}
 
 		this.environment = environment;
 		if( this.environment != null ) {
-			this.environment.getInhabitant().getSituationalAwareness().addListener(e->onNotifySituationChanged(e));
+			reference = environment.getInhabitant();
+			ca = reference.getCollisionAvoidance();
+			if( ca == null )
+				return;
+			sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			sa.removeListener( e->onNotifySituationChanged(e));			
+			sa.addListener(e->onNotifySituationChanged(e));
 		}
 	}
 
@@ -145,9 +162,15 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 				IVessel other = (IVessel) phobj;
 				logger.fine("Distance: " + LatLngUtils.getDistance( vessel.getLocation(), phobj.getLocation()) );
 				double distance = LatLngUtils.getDistance(vessel.getLocation(), other.getLocation());
-				MIIPImages.Images img = ( distance > vessel.getSituationalAwareness().getRange() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;
+
+				ICollisionAvoidance<IVessel, VesselRadarData> ca = vessel.getCollisionAvoidance();
+				if( ca == null )
+					continue;
+				ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+
+				MIIPImages.Images img = ( distance > sa.getRange() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;
 				Point otherPoint = su.scaleToCanvas( phobj.getLocation() );
-				drawLine(gc, other, null);
+				drawLine(gc, other, this.environment.getOthers());
 				drawOval(gc, other, otherPoint);
 				drawImage(gc, otherPoint, img );
 			}
@@ -196,7 +219,9 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_RED ));
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
 
-		radius = (su.scaleXToDisplay((int)vessel.getSituationalAwareness().getRange()));
+		ICollisionAvoidance<IVessel, VesselRadarData> ca = vessel.getCollisionAvoidance();
+		ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+		radius = (su.scaleXToDisplay((int) sa.getRange()));
 		radius *= 1.5;
 		transform = radius/2;
 		gc.setForeground( getDisplay().getSystemColor( SWT.COLOR_GRAY ));

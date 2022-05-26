@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
@@ -23,13 +23,13 @@ public class DirectRadar extends AbstractSWTRadar<IVessel>{
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData ship ){
-		ISituationalAwareness<IPhysical, IVessel> sa = null;//super.getInput();
-		IVessel reference = sa.getReference();
+	protected void drawObject( GC gc, VesselRadarData ship ){
+		ISituationalAwareness<VesselRadarData> sa = null;//super.getInput();
+		IVessel reference = null;//sa.getReference();
 		if( ship.getPhysical().equals( reference ))
 			return;
 
-		IField field = sa.getView();
+		IField field = null;//sa.getView();
 		Map.Entry<Double, Double> vector = field.getDifference(reference.getLocation(), ship.getLocation());
 		double distance = vector.getValue();
 		double angle = vector.getKey();

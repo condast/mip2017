@@ -4,7 +4,7 @@ import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.model.AbstractModel;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.MotionData;
-import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.Motion;
@@ -37,8 +37,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	private float speed;//-20 - 60 km/hour
 	private int heading; //0-360
 
-	private ISituationalAwareness<IPhysical,IVessel> sa;
-	private ICollisionAvoidance<IPhysical,IVessel> ca;
+	private ICollisionAvoidance<IVessel, VesselRadarData> ca;
 
 	private double rotation;
 	private double rot; //Rate of turn (degress/minute
@@ -58,11 +57,6 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		this.length = length;
 		this.rotation = (this.length + 5 * Math.random()) * this.speed;
 		this.rot = ( rotation * Math.PI)/30 ; //( v + 5 *rand ) 2 * PI/60)
-	}
-
-	public void init(ISituationalAwareness<IPhysical,IVessel> sa, ICollisionAvoidance<IPhysical,IVessel>  ca) {
-		this.sa = sa;
-		this.ca = ca;
 	}
 
 	@Override
@@ -136,9 +130,15 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		return motion;
 	}
 
+
 	@Override
-	public ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness() {
-		return sa;
+	public ICollisionAvoidance<IVessel, VesselRadarData> getCollisionAvoidance() {
+		return ca;
+	}
+
+	@Override
+	public void setCollisionAvoidance(ICollisionAvoidance<IVessel, VesselRadarData> ca) {
+		this.ca = ca;
 	}
 
 	/**
@@ -152,35 +152,6 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 		Heading bearing = ( Math.random() < 0.5f)? Heading.EAST: Heading.WEST;
 		long id=  name.hashCode();
 		return new Ship( id, name, lnglat, (float) speed, bearing);
-	}
-
-	@Override
-	public String[] getSelectedStrategies() {
-		return ca.getSelectedStrategies();
-	}
-
-	@Override
-	public void init(ISituationalAwareness<IPhysical, IVessel> sa) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void clearStrategies() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean addStrategy(String strategyName) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean removeStrategy(String strategyName) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

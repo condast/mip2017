@@ -6,8 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.messaging.http.AbstractHttpRequest;
 import org.condast.commons.messaging.http.ResponseEvent;
@@ -83,7 +82,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel> {
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData ship ){
+	protected void drawObject( GC gc, VesselRadarData ship ){
 		/* NOTHING */
 	}
 
@@ -112,7 +111,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel> {
 		return super.onDrawEnd(gc);
 	}
 
-	private class WebClient extends AbstractHttpRequest<LedRingRest.Requests, Object>{
+	private class WebClient extends AbstractHttpRequest<LedRingRest.Requests>{
 
 		public WebClient(String path) {
 			super(path);
@@ -124,7 +123,7 @@ public class LedRingRest<I> extends AbstractSWTRadar<IVessel> {
 		}
 
 		@Override
-		protected String onHandleResponse(ResponseEvent<LedRingRest.Requests,Object> response, Object data ) throws IOException {
+		protected String onHandleResponse(ResponseEvent<LedRingRest.Requests> response ) throws IOException {
 			String result = response.getResponse();
 			Gson gson = new Gson();
 			RestRadar.MIIPRadarData post = gson.fromJson(result, RestRadar.MIIPRadarData.class);

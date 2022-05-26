@@ -4,12 +4,13 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.condast.commons.Utils;
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
-import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
+import org.condast.commons.autonomy.sa.radar.IRadarData.DefaultDimensions;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.miip.waterway.ca.DefaultCollisionAvoidance;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 import org.miip.waterway.ui.radar.RadarGroup;
@@ -121,8 +123,9 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 			public void widgetSelected(SelectionEvent e) {
 				try{
 					IVessel vessel = environment.getInhabitant();
-					vessel.clearStrategies();
-					vessel.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
+					DefaultCollisionAvoidance ca =  (DefaultCollisionAvoidance) vessel.getCollisionAvoidance();
+					ca.clearStrategies();
+					ca.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
@@ -283,11 +286,12 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.environment.setEnabled(true);
 		this.canvas.setInput( this.environment);
 		IVessel reference = this.environment.getInhabitant();
-		ICollisionAvoidanceStrategy.DefaultStrategies strategy = Utils.assertNull(reference.getSelectedStrategies())?
+		ICollisionAvoidance<IVessel, VesselRadarData> ca = reference.getCollisionAvoidance();
+		ICollisionAvoidanceStrategy.DefaultStrategies strategy = Utils.assertNull(ca.getSelectedStrategies())?
 				ICollisionAvoidanceStrategy.DefaultStrategies.SIMPLE_COLLISION_AVOIDANCE:
-				ICollisionAvoidanceStrategy.DefaultStrategies.valueOf( reference.getSelectedStrategies()[0]);
+				ICollisionAvoidanceStrategy.DefaultStrategies.valueOf( ca.getSelectedStrategies()[0]);
 		this.strategyCombo.select(strategy.ordinal());
-		this.radarGroup.setInput( reference.getSituationalAwareness(), false );
+		//this.radarGroup.setInput( reference.getSituationalAwareness(), false );
 		if( this.environment != null )
 			this.environment.addListener(handler);
 		this.playerbar.getButton(PlayerImages.Images.START).setEnabled( this.environment != null );
@@ -414,8 +418,9 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 							break;
 						}
 						IVessel vessel = environment.getInhabitant();
-						vessel.clearStrategies();
-						vessel.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
+						DefaultCollisionAvoidance ca =  (DefaultCollisionAvoidance) vessel.getCollisionAvoidance();
+						ca.clearStrategies();
+						ca.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
 					}
 					catch( Exception ex ){
 						ex.printStackTrace();
@@ -459,18 +464,19 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 						IVessel vessel = event.getData();
 						if( vessel != null )
 							showCriticalDistance.setText(  String.valueOf( vessel.getCriticalDistance()));
-						ISituationalAwareness<IPhysical, IVessel> sa = ( vessel == null )?null: vessel.getSituationalAwareness();
+						DefaultCollisionAvoidance ca = (DefaultCollisionAvoidance) vessel.getCollisionAvoidance();
+						ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
 						switch( event.getType() ){
 						case INITIALSED:
-							if( sa != null )
-								radarGroup.setInput( sa, false);
+							//if( sa != null )
+							//	radarGroup.setInput( sa, false);
 							break;
 						case PROCEED:
 							if( sa == null )
 								break;
-							vessel.clearStrategies();
-							vessel.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
-							radarGroup.setInput( sa, false);
+							ca.clearStrategies();
+							ca.addStrategy( StringStyler.styleToEnum(strategyCombo.getText()));
+							//radarGroup.setInput( sa, false);
 							break;
 						case COLLISION_DETECT:
 						case OUT_OF_BOUNDS:
@@ -480,9 +486,9 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 							addData(event);
 							if( sa == null )
 								return;
-							Set<RadarData> data = null;//SituationalAwareness.getSortedRadarData(sa.getScan());
+							Set<VesselRadarData> data = null;//SituationalAwareness.getSortedRadarData(sa.getScan());
 							if( !Utils.assertNull(data)) {
-								RadarData other = data.iterator().next();
+								VesselRadarData other = data.iterator().next();
 								showDistance.setText( String.format("%,.2f", other.getDistance()));
 							}
 							break;

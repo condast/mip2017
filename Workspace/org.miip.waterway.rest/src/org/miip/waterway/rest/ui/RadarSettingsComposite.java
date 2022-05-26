@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.miip.waterway.model.def.IMIIPRadar;
-import org.miip.waterway.radar.IRadarData;
-import org.miip.waterway.radar.IRadarData.Choices;
+import org.miip.waterway.radar.ILEDRadarData;
+import org.miip.waterway.radar.ILEDRadarData.Choices;
 import org.miip.waterway.radar.RadarOptions;
 import org.miip.waterway.rest.core.Dispatcher;
 
@@ -43,7 +43,7 @@ public class RadarSettingsComposite extends Composite {
 
 		radarCombo = new Combo(this, SWT.NONE);
 		radarCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		radarCombo.setItems( IRadarData.Choices.getItems());
+		radarCombo.setItems( ILEDRadarData.Choices.getItems());
 		radarCombo.select(0);
 		radarCombo.addSelectionListener( new SelectionAdapter(){
 			private static final long serialVersionUID = 1L;

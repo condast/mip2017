@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
-import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationListener;
 import org.condast.commons.autonomy.sa.SituationEvent;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
 import org.condast.commons.ui.session.AbstractSessionHandler;
@@ -75,19 +75,19 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
-	private ISituationListener<IPhysical> shlistener = new ISituationListener<IPhysical>() {
+	private ISituationListener<VesselRadarData> shlistener = new ISituationListener<VesselRadarData>() {
 
 		private StringBuffer buffer = new StringBuffer();
 
 		@Override
-		public void notifySituationChanged(SituationEvent<IPhysical> event) {
+		public void notifySituationChanged(SituationEvent<VesselRadarData> event) {
 			if( event.getAngle() == 0 ){
 				buffer = new StringBuffer();
 				buffer.append( "vectors: " );
 			}else if( event.getAngle() == 511 ){
 				logger.info( buffer.toString() );
 			}else{
-				buffer.append( "[" + event.getAngle() + ", " + event.getRadarData().getDistance() + "] " );
+				buffer.append( "[" + event.getAngle() + ", " +/* event.getRadarData().getDistance() +*/ "] " );
 			}
 			try {
 				if( getDisplay().isDisposed())

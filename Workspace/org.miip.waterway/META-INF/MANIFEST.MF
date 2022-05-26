@@ -18,9 +18,9 @@ Import-Package: org.condast.commons.autonomy.ca,
  org.condast.commons.thread,
  org.condast.commons.ui.radar,
  org.eclipse.swt.graphics
-Export-Package: org.miip.waterway.model,
+Export-Package: org.miip.waterway.ca,
+ org.miip.waterway.model,
  org.miip.waterway.model.def,
  org.miip.waterway.model.eco,
- org.miip.waterway.radar,
- org.miip.waterway.sa
+ org.miip.waterway.radar
 Automatic-Module-Name: org.miip.waterway

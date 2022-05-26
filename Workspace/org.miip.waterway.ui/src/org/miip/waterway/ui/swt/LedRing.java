@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.RadarData;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.autonomy.ui.radar.AbstractSWTRadar;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.range.DoubleRange;
@@ -55,7 +55,7 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel> {
 	}
 
 	@Override
-	protected void drawObject( GC gc, RadarData ship ){
+	protected void drawObject( GC gc, VesselRadarData ship ){
 		IVessel reference = null;//getInput().getReference();
 		logger.fine(" Reference: " + reference.getLocation().toLocation() + " -\t" + ship.getLocation().toLocation());
 		logger.fine(": Diff ( " + (ship.getLocation().getLatitude() - reference.getLocation().getLatitude()) + " (N), " + (ship.getLocation().getLongitude() - reference.getLocation().getLongitude()) + " (W)");
@@ -88,8 +88,8 @@ public class LedRing<I> extends AbstractSWTRadar<IVessel> {
 	protected Color getColour( int key, double distance) {
 		if( super.getInput() == null)
 			return super.getColour(distance);
-		ISituationalAwareness<IPhysical, IVessel> sa = null;//super.getInput();
-		double critical = ( sa.getReference() == null )? 0: sa.getReference().getCriticalDistance();
+		ISituationalAwareness<VesselRadarData> sa = null;//super.getInput();
+		double critical = -1;//( sa.getReference() == null )? 0: sa.getReference().getCriticalDistance();
 		return IRadarColours.RadarColours.getColour(getDisplay(), getRange(), getSensitivity(), critical, distance);
 	}
 

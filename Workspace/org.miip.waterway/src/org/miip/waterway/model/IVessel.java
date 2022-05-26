@@ -1,15 +1,13 @@
 package org.miip.waterway.model;
 
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.model.IAutonomous;
-import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.Waypoint;
 
-public interface IVessel extends IAutonomous<IPhysical>
+public interface IVessel extends IAutonomous
 {
 	float DEFAULT_LENGTH = 4.00f;//4 mtr
-
-	void init(ISituationalAwareness<IPhysical,IVessel> sa);
 
 	/**
 	 * A vessel always has at least one destination
@@ -22,6 +20,10 @@ public interface IVessel extends IAutonomous<IPhysical>
 	 * @return
 	 */
 	public boolean hasCollisionAvoidance();
+	
+	public ICollisionAvoidance<IVessel, VesselRadarData> getCollisionAvoidance();
+
+	public void setCollisionAvoidance(ICollisionAvoidance<IVessel, VesselRadarData> ca);
 
 	double getTurn(long timemsec);
 
@@ -34,14 +36,6 @@ public interface IVessel extends IAutonomous<IPhysical>
 	@Override
 	double getSpeed();
 
-	ISituationalAwareness<IPhysical, IVessel> getSituationalAwareness();
-
 	@Override
 	double getCriticalDistance();
-
-	void clearStrategies();
-
-	boolean addStrategy(String strategyName );
-
-	boolean removeStrategy(String strategyName );
 }

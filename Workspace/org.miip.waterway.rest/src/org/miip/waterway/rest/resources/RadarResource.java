@@ -13,14 +13,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.IRadarData.DefaultDimensions;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.log.LogFactory;
 import org.condast.commons.messaging.rest.ResponseCode;
 import org.miip.waterway.model.IVessel;
-import org.miip.waterway.radar.IRadarData;
+import org.miip.waterway.radar.ILEDRadarData;
 import org.miip.waterway.radar.LEDRadarData;
 import org.miip.waterway.radar.RadarOptions;
 import org.miip.waterway.radar.RestRadar;
@@ -50,7 +52,7 @@ public class RadarResource{
 			RadarOptions settings = dispatcher.getOptions();
 			if( settings == null )
 				return Response.noContent().build();
-			IRadarData data = settings.toRadarData();
+			ILEDRadarData data = settings.toRadarData();
 			Gson gson = new Gson();
 			String result = gson.toJson(data, LEDRadarData.class);
 			return Response.ok( result ).build();
@@ -99,7 +101,8 @@ public class RadarResource{
 			IVessel reference = env.getInhabitant();
 			if( reference == null )
 				return response;
-			ISituationalAwareness<IPhysical, IVessel> sa = reference.getSituationalAwareness();
+			ICollisionAvoidance<IVessel, VesselRadarData> ca = reference.getCollisionAvoidance();
+			ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
 			if( sa == null ) {
 				response = Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 				return response;

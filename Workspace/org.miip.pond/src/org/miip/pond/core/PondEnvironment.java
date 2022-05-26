@@ -5,17 +5,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.Waypoint;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.thread.AbstractExecuteThread;
+import org.miip.waterway.ca.DefaultCollisionAvoidance;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
 import org.miip.waterway.model.Waterway;
@@ -69,23 +72,23 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, 90, true );//bearing east, 10 km/h
-		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
+		ICollisionAvoidance<IVessel, VesselRadarData> ca =  new DefaultCollisionAvoidance( reference, field );
+		reference.setCollisionAvoidance(ca);
+		ISituationalAwareness<VesselRadarData> sa = new PondSituationalAwareness( reference, field );
 		sa.setRange(30);
-		sa.setInput(this);
-		reference.init(sa);
+		ca.addSituationalAwareness(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), 90 );
 		reference.addWayPoint( new Waypoint( destination ));
 		
 		this.others.clear();
 		latlng = field.transform( field.getLength()/2, 0);
-		if( !field.isInField(latlng, 1))
-			System.out.println("STOP!!!");
 		name = "Other";
 		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, false );//bearing south, 10 km/h
+		ca =  new DefaultCollisionAvoidance( other, field );
+		other.setCollisionAvoidance(ca);
 		sa = new PondSituationalAwareness( other, field );
-		sa.setInput(this);
 		sa.setRange(30);
-		other.init(sa);
+		ca.addSituationalAwareness(sa);
 		destination = Field.clip( field, other.getLocation(), 180 );
 		other.addWayPoint( new Waypoint( destination ));
 		
@@ -109,9 +112,10 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			logger.info("out of bounds");
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, angle, true);//bearing east, 10 km/h
-		ISituationalAwareness<IPhysical, IVessel> sa = new PondSituationalAwareness( reference, field );
-		sa.setInput(this);
-		reference.init(sa);
+		ICollisionAvoidance<IVessel, VesselRadarData> ca =  new DefaultCollisionAvoidance( reference, field );
+		reference.setCollisionAvoidance(ca);
+		ISituationalAwareness<VesselRadarData> sa = new PondSituationalAwareness( reference, field );
+		ca.addSituationalAwareness(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), angle );
 		reference.addWayPoint( new Waypoint( destination ));
 
@@ -122,9 +126,10 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			logger.info("out of bounds");
 		name = "Other";
 		IVessel other = new Vessel( name.hashCode(), name, latlng, heading, false);
+		ca = reference.getCollisionAvoidance();
+		other.setCollisionAvoidance(ca);
 		sa = new PondSituationalAwareness( other, field );
-		sa.setInput(this);
-		other.init(sa);
+		ca.addSituationalAwareness(sa);
 		destination = LatLngUtilsDegrees.extrapolate( other.getLocation(), 190, half);
 		other.addWayPoint( new Waypoint( destination ));
 
@@ -245,12 +250,6 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	}
 
 	@Override
-	public ISituationalAwareness<IPhysical,IVessel> getSituationalAwareness() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public int getBankWidth() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -258,6 +257,12 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	@Override
 	public Bank[] getBanks() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISituationalAwareness<VesselRadarData> getSituationalAwareness() {
 		// TODO Auto-generated method stub
 		return null;
 	}

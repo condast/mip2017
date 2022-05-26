@@ -4,7 +4,7 @@ import org.condast.commons.preferences.IPreferenceStore;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.miip.waterway.model.def.IMIIPRadar;
-import org.miip.waterway.radar.IRadarData.Choices;
+import org.miip.waterway.radar.ILEDRadarData.Choices;
 
 public class RadarOptions{
 
@@ -160,8 +160,8 @@ public class RadarOptions{
 		return StringUtils.isEmpty( str)?false: Boolean.parseBoolean(str );
 	}
 
-	public IRadarData toRadarData() {
-		IRadarData data = new LEDRadarData( getChoice(), isEnabled(),(int) getRange(), (int) getSensitivity(), getOptions() );
+	public ILEDRadarData toRadarData() {
+		ILEDRadarData data = new LEDRadarData( getChoice(), isEnabled(),(int) getRange(), (int) getSensitivity(), getOptions() );
 		return data;
 	}
 
