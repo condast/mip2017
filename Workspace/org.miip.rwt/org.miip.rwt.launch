@@ -43,6 +43,7 @@
         <setEntry value="javax.servlet@default:default"/>
         <setEntry value="javax.validation.api@default:default"/>
         <setEntry value="javax.ws.rs-api@default:default"/>
+        <setEntry value="javax.xml.bind@default:default"/>
         <setEntry value="org.apache.commons.commons-codec@default:default"/>
         <setEntry value="org.apache.commons.fileupload@default:default"/>
         <setEntry value="org.apache.commons.io@default:default"/>

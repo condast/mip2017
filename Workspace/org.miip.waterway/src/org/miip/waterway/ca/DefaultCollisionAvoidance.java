@@ -6,13 +6,19 @@ import java.util.Collection;
 import org.condast.commons.autonomy.ca.AbstractVesselCollisionAvoidance;
 import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.data.plane.FieldData;
 import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
 
 public class DefaultCollisionAvoidance extends AbstractVesselCollisionAvoidance<IPhysical, IVessel>{
 
-	public DefaultCollisionAvoidance( IVessel vessel, IField field ){
-		super( vessel, field, true);
+	public DefaultCollisionAvoidance( IVessel vessel ){
+		super( vessel,  true);
+	}
+
+	public DefaultCollisionAvoidance( IVessel vessel, FieldData field ){
+		super( vessel, true);
+		this.setField(field);
 	}
 
 	@Override

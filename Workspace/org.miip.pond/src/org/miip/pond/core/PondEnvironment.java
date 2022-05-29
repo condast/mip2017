@@ -16,6 +16,7 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.latlng.Waypoint;
 import org.condast.commons.data.plane.Field;
+import org.condast.commons.data.plane.FieldData;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.ca.DefaultCollisionAvoidance;
@@ -66,17 +67,18 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	@Override
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, 0);
+		FieldData fieldData = field.toFieldData(FieldData.DEFAULT_ZOOM );
 		this.iteration = 0;
 		
 		//Vessels have situational awareness and collision avoidance
 		LatLng latlng = field.transform(0, field.getWidth()/2);
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, 90, true );//bearing east, 10 km/h
-		ICollisionAvoidance<IVessel, VesselRadarData> ca =  new DefaultCollisionAvoidance( reference, field );
+		ICollisionAvoidance<IVessel, VesselRadarData> ca =  new DefaultCollisionAvoidance( reference, fieldData );
 		reference.setCollisionAvoidance(ca);
 		ISituationalAwareness<VesselRadarData> sa = new PondSituationalAwareness( reference, field );
 		sa.setRange(30);
-		ca.addSituationalAwareness(sa);
+		//ca.addSituationalAwareness(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), 90 );
 		reference.addWayPoint( new Waypoint( destination ));
 		
@@ -84,11 +86,11 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		latlng = field.transform( field.getLength()/2, 0);
 		name = "Other";
 		IVessel other = new Vessel( name.hashCode(), name , latlng, 180, false );//bearing south, 10 km/h
-		ca =  new DefaultCollisionAvoidance( other, field );
+		ca =  new DefaultCollisionAvoidance( other, fieldData );
 		other.setCollisionAvoidance(ca);
 		sa = new PondSituationalAwareness( other, field );
 		sa.setRange(30);
-		ca.addSituationalAwareness(sa);
+		//ca.addSituationalAwareness(sa);
 		destination = Field.clip( field, other.getLocation(), 180 );
 		other.addWayPoint( new Waypoint( destination ));
 		
@@ -112,10 +114,11 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 			logger.info("out of bounds");
 		String name = "Reference";
 		reference = new Vessel( name.hashCode(), name, latlng, angle, true);//bearing east, 10 km/h
-		ICollisionAvoidance<IVessel, VesselRadarData> ca =  new DefaultCollisionAvoidance( reference, field );
+		FieldData fieldData = field.toFieldData(FieldData.DEFAULT_ZOOM );
+		ICollisionAvoidance<IVessel, VesselRadarData> ca =  new DefaultCollisionAvoidance( reference, fieldData );
 		reference.setCollisionAvoidance(ca);
 		ISituationalAwareness<VesselRadarData> sa = new PondSituationalAwareness( reference, field );
-		ca.addSituationalAwareness(sa);
+		//ca.addSituationalAwareness(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), angle );
 		reference.addWayPoint( new Waypoint( destination ));
 
@@ -129,7 +132,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		ca = reference.getCollisionAvoidance();
 		other.setCollisionAvoidance(ca);
 		sa = new PondSituationalAwareness( other, field );
-		ca.addSituationalAwareness(sa);
+		//ca.addSituationalAwareness(sa);
 		destination = LatLngUtilsDegrees.extrapolate( other.getLocation(), 190, half);
 		other.addWayPoint( new Waypoint( destination ));
 
