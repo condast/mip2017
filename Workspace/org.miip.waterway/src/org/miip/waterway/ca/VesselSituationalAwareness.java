@@ -6,12 +6,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
+import org.condast.commons.autonomy.sa.radar.IRadarData;
 import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
@@ -54,7 +56,7 @@ public class VesselSituationalAwareness extends AbstractSituationalAwareness<Ves
 	};
 
 	public VesselSituationalAwareness( IVessel vessel, IField field ) {
-		super( 0, field );
+		super( ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString(), IRadarData.DefaultDimensions.VESSEL_RADAR_DATA.getIndex(), field );
 		this.vessel = vessel;
 		this.field = field;
 	}

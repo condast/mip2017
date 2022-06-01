@@ -13,7 +13,6 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.autonomy.sa.radar.VesselRadarData;
-import org.condast.commons.autonomy.sa.radar.IRadarData.DefaultDimensions;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
@@ -43,6 +42,8 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 
 	private Map<IVessel, List<LatLng>> trajectory;
 
+	private String saID;
+	
 	private boolean disposed;
 
 	private Logger logger = Logger.getLogger( this.getClass().getName() );
@@ -55,6 +56,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 	public PondCanvas(Composite parent, Integer style) {
 		super(parent, style);
 		this.disposed = false;
+		this.saID = ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString();
 		trajectory = new HashMap<>();
 		setBackground(Display.getCurrent().getSystemColor( SWT.COLOR_WHITE));
 		super.addPaintListener( e->onPaintControl(e));
@@ -99,7 +101,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		if( this.environment != null ) {
 			reference = environment.getInhabitant();
 			ca = reference.getCollisionAvoidance();
-			sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			sa = ca.getSituationalAwareness( saID );
 			sa.removeListener( e->onNotifySituationChanged(e));			
 		}
 
@@ -109,7 +111,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 			ca = reference.getCollisionAvoidance();
 			if( ca == null )
 				return;
-			sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			sa = ca.getSituationalAwareness( saID );
 			sa.removeListener( e->onNotifySituationChanged(e));			
 			sa.addListener(e->onNotifySituationChanged(e));
 		}
@@ -166,7 +168,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 				ICollisionAvoidance<IVessel, VesselRadarData> ca = vessel.getCollisionAvoidance();
 				if( ca == null )
 					continue;
-				ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+				ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( saID );
 
 				MIIPImages.Images img = ( distance > sa.getRange() )? MIIPImages.Images.SHIP_GRN: MIIPImages.Images.SHIP_RED;
 				Point otherPoint = su.scaleToCanvas( phobj.getLocation() );
@@ -220,7 +222,7 @@ public class PondCanvas extends Canvas implements IInputWidget<IMIIPEnvironment>
 		gc.drawOval(point.x-transform, point.y-transform, radius, radius );
 
 		ICollisionAvoidance<IVessel, VesselRadarData> ca = vessel.getCollisionAvoidance();
-		ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+		ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( saID );
 		radius = (su.scaleXToDisplay((int) sa.getRange()));
 		radius *= 1.5;
 		transform = radius/2;

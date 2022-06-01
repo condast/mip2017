@@ -2,6 +2,7 @@ package org.miip.waterway.model.eco;
 
 import java.util.Collection;
 
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
@@ -19,7 +20,7 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<Vesse
 	private IReferenceEnvironment<IVessel, IPhysical> input;
 	
 	public PondSituationalAwareness( IVessel owner, IField field) {
-		super( 0, field );
+		super(ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString(), IRadarData.DefaultDimensions.VESSEL_RADAR_DATA.getIndex(), field );
 		this.owner = owner;
 		//super.setCriticalDistance( vessel.getMinTurnDistance());
 	}

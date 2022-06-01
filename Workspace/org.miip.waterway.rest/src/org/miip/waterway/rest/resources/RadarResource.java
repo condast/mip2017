@@ -17,7 +17,6 @@ import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.IRadarData.DefaultDimensions;
 import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.log.LogFactory;
 import org.condast.commons.messaging.rest.ResponseCode;
@@ -102,7 +101,7 @@ public class RadarResource{
 			if( reference == null )
 				return response;
 			ICollisionAvoidance<IVessel, VesselRadarData> ca = reference.getCollisionAvoidance();
-			ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			ISituationalAwareness<VesselRadarData> sa = ca.getSituationalAwareness( ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString());
 			if( sa == null ) {
 				response = Response.ok( ResponseCode.RESPONSE_EMPTY ).build();
 				return response;
