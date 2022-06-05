@@ -55,7 +55,7 @@ public class RestRadar{
 		if( sa == null )
 			return colours;
 		for( IRadarData<VesselRadarData> radarData: sa.getRadarData() ){
-			VesselRadarData data = radarData.getData( IRadarData.DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			VesselRadarData data = radarData.getData();
 			drawObject( null/*sa.getReference()*/, data );
 		}
 		this.onDrawEnd();

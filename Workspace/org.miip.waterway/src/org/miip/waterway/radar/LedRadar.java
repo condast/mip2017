@@ -39,7 +39,7 @@ public class LedRadar<O extends IPhysical,V extends IPhysical>{
 			return;
 		IVessel reference = null;//(IVessel) radar.getInput().getReference();
 		for( IRadarData<VesselRadarData> radarData: sa.getRadarData() ){
-			VesselRadarData data = radarData.getData( IRadarData.DefaultDimensions.VESSEL_RADAR_DATA.getIndex());
+			VesselRadarData data = radarData.getData();
 			double angle = LatLngUtils.getHeading(reference.getLocation(), data.getLocation());
 			int key = ( int )( radar.getSteps() * angle /( 2*Math.PI ));
 			Motion waypoint = calculate(key, data );

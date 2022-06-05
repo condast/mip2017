@@ -8,7 +8,7 @@ import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
 import org.condast.commons.autonomy.sa.AbstractSituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
-import org.condast.commons.autonomy.sa.radar.IRadarData;
+import org.condast.commons.autonomy.sa.radar.IDataEntry;
 import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
@@ -20,7 +20,7 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<Vesse
 	private IReferenceEnvironment<IVessel, IPhysical> input;
 	
 	public PondSituationalAwareness( IVessel owner, IField field) {
-		super(ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString(), IRadarData.DefaultDimensions.VESSEL_RADAR_DATA.getIndex(), field );
+		super(ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString(), IDataEntry.DefaultDimensions.VESSEL_RADAR_DATA.getIndex(), field );
 		this.owner = owner;
 		//super.setCriticalDistance( vessel.getMinTurnDistance());
 	}
