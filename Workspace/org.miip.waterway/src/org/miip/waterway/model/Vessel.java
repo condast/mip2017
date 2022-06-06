@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.model.AbstractAutonomous;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.MotionData;
@@ -85,12 +86,12 @@ public class Vessel extends AbstractAutonomous<IPhysical, IVessel, VesselRadarDa
 	@Override
 	public double getCriticalDistance() {
 		ICollisionAvoidance<IVessel, VesselRadarData> ca = super.getCollisionAvoidance();
-		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
+		return ( ca == null )? ICollisionAvoidanceStrategy.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
 	}
 
 	public boolean isInCriticalDistance( IPhysical physical ) {
 		ICollisionAvoidance<IVessel, VesselRadarData> ca = super.getCollisionAvoidance();
-		double critical = ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
+		double critical = ( ca == null )? ICollisionAvoidanceStrategy.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
 		double distance = LatLngUtils.getDistance(this.getLocation(), physical.getLocation());
 		return distance <= critical;
 	}

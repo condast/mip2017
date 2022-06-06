@@ -1,15 +1,15 @@
 package org.miip.waterway.ca;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.condast.commons.autonomy.ca.AbstractVesselCollisionAvoidance;
 import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
-import org.condast.commons.autonomy.model.IPhysical;
+import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.plane.FieldData;
 import org.miip.waterway.model.IVessel;
 
-public class DefaultCollisionAvoidance extends AbstractVesselCollisionAvoidance<IPhysical, IVessel>{
+public class DefaultCollisionAvoidance extends AbstractVesselCollisionAvoidance<IVessel>{
 
 	public DefaultCollisionAvoidance( IVessel vessel ){
 		super( vessel,  true);
@@ -25,17 +25,17 @@ public class DefaultCollisionAvoidance extends AbstractVesselCollisionAvoidance<
 	}
 
 	public boolean addStrategy( String strategyName ) {
-		ICollisionAvoidanceStrategy strategy = super.getDefaultStrategy(strategyName);
+		ICollisionAvoidanceStrategy<VesselRadarData> strategy = super.getDefaultStrategy(strategyName);
 		if( strategy == null )
 			return false;
 		return super.addStrategy(strategy);
 	}
 
 	public boolean removeStrategy(String strategyName ) {
-		Collection<ICollisionAvoidanceStrategy> temp =
-				new ArrayList<>(super.getStrategies());
+		Map<ICollisionAvoidanceStrategy<VesselRadarData>, Boolean> temp =
+				new HashMap<>(super.getStrategies());
 		boolean result = false;
-		for( ICollisionAvoidanceStrategy strategy: temp) {
+		for( ICollisionAvoidanceStrategy<VesselRadarData> strategy: temp.keySet()) {
 			if( strategy.getName().equals(strategyName))
 				result = super.removeStrategy(strategy);
 		}

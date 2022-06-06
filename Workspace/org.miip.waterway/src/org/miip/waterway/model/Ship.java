@@ -1,6 +1,7 @@
 package org.miip.waterway.model;
 
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
+import org.condast.commons.autonomy.ca.ICollisionAvoidanceStrategy;
 import org.condast.commons.autonomy.model.AbstractModel;
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.MotionData;
@@ -51,7 +52,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 	}
 
 	public Ship( long id, String name, float speed, int length, LatLng position, int heading) {
-		super( id, name , IPhysical.ModelTypes.VESSEL, position, ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE, null );
+		super( id, name , IPhysical.ModelTypes.VESSEL, position, ICollisionAvoidanceStrategy.DEFAULT_CRITICAL_DISTANCE, null );
 		this.speed = speed;
 		this.heading = heading;
 		this.length = length;
@@ -66,7 +67,7 @@ public class Ship extends AbstractModel<Object> implements IVessel{
 
 	@Override
 	public double getCriticalDistance() {
-		return ( ca == null )? ICollisionAvoidance.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
+		return ( ca == null )? ICollisionAvoidanceStrategy.DEFAULT_CRITICAL_DISTANCE: ca.getCriticalDistance();
 	}
 
 	/* (non-Javadoc)
