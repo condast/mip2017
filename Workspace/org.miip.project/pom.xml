@@ -15,16 +15,26 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
         <tycho.version>2.3.0</tycho.version>
+		<bundle-name>org.miip</bundle-name>
         <generics>P:/GitHub</generics>
         <virgo-root>file:${generics}/Root/Workspace/Virgo</virgo-root>
         <project-root>P:/GitHub/org.miip</project-root>
         <workspace-root>P:/Windows/Condast/Workspace/org.miip</workspace-root>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
+		<update-site>${project-root}/${bundle-name}.update/target/site/plugins</update-site>
+		<release-dir>P:/Releases</release-dir>
         <rap-repo.url>http://download.eclipse.org/rt/rap/3.4/</rap-repo.url>
         <condast-commons>file:${generics}/org.condast.commons/Workspace/</condast-commons>
         <condast-js>file:${generics}/org.condast.js/Workspace/</condast-js>
         <condast-symbiot>file:${generics}/org.condast.symbiotic/Workspace/</condast-symbiot>
     </properties>
+
+	<distributionManagement>
+		<repository>
+			<id>release directory</id>
+			<url>file:${release-dir}/release</url>
+		</repository>
+	</distributionManagement>
 
     <repositories>
         <repository>
