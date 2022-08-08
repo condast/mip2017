@@ -32,7 +32,7 @@
 	<distributionManagement>
 		<repository>
 			<id>release directory</id>
-			<url>file:${release-dir}/release</url>
+			<url>file:${release-dir}/deploy/${bundle-name}</url>
 		</repository>
 	</distributionManagement>
 
