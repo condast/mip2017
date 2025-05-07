@@ -17,7 +17,7 @@ import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.plane.IField;
 import org.condast.commons.ui.swt.IInputWidget;
-import org.condast.commons.ui.utils.ScalingUtils;
+import org.condast.commons.ui.widgets.utils.ScalingUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;

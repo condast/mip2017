@@ -2,10 +2,10 @@ package org.miip.rwt.entry;
 
 import java.util.concurrent.TimeUnit;
 
-import org.condast.commons.config.Config;
 import org.condast.commons.data.colours.RGBA;
 import org.condast.commons.data.plane.IField;
-import org.condast.commons.ui.entry.AbstractRestEntryPoint;
+import org.condast.commons.preferences.config.Config;
+import org.condast.commons.ui.widgets.entry.AbstractRestEntryPoint;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -106,7 +106,7 @@ public class RouterEntryPoint extends AbstractRestEntryPoint<Object> {
 		map = new PixelXYMap(comp, SWT.NONE);
 		map.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true, 3, 1));
 
-		Config config = new Config();
+		Config config = Config.getInstance();
 		browser.setInput(config.getServerContext());
 		return browser;
 	}

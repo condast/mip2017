@@ -1,7 +1,5 @@
 package org.miip.waterway.model.eco;
 
-import java.util.Collection;
-
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.model.IPhysical;
@@ -29,7 +27,6 @@ public class PondSituationalAwareness extends AbstractSituationalAwareness<Vesse
 		notifylisteners( new SituationEvent<VesselRadarData>( this));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public IPhysical[] getScan() {
 		//Collection<VesselRadarData> results = super.getSituation().values();

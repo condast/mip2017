@@ -11,14 +11,14 @@ import java.lang.reflect.Constructor;
 import java.util.EnumSet;
 
 import org.condast.commons.preferences.AbstractPreferenceStore;
+import org.condast.commons.preferences.xml.AbstractXMLBuilder;
+import org.condast.commons.preferences.xml.AbstractXmlHandler;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.image.AbstractImages;
 import org.condast.commons.ui.swt.IInputWidget;
 import org.condast.commons.ui.swt.IStyle;
-import org.condast.commons.ui.widgets.StatusBar;
-import org.condast.commons.xml.AbstractXMLBuilder;
-import org.condast.commons.xml.AbstractXmlHandler;
+import org.condast.commons.ui.widgets.status.StatusBar;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;

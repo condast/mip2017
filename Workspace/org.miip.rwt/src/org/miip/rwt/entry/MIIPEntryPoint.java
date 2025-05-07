@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.condast.commons.preferences.IPreferenceStore;
+import org.condast.commons.preferences.xml.AbstractXMLBuilder;
+import org.condast.commons.preferences.xml.AbstractXMLBuilder.Selection;
 import org.condast.commons.strings.StringStyler;
 import org.condast.commons.strings.StringUtils;
 import org.condast.commons.ui.activate.ActivationEvent;
 import org.condast.commons.ui.activate.IActivateListener;
-import org.condast.commons.ui.logger.LogComposite;
 import org.condast.commons.ui.swt.IInputWidget;
-import org.condast.commons.xml.AbstractXMLBuilder;
-import org.condast.commons.xml.AbstractXMLBuilder.Selection;
+import org.condast.commons.ui.widgets.logger.LogComposite;
 import org.condast.commons.xml.BuildEvent;
 import org.condast.commons.xml.IBuildListener;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;

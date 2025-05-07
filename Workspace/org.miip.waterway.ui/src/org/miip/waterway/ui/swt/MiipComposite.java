@@ -3,17 +3,19 @@ package org.miip.waterway.ui.swt;
 import java.util.EnumSet;
 import java.util.logging.Logger;
 
+import org.condast.commons.autonomy.ca.ICollisionAvoidance;
 import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.sa.ISituationListener;
+import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.SituationEvent;
 import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.thread.IExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
-import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.swt.IInputWidget;
-import org.condast.commons.ui.widgets.AbstractButtonBar;
+import org.condast.commons.ui.widgets.session.AbstractSessionHandler;
+import org.condast.commons.ui.wtk.AbstractButtonBar;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -158,7 +160,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 				try{
 					lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection()));
 					IExecuteThread thread = (IExecuteThread) environment;
-					thread.setTimer( slider_speed.getSelection());
+					thread.setTime( slider_speed.getSelection());
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
@@ -313,7 +315,9 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	public void setInput( IMIIPEnvironment environment ){
 		this.environment = environment;
 		if( this.environment != null ) {
-			this.radarGroup.setInput( environment.getSituationalAwareness(), false);
+			ISituationalAwareness<VesselRadarData> sa = 
+					environment.getInhabitant().getCollisionAvoidance().getSituationalAwareness( ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString());
+			this.radarGroup.setInput( sa, false);
 		}
 		this.canvas.setInput(environment);
 	}
@@ -321,7 +325,7 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	protected void updateView(){
 		Ship ship = (Ship) environment.getInhabitant();
 		IExecuteThread thread = (IExecuteThread) environment;
-		this.slider_speed.setSelection( thread.getTimer());
+		this.slider_speed.setSelection( thread.getTime());
 		this.spinner_ships.setSelection( environment.getWaterway().getNrOfShips());
 		canvas.redraw();
 		this.text_name.setText( ship.getIdentifier() );
@@ -335,8 +339,10 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 	@Override
 	public void dispose(){
 		if( this.environment != null ){
-			if( this.environment.getSituationalAwareness() != null )
-				this.environment.getSituationalAwareness().removeListener(shlistener);
+			ISituationalAwareness<VesselRadarData> sa = 
+					environment.getInhabitant().getCollisionAvoidance().getSituationalAwareness( ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString());
+			if( sa != null )
+				sa.removeListener(shlistener);
 			this.environment.removeListener(handler);
 			IExecuteThread thread = (IExecuteThread) environment;
 			thread.stop();
@@ -391,8 +397,10 @@ public class MiipComposite extends Composite implements IInputWidget<IMIIPEnviro
 						case START:
 							environment.addListener(handler);
 							thread.start();
-							environment.getSituationalAwareness().addListener(shlistener);
-							radarGroup.setInput( environment.getSituationalAwareness(), false);
+							ISituationalAwareness<VesselRadarData> sa = 
+									environment.getInhabitant().getCollisionAvoidance().getSituationalAwareness( ICollisionAvoidance.DefaultSituationalAwareness.VESSEL_RADAR.toString());
+							sa.addListener(shlistener);
+							radarGroup.setInput(sa, false);
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
 							clear.setEnabled( false );//!environment.isRunning() || environment.isPaused());

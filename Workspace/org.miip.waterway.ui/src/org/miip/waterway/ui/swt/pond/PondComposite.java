@@ -2,6 +2,10 @@ package org.miip.waterway.ui.swt.pond;
 
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.condast.commons.Utils;
 import org.condast.commons.autonomy.ca.ICollisionAvoidance;
@@ -11,12 +15,12 @@ import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.sa.ISituationalAwareness;
 import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.strings.StringStyler;
-import org.condast.commons.thread.IExecuteThread;
+import org.condast.commons.thread.AbstractExecuteThread;
 import org.condast.commons.ui.player.PlayerImages;
-import org.condast.commons.ui.session.AbstractSessionHandler;
 import org.condast.commons.ui.session.SessionEvent;
 import org.condast.commons.ui.swt.IInputWidget;
-import org.condast.commons.ui.widgets.AbstractButtonBar;
+import org.condast.commons.ui.widgets.session.AbstractSessionHandler;
+import org.condast.commons.ui.wtk.AbstractButtonBar;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -78,6 +82,8 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 	private Label showDistance;
 	private Label showCriticalDistance;
 	
+	private ExecuteThread executor;
+		
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -88,6 +94,8 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.createComposite(parent, style | SWT.NO_SCROLL);
 		this.disposed = false;
 		this.handler = new SessionHandler(getDisplay());
+		executor = new ExecuteThread();
+		executor.setTime(slider_speed.getSelection());
 	}
 
 	protected void createComposite( Composite parent, int style ){
@@ -151,8 +159,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 			public void widgetSelected(SelectionEvent e) {
 				try{
 					lblSpeedLabel.setText( String.valueOf( slider_speed.getSelection()));
-					IExecuteThread thread = (IExecuteThread) environment;
-					thread.setTimer( slider_speed.getSelection());
+					executor.setTime( slider_speed.getSelection());
 					super.widgetSelected(e);
 				}
 				catch( Exception ex ){
@@ -298,8 +305,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 
 	protected void updateView(){
 		IVessel vessel = environment.getInhabitant();
-		IExecuteThread thread = (IExecuteThread) environment;
-		this.slider_speed.setSelection( thread.getTimer());
+		this.slider_speed.setSelection( executor.getTime());
 		this.text_name.setText( vessel.getName() );
 		this.text_speed.setText( String.format("%,.2f", vessel.getSpeed() ));
 		this.text_heading.setText( String.format("%,.2f", vessel.getHeading() ));
@@ -324,8 +330,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		this.disposed = true;
 		if( this.environment != null ){
 			this.environment.removeListener(handler);
-			IExecuteThread thread = (IExecuteThread) environment;
-			thread.stop();
+			executor.stop();
 		}
 		this.handler.dispose();
 		super.dispose();
@@ -358,8 +363,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		}
 
 		public void stop() {
-			IExecuteThread thread = (IExecuteThread) environment;
-			thread.stop();
+			executor.stop();
 			environment.removeListener(handler);
 			getButton( PlayerImages.Images.START).setEnabled(true);
 			Button clear = (Button) getButton( PlayerImages.Images.RESET);
@@ -369,13 +373,12 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 		@Override
 		protected Control createButton(PlayerImages.Images type) {
 			Button button = new Button( this, SWT.FLAT );
-			IExecuteThread thread = (IExecuteThread) environment;
 			switch( type ){
 			case START:
 				button.setEnabled( environment != null );
 				break;
 			case STOP:
-				button.setEnabled(( environment != null ) && thread.isRunning());
+				button.setEnabled(( environment != null ) && executor.isRunning());
 				break;
 			default:
 				break;
@@ -390,12 +393,11 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 						Button button = (Button) e.getSource();
 						PlayerImages.Images image = (PlayerImages.Images) button.getData();
 						Button clear;
-						IExecuteThread thread = (IExecuteThread) environment;
 						switch( image ){
 						case START:
 							environment.addListener( handler);
 
-							thread.start();
+							executor.start();
 							getButton( PlayerImages.Images.STOP).setEnabled(true);
 							button.setEnabled(false);
 							clear = (Button) getButton( PlayerImages.Images.RESET);
@@ -405,7 +407,7 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 							stop();
 							break;
 						case NEXT:
-							thread.step();
+							executor.step();
 							clear = (Button) getButton( PlayerImages.Images.RESET);
 							clear.setEnabled( true );//!environment.isRunning() || environment.isPaused());
 							break;
@@ -502,5 +504,42 @@ public class PondComposite extends Composite implements IInputWidget<IMIIPEnviro
 				}
 			});
 		}
+	}
+	
+	private class ExecuteThread extends AbstractExecuteThread{
+
+		private ScheduledExecutorService service;
+		
+		public ExecuteThread() {
+			super(true);
+		}
+
+		
+		@Override
+		public ExecutorService onCreateService() {
+			service = new ScheduledThreadPoolExecutor(3);
+			return service;
+		}
+
+
+		@Override
+		public boolean onInitialise() {
+			environment.clear();
+			return false;
+		}
+
+		
+		@Override
+		protected void onStart() {
+			service.scheduleAtFixedRate(()->execute(), super.getTime(),  super.getTime(), TimeUnit.SECONDS);
+			super.onStart();
+		}
+
+
+		@Override
+		public void onExecute() {
+			environment.update();
+		}
+		
 	}
 }

@@ -2,8 +2,6 @@ package org.miip.waterway.model.def;
 
 import org.condast.commons.autonomy.model.IPhysical;
 import org.condast.commons.autonomy.model.IReferenceEnvironment;
-import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.plane.IField;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Waterway;
@@ -18,8 +16,6 @@ public interface IMIIPEnvironment extends IReferenceEnvironment<IVessel, IPhysic
 
 	Waterway getWaterway();
 
-	ISituationalAwareness<VesselRadarData> getSituationalAwareness();
-
 	int getBankWidth();
 
 	Bank[] getBanks();
@@ -33,4 +29,6 @@ public interface IMIIPEnvironment extends IReferenceEnvironment<IVessel, IPhysic
 	 * @return
 	 */
 	double getAngle();
+	
+	public void update();
 }

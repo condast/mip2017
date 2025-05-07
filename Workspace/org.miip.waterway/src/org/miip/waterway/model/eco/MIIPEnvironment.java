@@ -12,13 +12,10 @@ import org.condast.commons.autonomy.env.EnvironmentEvent;
 import org.condast.commons.autonomy.env.IEnvironmentListener;
 import org.condast.commons.autonomy.env.IEnvironmentListener.EventTypes;
 import org.condast.commons.autonomy.model.IPhysical;
-import org.condast.commons.autonomy.sa.ISituationalAwareness;
-import org.condast.commons.autonomy.sa.radar.VesselRadarData;
 import org.condast.commons.data.latlng.LatLng;
 import org.condast.commons.data.latlng.LatLngUtils;
 import org.condast.commons.data.latlng.LatLngUtilsDegrees;
 import org.condast.commons.data.plane.Field;
-import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.ca.VesselSituationalAwareness;
 import org.miip.waterway.model.CentreShip;
 import org.miip.waterway.model.IVessel;
@@ -28,7 +25,7 @@ import org.miip.waterway.model.Ship.Heading;
 import org.miip.waterway.model.Waterway;
 import org.miip.waterway.model.def.IMIIPEnvironment;
 
-public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
+public class MIIPEnvironment implements IMIIPEnvironment {
 
 	private static final int DEFAULT_TIME_OUT =  1000;
 
@@ -50,6 +47,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private Bank bottomBank;
 	private Waterway waterway;
 	private VesselSituationalAwareness sa;
+	private boolean enabled;
+	private boolean initialised;
 
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	private int iteration;
@@ -69,6 +68,8 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.manual = false;
 		lock = new ReentrantLock();
 		this.listeners = new ArrayList<>();
+		this.enabled = false;
+		this.initialised = false;
 	}
 
 	@Override
@@ -78,18 +79,26 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		if(!enabled )
-			this.stop();
-		super.setEnabled(enabled);
+		this.enabled = enabled;
 	}
+
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	@Override
+	public boolean isInitialised() {
+		return this.initialised;
+	}
+
 
 	@Override
 	public boolean isActive() {
-		return super.isRunning();
+		return true;
 	}
 
-	@Override
-	public boolean onInitialise() {
+	public boolean initialise() {
 		currentTime = Calendar.getInstance().getTime();
 
 		//The bank on the top
@@ -116,6 +125,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 		notifyChangeEvent( new EnvironmentEvent<IVessel>( this, EventTypes.INITIALSED, null ));
 		iteration = 0;
+		this.initialised = true;
 		return true;
 	}
 
@@ -139,22 +149,6 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	@Override
 	public Field getField() {
 		return field;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#getTimer()
-	 */
-	@Override
-	public int getTimer() {
-		return timer;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#setTimer(int)
-	 */
-	@Override
-	public void setTimer(int timer) {
-		this.timer = timer;
 	}
 
 	@Override
@@ -230,7 +224,7 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	 * @see org.miip.waterway.model.eco.IMIIPEnvironment#onExecute()
 	 */
 	@Override
-	public synchronized void onExecute() {
+	public synchronized void update() {
 		lock.lock();
 		try{
 			logger.fine("\n\nEXECUTE:");
@@ -266,7 +260,6 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		finally{
 			lock.unlock();
 		}
-		sleep( timer );
 	}
 
 	/**
@@ -297,11 +290,5 @@ public class MIIPEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		double x = distance * Math.sin( radian );
 		double y = distance * Math.cos( radian );
 		return new Location((float) x, (float)y );
-	}
-
-	@Override
-	public ISituationalAwareness<VesselRadarData> getSituationalAwareness() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

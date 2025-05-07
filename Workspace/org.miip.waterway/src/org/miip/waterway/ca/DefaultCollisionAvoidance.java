@@ -11,12 +11,8 @@ import org.miip.waterway.model.IVessel;
 
 public class DefaultCollisionAvoidance extends AbstractVesselCollisionAvoidance<IVessel>{
 
-	public DefaultCollisionAvoidance( IVessel vessel ){
-		super( vessel,  true);
-	}
-
 	public DefaultCollisionAvoidance( IVessel vessel, FieldData field ){
-		super( vessel, true);
+		super( vessel, field, true);
 	}
 
 	@Override

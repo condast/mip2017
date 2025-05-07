@@ -3,7 +3,7 @@ package org.miip.waterway.ui.swt;
 import java.util.Arrays;
 
 import org.condast.commons.data.colours.RGBA;
-import org.condast.commons.ui.xy.AbstractXYGraph;
+import org.condast.commons.ui.widgets.xy.AbstractXYGraph;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;

@@ -61,7 +61,6 @@ public class VesselSituationalAwareness extends AbstractSituationalAwareness<Ves
 		this.field = field;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public IPhysical[] getScan() {
 		Collection<IPhysical> results = new ArrayList<>();

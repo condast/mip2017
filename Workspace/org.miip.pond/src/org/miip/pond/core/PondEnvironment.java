@@ -18,7 +18,6 @@ import org.condast.commons.data.latlng.Waypoint;
 import org.condast.commons.data.plane.Field;
 import org.condast.commons.data.plane.FieldData;
 import org.condast.commons.data.plane.IField;
-import org.condast.commons.thread.AbstractExecuteThread;
 import org.miip.waterway.ca.DefaultCollisionAvoidance;
 import org.miip.waterway.model.IVessel;
 import org.miip.waterway.model.Vessel;
@@ -28,7 +27,7 @@ import org.miip.waterway.model.def.MapLocation;
 import org.miip.waterway.model.eco.Bank;
 import org.miip.waterway.model.eco.PondSituationalAwareness;
 
-public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvironment {
+public class PondEnvironment implements IMIIPEnvironment {
 
 	public static final int DEFAULT_START_ANGLE = 90;
 	public static final int DEFAULT_OFFSET = 90;
@@ -37,9 +36,11 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	private IField field;
 	private Vessel reference;
 	private List<IPhysical> others;
-	private int time;
+	private long time;
 	private int iteration;
 	private double angle;
+	private boolean enabled;
+	private boolean active;
 	
 	private Collection<IEnvironmentListener<IVessel>> listeners;
 	
@@ -54,16 +55,21 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		this.time = DEFAULT_TIME_SECOND;
 		this.iteration = 0;
 		this.angle = 0;
+		this.enabled = false;
+		this.active = false;
 		this.clear();
 	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
-		if(!enabled )
-			this.stop();
-		super.setEnabled(enabled);
+		this.enabled = enabled;
 	}
 
+	@Override
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+	
 	@Override
 	public void clear() {
 		field = new Field( MapLocation.Location.RIJNHAVEN.toLatLng(), 100, 100, 0);
@@ -78,7 +84,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		reference.setCollisionAvoidance(ca);
 		ISituationalAwareness<VesselRadarData> sa = new PondSituationalAwareness( reference, field );
 		sa.setRange(30);
-		//ca.addSituationalAwareness(sa);
+		ca.addSituationalAwareness(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), 90 );
 		reference.addWayPoint( new Waypoint( destination ));
 		
@@ -90,7 +96,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		other.setCollisionAvoidance(ca);
 		sa = new PondSituationalAwareness( other, field );
 		sa.setRange(30);
-		//ca.addSituationalAwareness(sa);
+		ca.addSituationalAwareness(sa);
 		destination = Field.clip( field, other.getLocation(), 180 );
 		other.addWayPoint( new Waypoint( destination ));
 		
@@ -98,7 +104,6 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(this, EventTypes.INITIALSED,  reference));
 	}
 
-	@Override
 	public boolean onInitialise() {
 		clear();
 		return true;
@@ -118,7 +123,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		ICollisionAvoidance<IVessel, VesselRadarData> ca =  new DefaultCollisionAvoidance( reference, fieldData );
 		reference.setCollisionAvoidance(ca);
 		ISituationalAwareness<VesselRadarData> sa = new PondSituationalAwareness( reference, field );
-		//ca.addSituationalAwareness(sa);
+		ca.addSituationalAwareness(sa);
 		LatLng destination = Field.clip( field, reference.getLocation(), angle );
 		reference.addWayPoint( new Waypoint( destination ));
 
@@ -132,7 +137,7 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		ca = reference.getCollisionAvoidance();
 		other.setCollisionAvoidance(ca);
 		sa = new PondSituationalAwareness( other, field );
-		//ca.addSituationalAwareness(sa);
+		ca.addSituationalAwareness(sa);
 		destination = LatLngUtilsDegrees.extrapolate( other.getLocation(), 190, half);
 		other.addWayPoint( new Waypoint( destination ));
 
@@ -175,25 +180,17 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 	}
 
 	@Override
-	public int getTimer() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void setTimer(int timer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public boolean isInitialised() {
 		return true;
 	}
 
 	@Override
 	public boolean isActive() {
-		return super.isRunning();
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	@Override
@@ -220,24 +217,26 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 		return field.getName();
 	}
 
-	@Override
-	public void onExecute() {
-		reference.move(time);
-		if( reference.destinationReached()) {
-			proceed();
-		}
-		for(IPhysical other: others ) {
-			Vessel vessel = (Vessel) other;
-			vessel.move(time);
-			if( reference.isInCriticalDistance(other))
-				notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
-			if( vessel.destinationReached()) {
+	public void update() {
+		try {
+			reference.move(time);
+			if( reference.destinationReached()) {
 				proceed();
-				break;
 			}
+			for(IPhysical other: others ) {
+				Vessel vessel = (Vessel) other;
+				vessel.move(time);
+				if( reference.isInCriticalDistance(other))
+					notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.COLLISION_DETECT, vessel));
+				if( vessel.destinationReached()) {
+					proceed();
+					break;
+				}
+			}
+			notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.CHANGED, reference));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		notifyEnvironmentChanged( new EnvironmentEvent<IVessel>(pe, EventTypes.CHANGED, reference));
-		super.sleep(time);
 	}
 
 	@Override
@@ -260,12 +259,6 @@ public class PondEnvironment extends AbstractExecuteThread implements IMIIPEnvir
 
 	@Override
 	public Bank[] getBanks() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ISituationalAwareness<VesselRadarData> getSituationalAwareness() {
 		// TODO Auto-generated method stub
 		return null;
 	}

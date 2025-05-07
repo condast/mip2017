@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.condast.commons.data.colours.RGBA;
-import org.condast.commons.ui.xy.AbstractXYMap;
+import org.condast.commons.ui.widgets.xy.AbstractXYMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
